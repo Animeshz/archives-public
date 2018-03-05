@@ -8,6 +8,7 @@
 
 namespace Animeshz\ClusterPlus;
 
+use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 use \Animeshz\ClusterPlus\Commands\CommandsDispatcher;
 use \Animeshz\ClusterPlus\Utils\Collector;
 use \Animeshz\ClusterPlus\Utils\UniversalHelpers;
@@ -30,6 +31,11 @@ class Client extends LiviaClient
 	 * @var \Animeshz\ClusterPlus\Utils\Collector
 	 */
 	protected $collector;
+
+	/**
+	 * @var \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient
+	 */
+	protected $dialogflow;
 
 	/**
 	 * @var \Animeshz\ClusterPlus\Dependent\Pool<\CharlotteDunois\Phoebe\Pool>
@@ -81,6 +87,7 @@ class Client extends LiviaClient
 
 		$this->eventHandler = new $eventHandler($this);
 		$this->pool = new $pool($this, $poolOptions);
+		$this->dialogflow = new DialogFlowClient($this);
 
 		$this->eventHandler->dispatch();
 

@@ -130,7 +130,7 @@ class Command implements \JsonSerializable, \Serializable
 	{
 		if(\property_exists($this, $name)) {
 			return $this->$name;
-		}		
+		}
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
 	}
 	
