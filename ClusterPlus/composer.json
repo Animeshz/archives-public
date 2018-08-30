@@ -9,7 +9,10 @@
             "email": "animeshsahu19@yahoo.com"
         }
     ],
-    "require": {},
+    "require": {
+        "charlottedunois/livia": "dev-master",
+        "react/mysql": "^0.3.3"
+    },
     "autoload": {
         "psr-4": {
             "ClusterPlus\\": "./core/"
