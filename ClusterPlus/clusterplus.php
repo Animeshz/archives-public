@@ -15,7 +15,6 @@ class ClusterPlus
 		}
 
 		require __DIR__.'/vendor/autoload.php';
-		var_dump(__DIR__.'/vendor/autoload.php');
 		$config = json_decode(file_get_contents(__DIR__.'/config.json'), true);
 
 		if(class_exists("\\ClusterPlus\\init")) new \ClusterPlus\init($config);
