@@ -11,7 +11,8 @@
     ],
     "require": {
         "charlottedunois/livia": "dev-master",
-        "react/mysql": "^0.3.3"
+        "react/mysql": "^0.3.3",
+        "haydenpierce/class-finder": "^0.0.2"
     },
     "autoload": {
         "psr-4": {
