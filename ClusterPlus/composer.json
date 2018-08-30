@@ -11,12 +11,12 @@
     ],
     "require": {
         "charlottedunois/livia": "dev-master",
-        "react/mysql": "^0.3.3",
+        "react/mysql": "dev-master",
         "haydenpierce/class-finder": "^0.0.2"
     },
     "autoload": {
         "psr-4": {
-            "ClusterPlus\\": "./core/"
+            "ClusterPlus\\": "core"
         }
     }
 }
