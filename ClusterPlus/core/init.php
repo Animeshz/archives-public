@@ -21,6 +21,11 @@ class init
 	protected $client;
 
 	/**
+	 * @var \ClusterPlus\commands\CommandsRegistry
+	 */
+	// protected $commandsRegistry;
+
+	/**
      * Fancy Constructor
      *
      * ```
@@ -39,11 +44,28 @@ class init
 		$this->loop = \React\EventLoop\Factory::create();
 		$this->client = new \CharlotteDunois\Livia\LiviaClient($config['clientConfig'], $this->loop);
 
-		$this->attachListeners()->loadCore()->login();
+		// $this->attachListeners()->loadCore()->login();
+		$this->loadCore()->login();
 	}
 
-	public function attachListeners()
+	public function registerDefaults()
 	{
+
+		new \ClusterPlus\defaults\EventHandler($this->client);
+	}
+
+	public function attachListeners(string $location)
+	{
+		$path = \realpath($location);
+		if($path){
+			$listener = include $path;
+			$instance = $listener($this->client);
+			if($instance instanceof \ClusterPlus\interfaces\EventHandler){
+				new $instance();
+			} else {
+				throw new \Exception("Wrong Argument: Event Handler must implement \ClusterPlus\interface\EventHandler", code, previous);
+			}
+		}
 		return $this;
 	}
 
@@ -55,8 +77,6 @@ class init
 			$this->client->setProvider(new \CharlotteDunois\Livia\Providers\MySQLProvider($db));
 		});
 
-		var_dump($this->loadClasses());
-
 		return $this;
 	}
 
@@ -65,7 +85,7 @@ class init
 		return \HaydenPierce\ClassFinder\ClassFinder::getClassesInNamespace("ClusterPlus");
 	}
 
-	public function login()
+	public function login(callable $resolve, callable $reject)
 	{
 		$this->client->login($this->config['token']);
 		$this->loop->run();

@@ -10,8 +10,11 @@ namespace ClusterPlus\commands;
 
 class CommandsRegistry
 {
-	public function __construct()
+	protected $client;
+
+	public function __construct(\CharlotteDunois\Yasmin\Client $client)
 	{
-		
+		$this->client = $client;
+		var_dump($this->loadClasses());
 	}
 }

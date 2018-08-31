@@ -8,17 +8,33 @@
 
 class ClusterPlus
 {
+	/**
+	 * @var \ClusterPlus\init
+	 */
+	protected $init;
+
 	public function __construct()
 	{
-		if(\PHP_SAPI !== 'cli') {
-			throw new \Exception('ClusterPlus can only be used in the CLI SAPI. Please use PHP CLI.');
-		}
-
 		require __DIR__.'/vendor/autoload.php';
 		$config = json_decode(file_get_contents(__DIR__.'/config.json'), true);
 
-		if(class_exists("\\ClusterPlus\\init")) new \ClusterPlus\init($config);
+		if(class_exists("\\ClusterPlus\\init")) $this->init = new \ClusterPlus\init($config);
+	}
+
+	public function __get($name){
+		switch ($name) {
+			case 'init':
+				return $this->init;
+			break;
+		}
+	}
+
+	public function getInitInstance()
+	{
+		return $this->init;
 	}
 }
 
-new ClusterPlus();
+$cp = new ClusterPlus();
+
+$cp->init->registerDefaults();
