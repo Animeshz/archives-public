@@ -13,7 +13,7 @@ namespace ClusterPlus\Dependent;
  *
  * @property \CharlotteDunois\Livia\Client<\CharlotteDunois\Yasmin\Client>   $client   Instance of current client.
  */
-class EventHandler implements \ClusterPlus\interfaces\EventHandler, \CharlotteDunois\Events\EventEmitterInterface
+class EventHandler implements \ClusterPlus\Interfaces\EventHandler
 {
 	/**
 	 * @var \CharlotteDunois\Livia\LiviaClient<\CharlotteDunois\Yasmin\Client>
