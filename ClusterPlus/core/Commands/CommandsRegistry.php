@@ -19,16 +19,16 @@ class CommandsRegistry
 	{
 		$this->client = $client;
 
-		$this->client->registerDefaults();
+		$this->client->registry->registerDefaults();
 		$this->registerGroups()->registerCommands();
 	}
 
 	public function registerGroups()
 	{
 		$this->client->registry->registerGroup(
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_moderation', 'Cluster Plus Moderation', true))
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_polls', 'Cluster Plus Polls'))
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_forms', 'Cluster Plus Forms'))
+            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_moderation', 'Cluster Plus Moderation', true)),
+            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_polls', 'Cluster Plus Polls')),
+            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_forms', 'Cluster Plus Forms')),
             (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_meta', 'Cluster Plus Meta'))
         );
 		return $this;
@@ -36,7 +36,7 @@ class CommandsRegistry
 
 	public function registerCommands()
 	{
-		$this->registerCommandsIn(__DIR__.'/commands', true);
+		$this->client->registry->registerCommandsIn(__DIR__.'/commands', true);
 		return $this;
 	}
 }
