@@ -24,17 +24,11 @@ class ClusterPlus
 	public function __get($name){
 		switch ($name) {
 			case 'init':
-				return $this->init;
+			return $this->init;
 			break;
 		}
-	}
-
-	public function getInitInstance()
-	{
-		return $this->init;
 	}
 }
 
 $cp = new ClusterPlus();
-
-$cp->init->registerDefaults();
+$cp->init->login();
