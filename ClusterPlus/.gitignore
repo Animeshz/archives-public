@@ -1,3 +1,4 @@
+/templates/
 /vendor/
 composer.lock
 config.json
