@@ -8,7 +8,7 @@
 
 namespace ClusterPlus\Commands;
 
-class CommandsRegistry
+class CommandsDispatcher
 {
 	/**
 	 * @var \CharlotteDunois\Livia\LiviaClient<\CharlotteDunois\Yasmin\Client>
@@ -20,17 +20,23 @@ class CommandsRegistry
 		$this->client = $client;
 
 		$this->client->registry->registerDefaults();
-		$this->registerGroups()->registerCommands();
+		$this->registerTypes()->registerGroups()->registerCommands();
+	}
+
+	public function registerTypes()
+	{
+		$this->client->registry->registerTypesIn(__DIR__.'/types');
+		return $this;
 	}
 
 	public function registerGroups()
 	{
 		$this->client->registry->registerGroup(
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_moderation', 'Cluster Plus Moderation', true)),
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_polls', 'Cluster Plus Polls')),
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_forms', 'Cluster Plus Forms')),
-            (new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_meta', 'Cluster Plus Meta'))
-        );
+			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_moderation', 'Cluster Plus Moderation', true)),
+			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_polls', 'Cluster Plus Polls')),
+			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_forms', 'Cluster Plus Forms')),
+			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'clusterplus_meta', 'Cluster Plus Meta'))
+		);
 		return $this;
 	}
 
