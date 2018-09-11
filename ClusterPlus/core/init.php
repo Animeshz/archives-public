@@ -100,7 +100,7 @@ class init
 		{
 			$this->client->setProvider(new \CharlotteDunois\Livia\Providers\MySQLProvider($db));
 		});
-		new \ClusterPlus\Commands\CommandsRegistry($this->client); //refractor to dispatcher
+		new \ClusterPlus\Commands\CommandsDispatcher($this->client); //refractor to dispatcher
 	}
 
 	// public function loadClasses()
