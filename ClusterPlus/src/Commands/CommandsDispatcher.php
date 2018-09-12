@@ -20,13 +20,7 @@ class CommandsDispatcher
 		$this->client = $client;
 
 		$this->client->registry->registerDefaults();
-		$this->registerTypes()->registerGroups()->registerCommands();
-	}
-
-	public function registerTypes()
-	{
-		$this->client->registry->registerTypesIn(__DIR__.'/types');
-		return $this;
+		$this->registerGroups()->registerCommands();
 	}
 
 	public function registerGroups()
