@@ -17,6 +17,7 @@
     "autoload": {
         "psr-4": {
             "ClusterPlus\\": "core/"
-        }
+        },
+        "files": ["lib/custom/functions.php"]
     }
 }

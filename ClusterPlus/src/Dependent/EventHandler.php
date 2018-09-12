@@ -75,4 +75,15 @@ class EventHandler implements \ClusterPlus\Interfaces\EventHandler
 			$this->client->on($event[0], $event[1]);
 		}
 	}
+
+	public function debug()
+	{
+		// return [
+		// 	__FUNCTION__,
+		// 	function ($debug)
+		// 	{
+		// 		echo $debug.\PHP_EOL;
+		// 	}
+		// ];
+	}
 }

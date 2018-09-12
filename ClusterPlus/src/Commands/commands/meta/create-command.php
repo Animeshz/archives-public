@@ -10,16 +10,16 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
 		function __construct($client) {
 			parent::__construct($client, array(
-				'name' => 'avatar',
+				'name' => 'create-command',
 				'group' => 'clusterplus_meta',
-				'description' => 'Shows the avatar of the user if not found nothing is sent',
+				'description' => 'Creates a command',
 				'guildOnly' => true,
 				'args' => array(
 					array(
-						'key' => 'user',
-						'prompt' => 'user',
-						'type' => 'c-user',
-						'default' => ''
+						'key' => 'actions',
+						'prompt' => 'Define some actions',
+						'type' => 'string',
+						'infinite' => true
 					)
 				)
 			));
@@ -27,20 +27,10 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			$embed = new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003']);
-			if($args['user'] !== '') {
-				$av = $args['user']->getAvatarURL();
-			} else {
-				$av = $message->message->author->getAvatarURL();
+			$message->say(var_export($args['actions'], true));
+			foreach ($args['actions'] as $value) {
+				
 			}
-
-			if($av !== null) {
-				$embed->setImage($av);
-			} else {
-				$embed->setDescription('Image not found');
-			}
-
-			$message->message->channel->send('', ['embed' => $embed]);
 		}
 	});
 };

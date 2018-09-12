@@ -33,19 +33,38 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 					} elseif($msg->content === 'done') {
 
-						$title = \array_shift($questions);
+						$this->client->removeListener('message', $listener);
+						$newListener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($message, &$questions, &$newListener) {
+							if($msg->channel->__toString() === $message->channel->__toString() && $msg->author->__toString() === $message->author->__toString()) {
+								if($msg->content === 'yes') {
+									$desc = 'Title: '.$questions[0].\PHP_EOL;
+									for($i = 1; $i<\count($questions); $i++) {
+										$desc .= $i.'. '.$questions[$i];
+									}
+
+									$embed = new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003']);
+									$embed->setDescription($desc);
+
+									$msg->channel->send('', ['embed' => $embed]);
+								} else {
+									unset($questions);
+									$this->client->removeListener('message', $newListener);
+									$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Successfully cancelled form creation'])]);
+								}
+							}
+						};
+						$this->client->on('message', $listener);
+					} elseif($msg->content === 'yes') {
 						$data = $this->client->provider->get($msg->guild, 'forms', []);
 						$data[$title] = $questions;
 
 						$this->client->provider->set($msg->guild, 'forms', $data);
 						$this->client->removeListener('message', $listener);
-						//new listenener and send confirmation
 						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Successfully created form'])]);
-
 					} else {
 
 						$questions[] = $msg->content;
-						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Next question'])]);
+						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Enter a new question, type done for submitting and cancel for cancelling'])]);
 
 					}
 
