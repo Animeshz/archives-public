@@ -9,26 +9,26 @@
 class ClusterPlus
 {
 	/**
-	 * @var \ClusterPlus\init
+	 * @var \ClusterPlus\Client
 	 */
-	protected $init;
+	protected $client;
 
 	public function __construct()
 	{
 		require __DIR__.'/vendor/autoload.php';
-		$config = json_decode(file_get_contents(__DIR__.'/config.json'), true);
+		$config = json_decode(file_get_contents(__DIR__.'/../config.json'), true);
 
-		if(class_exists("\\ClusterPlus\\init")) $this->init = new \ClusterPlus\init($config);
+		if(class_exists("\\ClusterPlus\\init")) $this->client = new \ClusterPlus\Client($config);
 	}
 
 	public function __get($name){
 		switch ($name) {
-			case 'init':
-			return $this->init;
+			case 'client':
+			return $this->client;
 			break;
 		}
 	}
 }
 
 $cp = new ClusterPlus();
-$cp->init->login();
+$cp->client->login();

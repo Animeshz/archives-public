@@ -13,7 +13,7 @@ namespace ClusterPlus;
  *
  * @property \CharlotteDunois\Livia\Client<\CharlotteDunois\Yasmin\Client>   $client   Instance of current client.
  */
-class init
+class Client
 {
 	/**
 	 * @var \CharlotteDunois\Livia\LiviaClient<\CharlotteDunois\Yasmin\Client>

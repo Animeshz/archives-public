@@ -16,8 +16,8 @@
     },
     "autoload": {
         "psr-4": {
-            "ClusterPlus\\": "core/"
+            "ClusterPlus\\": "src/"
         },
-        "files": ["lib/custom/functions.php"]
+        "files": ["src/Utils/CommandHelpers.php"]
     }
 }
