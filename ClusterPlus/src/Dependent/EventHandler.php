@@ -25,9 +25,9 @@ class EventHandler implements \ClusterPlus\Interfaces\EventHandler
 	 */
 	protected $events;
 
-	public function __construct(\ClusterPlus\init $init, array $excludeFuncs = null)
+	public function __construct(\ClusterPlus\Client $client, array $excludeFuncs = null)
 	{
-		$this->client = $init->client;
+		$this->client = $client->client;
 
 		$magic = [
 			'__construct',

@@ -8,7 +8,7 @@
 
 namespace ClusterPlus\Utils;
 
-function addAction(string $name, ...$values = null)
+function addAction(string $name, ...$values)
 {
 	switch (true) {
 		case ($name === 'addRole' || $name === 'removeRole' || $name === 'setVoiceChannel'):

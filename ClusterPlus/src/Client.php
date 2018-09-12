@@ -51,8 +51,6 @@ class Client
 	 */
 	public function __construct(array $config)
 	{
-
-		var_dump(\ClusterPlus\Utils\resolve('TextChannel', $message->guild, $message->channel->id));
 		$this->config = $config;
 		$this->loop = \React\EventLoop\Factory::create();
 		$this->client = new \CharlotteDunois\Livia\LiviaClient($this->config['clientConfig'], $this->loop);
