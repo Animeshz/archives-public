@@ -16,6 +16,11 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 				'guildOnly' => true,
 				'args' => array(
 					array(
+						'key' => 'name',
+						'prompt' => 'Name of your command',
+						'type' => 'string'
+					),
+					array(
 						'key' => 'actions',
 						'prompt' => 'Define some actions',
 						'type' => 'string',
@@ -27,10 +32,29 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			$message->say(var_export($args['actions'], true));
-			foreach ($args['actions'] as $value) {
-				
-			}
+			$e = new \Exception;
+			$message->say(var_export($e->getTraceAsString(), true));
+			//validate command
+			// foreach ($args['actions'] as $action) {
+			// 	preg_match("/('.*?')/", $action, $function);
+			// 	preg_match("/\([^)]+\)/", $action, $args);
+
+			// 	// $function = \trim($function, "'");
+			// 	// $args = trim($args, '()');
+
+			// 	var_dump($action, $function, $args);
+
+			// 	// $argsArr = \trim(\explode(',', $args));
+
+			// 	// if(\method_exists('\\ClusterPlus\\Interfaces\\documentary\\'.$function, $args[0])) {
+
+			// 	// }
+			// }
+
+			// var_dump($args['actions']);
+
+			//register command in database
+			//create another class for maintaining the command created
 		}
 	});
 };
