@@ -8,77 +8,75 @@
 
 namespace ClusterPlus\Utils;
 
-function addAction(string $name, ...$values)
+class CommandHelpers
 {
-	switch (true) {
-		case ($name === 'addRole' || $name === 'removeRole' || $name === 'setVoiceChannel'):
-		if(!($values[0] instanceof \React\Promise\ExtendedPromiseInterface)) {
-			if (!($values[0] instanceof \CharlotteDunois\Yasmin\Models\GuildMember)) throw new InvalidArgumentException("Given value is not an instance of CharlotteDunois\Yasmin\Models\GuildMember");
-			return $values[0]->$name($values[1]);
-		}
-		return $values[0]->then(function (\CharlotteDunois\Yasmin\Models\GuildMember $member) use ($name, $values)
-		{
-			return $member->$name($values[1]);
-		});
-		
-		break;
+	public static decodeArgs(array $args)
+	{}
 
-		case ($name === 'createInvite' || $name === 'send' || $name === 'setTopic'):
-		if(!($values[0] instanceof \React\Promise\ExtendedPromiseInterface)) {
-			if (!($values[0] instanceof \CharlotteDunois\Yasmin\Models\TextChannel)) throw new InvalidArgumentException("Given value is not an instance of CharlotteDunois\Yasmin\Models\TextChannel");
-			return $values[0]->$name($values[1]);
+	public static function addAction(string $name, $model, $option)
+	{
+		if(!($model instanceof \React\Promise\ExtendedPromiseInterface)) {
+			$model = \React\Promise\resolve($model);
 		}
-		return $values[0]->then(function (\CharlotteDunois\Yasmin\Models\TextChannel $channel) use ($name, $values)
-		{
-			return $channel->$name($values[1]);
-		});
-		break;
 
-		case ($name === 'setColor'):
-		if(!($values[0] instanceof \React\Promise\ExtendedPromiseInterface)) {
-			if (!($values[0] instanceof \CharlotteDunois\Yasmin\Models\Role)) throw new InvalidArgumentException("Given value is not an instance of CharlotteDunois\Yasmin\Models\TextChannel");
-			return $values[0]->$name($values[1]);
+		switch (true) {
+			case ($name === 'addRole' || $name === 'removeRole' || $name === 'setVoiceChannel'):
+			return $model->then(function (\CharlotteDunois\Yasmin\Models\GuildMember $member) use ($name, $option)
+			{
+				return $member->$name($option);
+			});
+			break;
+
+			case ($name === 'createInvite' || $name === 'send' || $name === 'setTopic'):
+			return $model->then(function (\CharlotteDunois\Yasmin\Models\TextChannel $channel) use ($name, $option)
+			{
+				return $channel->$name($option);
+			});
+			break;
+
+			case ($name === 'setColor'):
+			return $model->then(function (\CharlotteDunois\Yasmin\Models\Role $role) use ($name, $option)
+			{
+				return $role->$name($option);
+			});
+			break;
 		}
-		return $values[0]->then(function (\CharlotteDunois\Yasmin\Models\Role $role) use ($name, $values)
-		{
-			return $role->$name($values[1]);
-		});
-		break;
 	}
-}
 
 // addTimer(int $time, $name, $value)
 // addListener()
 
-function resolve(string $type, $value, ...$options){
-	switch ($type) {
-		case 'GuildMember':
-		if($value instanceof \CharlotteDunois\Yasmin\Models\GuildMember) {
-			return \React\Promise\resolve($value);
-		} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
-			return $value->message->guild->fetchMember($value->message->author->id);
-		}
-		break;
+	public static function resolve(string $type, $value, ...$options){
+		switch ($type) {
+			case 'GuildMember':
+			if($value instanceof \CharlotteDunois\Yasmin\Models\GuildMember) {
+				return \React\Promise\resolve($value);
+			} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
+				return $value->message->guild->fetchMember($value->message->author->id);
+			}
+			break;
 
-		case 'TextChannel':
-		if($value instanceof \CharlotteDunois\Yasmin\Models\TextChannel) {
-			return \React\Promise\resolve($value);
-		} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
-			return \React\Promise\resolve($value->message->channel);
-		} elseif (($value instanceof \CharlotteDunois\Yasmin\Models\Guild) || ($value instanceof \CharlotteDunois\Yasmin\Client)) {
-			return \React\Promise\resolve($value->channels->get($options[0]));
-		}
-		break;
+			case 'TextChannel':
+			if($value instanceof \CharlotteDunois\Yasmin\Models\TextChannel) {
+				return \React\Promise\resolve($value);
+			} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
+				return \React\Promise\resolve($value->message->channel);
+			} elseif (($value instanceof \CharlotteDunois\Yasmin\Models\Guild) || ($value instanceof \CharlotteDunois\Yasmin\Client)) {
+				return \React\Promise\resolve($value->channels->get($options[0]));
+			}
+			break;
 
-		case 'Role':
-		if($value instanceof \CharlotteDunois\Yasmin\Models\Role) {
-			return \React\Promise\resolve($value);
-		} elseif ($value instanceof \CharlotteDunois\Yasmin\Models\Guild) {
-			if(\is_int($options[0])) return \React\Promise\resolve($value->roles->get($options[0]));
-			if(\is_string($options[0])) return \React\Promise\resolve($value->roles->first(function (\CharlotteDunois\Yasmin\Models\Role $role) {
-				if(\mb_strtolower($role->name) === \mb_strtolower($options[0])) return true;
-			}));
+			case 'Role':
+			//add support for CommandMessage
+			if($value instanceof \CharlotteDunois\Yasmin\Models\Role) {
+				return \React\Promise\resolve($value);
+			} elseif ($value instanceof \CharlotteDunois\Yasmin\Models\Guild) {
+				if(\is_int($options[0])) return \React\Promise\resolve($value->roles->get($options[0]));
+				if(\is_string($options[0])) return \React\Promise\resolve($value->roles->first(function (\CharlotteDunois\Yasmin\Models\Role $role) {
+					if(\mb_strtolower($role->name) === \mb_strtolower($options[0])) return true;
+				}));
+			}
+			break;
 		}
-		break;
 	}
 }

@@ -15,6 +15,9 @@ namespace ClusterPlus\Interfaces\documentary;
  */
 interface addAction
 {
+
+	// const METHODS = get_class_methods(__CLASS__);
+
 	/** 
 	 * Adds a role to the guild member. Resolves with $this.
 	 * 

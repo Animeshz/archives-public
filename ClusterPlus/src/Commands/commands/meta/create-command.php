@@ -32,26 +32,25 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			$e = new \Exception;
-			$message->say(var_export($e->getTraceAsString(), true));
-			//validate command
-			// foreach ($args['actions'] as $action) {
-			// 	preg_match("/('.*?')/", $action, $function);
-			// 	preg_match("/\([^)]+\)/", $action, $args);
+			// validate command
+			foreach ($args['actions'] as $attach) {
+				preg_match("/\([^)]+\)/i", $attach, $arguments);
+				$function = \preg_replace("/\([^)]+\)/", "", $attach);
+				$arguments = \explode(',', \trim($arguments[0], '()'));
+				$action = \trim(\array_shift($arguments));
 
-			// 	// $function = \trim($function, "'");
-			// 	// $args = trim($args, '()');
+				var_dump($function, $action, $arguments);
 
-			// 	var_dump($action, $function, $args);
+				foreach ($arguments as $k => $argument) {
+					if(1 !== preg_match('[.]')) continue;
+					$parts = \explode('.', $argument);
+					unset($arguments[$k]);
 
-			// 	// $argsArr = \trim(\explode(',', $args));
+					//use the value as parameter to next
+				}
 
-			// 	// if(\method_exists('\\ClusterPlus\\Interfaces\\documentary\\'.$function, $args[0])) {
-
-			// 	// }
-			// }
-
-			// var_dump($args['actions']);
+				// if(\method_exists('\\ClusterPlus\\Interfaces\\documentary\\'.$function, $args[0]))
+			}
 
 			//register command in database
 			//create another class for maintaining the command created
