@@ -9,20 +9,20 @@
 return function(\CharlotteDunois\Yasmin\Client $client) {
 	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
 		function __construct($client) {
-			parent::__construct($client, array(
+			parent::__construct($client, [
 				'name' => 'avatar',
-				'group' => 'clusterplus_meta',
+				'group' => 'meta',
 				'description' => 'Shows the avatar of the user if not found nothing is sent',
 				'guildOnly' => true,
-				'args' => array(
-					array(
+				'args' => [
+					[
 						'key' => 'user',
 						'prompt' => 'user',
 						'type' => 'user',
 						'default' => ''
-					)
-				)
-			));
+					]
+				]
+			]);
 		}
 
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)

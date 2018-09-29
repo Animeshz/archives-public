@@ -95,10 +95,15 @@ class Client
 	public function loadCore()
 	{
 		$this->eventHandler->dispatch();
+		$GLOBALS['collector'] = new \ClusterPlus\Utils\Collector($this->client);
 		$factory = new \React\MySQL\Factory($this->loop);
 		$factory->createConnection($this->config['database']['user'].':'.$this->config['database']['pass'].'@'.$this->config['database']['server'].'/'.$this->config['database']['db'])->done(function (\React\MySQL\ConnectionInterface $db)
 		{
-			$this->client->setProvider(new \CharlotteDunois\Livia\Providers\MySQLProvider($db));
+			$this->client->setProvider(new \CharlotteDunois\Livia\Providers\MySQLProvider($db))->done(function ()
+			{
+				global $collector;
+				$collector->loadFromDB();
+			});
 		});
 		new \ClusterPlus\Commands\CommandsDispatcher($this->client); //refractor to dispatcher
 	}

@@ -10,8 +10,9 @@ namespace ClusterPlus\Utils;
 
 class CommandHelpers
 {
-	public static decodeArgs(array $args)
-	{}
+	public static $options;
+
+	public static $methods;
 
 	public static function addAction(string $name, $model, $option)
 	{
@@ -46,7 +47,7 @@ class CommandHelpers
 // addTimer(int $time, $name, $value)
 // addListener()
 
-	public static function resolve(string $type, $value, ...$options){
+	public static function resolve(string $type, $value, $option){
 		switch ($type) {
 			case 'GuildMember':
 			if($value instanceof \CharlotteDunois\Yasmin\Models\GuildMember) {
@@ -62,7 +63,7 @@ class CommandHelpers
 			} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
 				return \React\Promise\resolve($value->message->channel);
 			} elseif (($value instanceof \CharlotteDunois\Yasmin\Models\Guild) || ($value instanceof \CharlotteDunois\Yasmin\Client)) {
-				return \React\Promise\resolve($value->channels->get($options[0]));
+				return \React\Promise\resolve($value->channels->get($option));
 			}
 			break;
 
@@ -71,12 +72,25 @@ class CommandHelpers
 			if($value instanceof \CharlotteDunois\Yasmin\Models\Role) {
 				return \React\Promise\resolve($value);
 			} elseif ($value instanceof \CharlotteDunois\Yasmin\Models\Guild) {
-				if(\is_int($options[0])) return \React\Promise\resolve($value->roles->get($options[0]));
-				if(\is_string($options[0])) return \React\Promise\resolve($value->roles->first(function (\CharlotteDunois\Yasmin\Models\Role $role) {
-					if(\mb_strtolower($role->name) === \mb_strtolower($options[0])) return true;
+				if(\is_int($option)) return \React\Promise\resolve($value->roles->get($option));
+				if(\is_string($option)) return \React\Promise\resolve($value->roles->first(function (\CharlotteDunois\Yasmin\Models\Role $role) {
+					if(\mb_strtolower($role->name) === \mb_strtolower($option)) return true;
 				}));
 			}
 			break;
 		}
+	}
+
+	public static function setupVars()
+	{
+		$options = \get_class_methods(__CLASS__);
+		if (($key = array_search(__FUNCTION__, $options)) !== false) {
+			unset($options[$key]);
+		}
+		self::$options = $options;
+		self::$methods = \array_combine(self::$options, [
+			['addRole', 'removeRole', 'setVoiceChannel', 'createInvite', 'send', 'setTopic', 'setColor'],
+			['GuildMember', 'TextChannel', 'Role']
+		]);
 	}
 }

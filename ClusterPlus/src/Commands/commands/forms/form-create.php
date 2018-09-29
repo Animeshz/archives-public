@@ -9,12 +9,12 @@
 return function(\CharlotteDunois\Yasmin\Client $client) {
 	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
 		function __construct($client) {
-			parent::__construct($client, array(
+			parent::__construct($client, [
 				'name' => 'form-create',
-				'group' => 'clusterplus_forms',
+				'group' => 'forms',
 				'description' => 'Creates a form, apply command canbe used to fill it',
 				'guildOnly' => true,
-			));
+			]);
 		}
 
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
