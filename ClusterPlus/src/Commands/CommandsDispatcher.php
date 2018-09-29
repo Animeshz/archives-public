@@ -15,8 +15,6 @@ class CommandsDispatcher
 	 */
 	protected $client;
 
-	protected $commands;
-
 	public function __construct(\CharlotteDunois\Yasmin\Client $client)
 	{
 		$this->client = $client;
@@ -24,7 +22,7 @@ class CommandsDispatcher
 		$this->client->registry->registerDefaults();
 		$this->registerGroups()->registerCommands();
 
-		$this->dispatchCustomCommands();
+		// $this->dispatchCustomCommands();
 	}
 
 	public function registerGroups()
@@ -50,28 +48,5 @@ class CommandsDispatcher
 		{
 
 		});
-	}
-
-	static function getAllCommandsFromGuild(int $guildID)
-	{
-		return self::$commands->get($guildID);
-	}
-
-	static function getSpecificCommand(int $guildID, string $name)
-	{
-		return (self::$commands->get($guildID))->get($name);
-	}
-
-	static function setCommand(\ClusterPlus\Commands\Command ...$commands)
-	{
-		foreach ($commands as $command) {
-			$guildID = $command->guild->id;
-			if(self::$commands->get($guildID) === null) self::$commands->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
-			$cmd = self::$commands->get($guildID);
-			$cmd->set($command->name, $command);
-			self::$commands->set($guildID, $cmd);
-
-			// $this->client->emit();
-		}
 	}
 }
