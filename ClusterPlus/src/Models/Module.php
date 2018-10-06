@@ -17,8 +17,19 @@ namespace ClusterPlus\Models;
  * @property string[]                                           $examples           Examples of and for the command.
  * @property string[]|null                                      $userPermissions    The required permissions for the user to use the command.
  */
-abstract class Command implements \JsonSerializable, \Serializable
+abstract class Module implements \JsonSerializable, \Serializable
 {
+
+	const ATTACHABLE_TO = [
+		'timer',
+		'periodicTimer',
+		'command'
+	];
+
+	const TIMER = 'Send the timer duration in second.'.\PHP_EOL;
+	const PEREODICTIMER = 'Send the periodicTimer duration in second.'.\PHP_EOL;
+	const COMMAND = 'Send the name of fancy command you like.'.\PHP_EOL;
+
 	/**
 	 * The client which initiated the instance.
 	 * @var \CharlotteDunois\Livia\LiviaClient
@@ -61,9 +72,10 @@ abstract class Command implements \JsonSerializable, \Serializable
 	 * ```
 	 * array(
 	 *   'name' => string,
-	 *   'guild' => \CharlotteDunois\Yasmin\Models\Guild,
+	 *   'aliases' => string[], (optional)
 	 *   'description => string,
 	 *   'examples' => string[], (optional)
+	 *   'userPermissions' => string[], (optional)
 	 * )
 	 * ```
 	 *
@@ -175,17 +187,4 @@ abstract class Command implements \JsonSerializable, \Serializable
 
 		return new self($client, $vars);
 	}
-
-	function attachModules(Modules ...$modules)
-	{
-		$this->modules = array_merge($this->modules, $modules);
-	}
-	
-	function run()
-	{
-		foreach ($this->modules as $module) {
-			//run the module
-		}
-	}
-
 }

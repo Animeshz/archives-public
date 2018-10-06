@@ -51,15 +51,19 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 			$description = \implode(' ', $args['description']);
 
 			//create another class for maintaining the command created
-			$cmd = new class($this->client, $guild, $name, $description) extends \ClusterPlus\Models\Command {
-				function __construct(\CharlotteDunois\Yasmin\Client $client, $guild, $name, $description) {
-					parent::__construct($client, [
-						'name' => $name,
-						'description' => $description,
-						'guild' => $guild
-					]);
-				}
-			};
+			try {
+				$cmd = new class($this->client, $guild, $name, $description) extends \ClusterPlus\Models\Command {
+					function __construct(\CharlotteDunois\Yasmin\Client $client, $guild, $name, $description) {
+						parent::__construct($client, [
+							'name' => $name,
+							'description' => $description,
+							'guild' => $guild
+						]);
+					}
+				};
+			} catch (\InvalidArgumentException $e) {
+				return $message->say('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
+			}
 
 			//register command in database
 			$commands = $this->client->provider->get($guild, 'commands', []);

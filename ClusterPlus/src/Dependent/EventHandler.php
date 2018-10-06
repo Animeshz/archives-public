@@ -86,4 +86,22 @@ class EventHandler implements \ClusterPlus\Interfaces\EventHandler
 		// 	}
 		// ];
 	}
+
+	protected function guildMemberAdd()
+	{
+		return [
+			__FUNCTION__,
+			function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
+			{
+				$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites)
+				{
+					$invites->each(function (\CharlotteDunois\Yasmin\Models\Invite $invite)
+					{
+						//check which invite usage increment create new instance of invite and store it in database
+						// if($invite->uses === $inv
+					});
+				});
+			}
+		];
+	}
 }

@@ -36,7 +36,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 			$selected = [];
 			$listener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($selected, $message, &$listener) {
-				if($msg->channel->__toString() === $message->channel->__toString() && $msg->author->__toString() === $message->author->__toString()) {
+				if($msg->channel === $message->channel && $msg->author === $message->author) {
 
 					$m = (int)$msg->content;
 					if($m<=\count(\ClusterPlus\Utils\CommandHelpers::$options)) {

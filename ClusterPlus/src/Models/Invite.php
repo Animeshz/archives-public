@@ -8,7 +8,7 @@
 
 namespace ClusterPlus\Models;
 /**
- * A command that can be run in a client.
+ * Invite 
  *
  * @property \CharlotteDunois\Livia\LiviaClient                 $client             The client which initiated the instance.
  * @property string                                             $name               The name of the command.
@@ -24,18 +24,6 @@ abstract class Command implements \JsonSerializable, \Serializable
 	 * @var \CharlotteDunois\Livia\LiviaClient
 	 */
 	protected $client;
-	
-	/**
-	 * The name of the command.
-	 * @var string
-	 */
-	protected $name;
-	
-	/**
-	 * A short description of the command.
-	 * @var string
-	 */
-	protected $description;
 
 	/**
 	 * Guild which command belong to
@@ -44,26 +32,15 @@ abstract class Command implements \JsonSerializable, \Serializable
 	protected $guild;
 	
 	/**
-	 * Examples of and for the command.
-	 * @var string[]
-	 */
-	protected $examples = [];
-
-	/**
-	 * Modules that will react to the command if it runs
-	 * @var Module[]
-	 */
-	protected $modules = [];
-	
-	/**
 	 * Constructs a new Command. Info is an array as following:
 	 *
 	 * ```
 	 * array(
 	 *   'name' => string,
-	 *   'guild' => \CharlotteDunois\Yasmin\Models\Guild,
+	 *   'aliases' => string[], (optional)
 	 *   'description => string,
 	 *   'examples' => string[], (optional)
+	 *   'userPermissions' => string[], (optional)
 	 * )
 	 * ```
 	 *
@@ -175,17 +152,4 @@ abstract class Command implements \JsonSerializable, \Serializable
 
 		return new self($client, $vars);
 	}
-
-	function attachModules(Modules ...$modules)
-	{
-		$this->modules = array_merge($this->modules, $modules);
-	}
-	
-	function run()
-	{
-		foreach ($this->modules as $module) {
-			//run the module
-		}
-	}
-
 }

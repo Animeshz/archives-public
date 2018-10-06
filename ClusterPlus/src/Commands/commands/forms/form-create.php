@@ -23,7 +23,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 			$questions = [];
 			$listener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($message, &$listener, &$questions) {
-				if($msg->channel->__toString() === $message->channel->__toString() && $msg->author->__toString() === $message->author->__toString()) {
+				if($msg->channel === $message->channel && $msg->author === $message->author) {
 
 					if($msg->content === 'cancel') {
 
