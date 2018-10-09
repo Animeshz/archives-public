@@ -22,7 +22,7 @@ class CommandsDispatcher
 		$this->client->registry->registerDefaults();
 		$this->registerGroups()->registerCommands();
 
-		// $this->dispatchCustomCommands();
+		$this->dispatchCustomCommands();
 	}
 
 	public function registerGroups()
@@ -44,9 +44,25 @@ class CommandsDispatcher
 
 	function dispatchCustomCommands()
 	{
-		$this->client->on('message', function ()
+		$this->client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message)
 		{
+			$prefix = $this->client->getGuildPrefix($message->guild);
+			$pattern = empty($this->client->dispatcher->commandPatterns[$prefix]) ? $this->client->dispatcher->buildCommandPattern($prefix) : $this->client->dispatcher->commandPatterns[$prefix];
+			$command = $this->matchCommand($message, $pattern, 2);
 
+			if($command instanceof \ClusterPlus\Models\Command) $command->run($message);
 		});
+	}
+
+	protected function matchCommand(\CharlotteDunois\Yasmin\Models\Message $message, string $pattern, int $commandNameIndex = 1)
+	{
+		global $collector;
+
+		\preg_match($pattern, $message->content, $matches);
+		if(!empty($matches)) {
+			return $collector->commands->first(function (\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
+		}
+
+		return null;
 	}
 }

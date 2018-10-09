@@ -17,7 +17,7 @@ namespace ClusterPlus\Models;
  * @property string[]                                           $examples           Examples of and for the command.
  * @property string[]|null                                      $userPermissions    The required permissions for the user to use the command.
  */
-abstract class Command implements \JsonSerializable, \Serializable
+class Command implements \JsonSerializable, \Serializable
 {
 	/**
 	 * The client which initiated the instance.
@@ -176,12 +176,12 @@ abstract class Command implements \JsonSerializable, \Serializable
 		return new self($client, $vars);
 	}
 
-	function attachModules(Modules ...$modules)
+	function attachModules(\ClusterPlus\Models\Module ...$modules)
 	{
 		$this->modules = array_merge($this->modules, $modules);
 	}
 	
-	function run()
+	function run(\CharlotteDunois\Yasmin\Message $message)
 	{
 		foreach ($this->modules as $module) {
 			//run the module

@@ -134,3 +134,5 @@ class Collector
 		}
 	}
 }
+
+serializate modules in command.

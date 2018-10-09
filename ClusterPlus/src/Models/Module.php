@@ -37,45 +37,37 @@ abstract class Module implements \JsonSerializable, \Serializable
 	protected $client;
 	
 	/**
-	 * The name of the command.
+	 * The name of the module.
 	 * @var string
 	 */
 	protected $name;
 	
 	/**
-	 * A short description of the command.
+	 * A short description of the module.
 	 * @var string
 	 */
 	protected $description;
 
 	/**
-	 * Guild which command belong to
+	 * Guild which module belong to
 	 * @var \CharlotteDunois\Yasmin\Models\Guild
 	 */
 	protected $guild;
-	
-	/**
-	 * Examples of and for the command.
-	 * @var string[]
-	 */
-	protected $examples = [];
 
 	/**
-	 * Modules that will react to the command if it runs
-	 * @var Module[]
+	 * Input of module-creator.
+	 * @var string
 	 */
-	protected $modules = [];
-	
+	protected $input;
+
 	/**
-	 * Constructs a new Command. Info is an array as following:
+	 * Constructs a new Module. Info is an array as following:
 	 *
 	 * ```
 	 * array(
 	 *   'name' => string,
-	 *   'aliases' => string[], (optional)
+	 *   'guild' => \CharlotteDunois\Yasmin\Models\Guild,
 	 *   'description => string,
-	 *   'examples' => string[], (optional)
-	 *   'userPermissions' => string[], (optional)
 	 * )
 	 * ```
 	 *
@@ -90,8 +82,8 @@ abstract class Module implements \JsonSerializable, \Serializable
 		$validator = \CharlotteDunois\Validation\Validator::make($info, array(
 			'name' => 'required|string|lowercase|nowhitespace',
 			'description' => 'required|string',
-			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild',
-			'examples' => 'array:string',
+			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild'
+			'input' => 'required|string',
 		));
 		
 		try {
@@ -103,7 +95,7 @@ abstract class Module implements \JsonSerializable, \Serializable
 		$this->name = $info['name'];
 		$this->description = $info['description'];
 		$this->guild = $info['guild'];
-		$this->examples = $info['examples'] ?? $this->examples;
+		$this->input = $info['input'];
 	}
 	
 	/**
@@ -146,7 +138,7 @@ abstract class Module implements \JsonSerializable, \Serializable
 	function serialize()
 	{
 		$vars = \get_object_vars($this);
-		unset($vars['client']);
+		unset($vars['client'], $vars['code']);
 		return \serialize($vars);
 	}
 
@@ -158,7 +150,7 @@ abstract class Module implements \JsonSerializable, \Serializable
 	{
 		$vars = \get_object_vars($this);
 		$vars['guild'] = ($vars['guild'])->id;
-		unset($vars['client']);
+		unset($vars['client'], $vars['code']);
 
 		return $vars;
 	}
@@ -186,5 +178,17 @@ abstract class Module implements \JsonSerializable, \Serializable
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 
 		return new self($client, $vars);
+	}
+
+	function createCode()
+	{
+		//do something with $this->input
+	}
+
+	function run(\CharlotteDunois\Yasmin\Message $message = null)
+	{
+		$code = $this->createCode();
+		safe_eval($code);
+		flush($code);
 	}
 }
