@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Models;
+namespace Animeshz\ClusterPlus\Models;
 /**
  * A command that can be run in a client.
  *
@@ -176,7 +176,7 @@ class Command implements \JsonSerializable, \Serializable
 		return new self($client, $vars);
 	}
 
-	function attachModules(\ClusterPlus\Models\Module ...$modules)
+	function attachModules(\Animeshz\ClusterPlus\Models\Module ...$modules)
 	{
 		$this->modules = array_merge($this->modules, $modules);
 	}

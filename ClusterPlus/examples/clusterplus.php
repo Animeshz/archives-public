@@ -9,7 +9,7 @@
 class ClusterPlus
 {
 	/**
-	 * @var \ClusterPlus\Client
+	 * @var \Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
 
@@ -18,7 +18,7 @@ class ClusterPlus
 		require __DIR__.'/../vendor/autoload.php';
 		$config = json_decode(file_get_contents(__DIR__.'/../config.json'), true);
 
-		if(class_exists("\\ClusterPlus\\Client")) $this->client = new \ClusterPlus\Client($config);
+		if(class_exists("\\Animeshz\\ClusterPlus\\Client")) $this->client = new \Animeshz\ClusterPlus\Client($config);
 	}
 
 	public function __get($name){

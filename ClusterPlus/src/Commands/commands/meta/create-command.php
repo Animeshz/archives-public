@@ -52,7 +52,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 			//create another class for maintaining the command created
 			try {
-				$cmd = new class($this->client, $guild, $name, $description) extends \ClusterPlus\Models\Command {
+				$cmd = new class($this->client, $guild, $name, $description) extends \Animeshz\ClusterPlus\Models\Command {
 					function __construct(\CharlotteDunois\Yasmin\Client $client, $guild, $name, $description) {
 						parent::__construct($client, [
 							'name' => $name,

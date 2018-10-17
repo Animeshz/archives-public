@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Utils;
+namespace Animeshz\ClusterPlus\Utils;
 
 class CommandHelpers
 {

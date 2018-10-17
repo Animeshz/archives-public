@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Utils;
+namespace Animeshz\ClusterPlus\Utils;
 
 class Collector
 {
@@ -85,13 +85,13 @@ class Collector
 				$commands = $this->client->provider->get($guild, 'commands', []);
 
 				foreach ($invites as $invite) {
-					$invs[] = \ClusterPlus\Models\Invite::jsonUnserialize($this->client, $invite);
+					$invs[] = \Animeshz\ClusterPlus\Models\Invite::jsonUnserialize($this->client, $invite);
 				}
 				foreach ($modules as $module) {
-					$mdls[] = \ClusterPlus\Models\Module::jsonUnserialize($this->client, $module);
+					$mdls[] = \Animeshz\ClusterPlus\Models\Module::jsonUnserialize($this->client, $module);
 				}
 				foreach ($commands as $command) {
-					$cmds[] = \ClusterPlus\Models\Command::jsonUnserialize($this->client, $command);
+					$cmds[] = \Animeshz\ClusterPlus\Models\Command::jsonUnserialize($this->client, $command);
 				}
 				
 				if(!empty($invs)) $this->setInvites($invs);
@@ -101,7 +101,7 @@ class Collector
 		});
 	}
 
-	function setCommands(\ClusterPlus\Models\Command ...$commands)
+	function setCommands(\Animeshz\ClusterPlusModels\Command ...$commands)
 	{
 		foreach ($commands as $command) {
 			$guildID = $command->guild->id;
@@ -112,27 +112,27 @@ class Collector
 		}
 	}
 
-	function setInvites(\ClusterPlus\Models\Command ...$commands)
-	{
-		foreach ($commands as $command) {
-			$guildID = $command->guild->id;
-			if($this->commands->get($guildID) === null) $this->commands->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
-			$cmd = $this->commands->get($guildID);
-			$cmd->set($command->name, $command);
-			$this->commands->set($guildID, $cmd);
-		}
-	}
+	// function setInvites(\Animeshz\ClusterPlusModels\Invite ...$invites)
+	// {
+	// 	foreach ($invites as $invite) {
+	// 		$guildID = $invite->guild->id;
+	// 		if($this->invites->get($guildID) === null) $this->invites->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+	// 		$cmd = $this->invites->get($guildID);
+	// 		$cmd->set($invite->name, $invite);
+	// 		$this->invites->set($guildID, $cmd);
+	// 	}
+	// }
 
-	function setModules(\ClusterPlus\Models\Command ...$commands)
-	{
-		foreach ($commands as $command) {
-			$guildID = $command->guild->id;
-			if($this->commands->get($guildID) === null) $this->commands->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
-			$cmd = $this->commands->get($guildID);
-			$cmd->set($command->name, $command);
-			$this->commands->set($guildID, $cmd);
-		}
-	}
+	// function setModules(\Animeshz\ClusterPlusModels\Module ...$modules)
+	// {
+	// 	foreach ($modules as $module) {
+	// 		$guildID = $module->guild->id;
+	// 		if($this->modules->get($guildID) === null) $this->modules->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+	// 		$cmd = $this->modules->get($guildID);
+	// 		$cmd->set($module->name, $module);
+	// 		$this->modules->set($guildID, $cmd);
+	// 	}
+	// }
 }
 
 serializate modules in command.

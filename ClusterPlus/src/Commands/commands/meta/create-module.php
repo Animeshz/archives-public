@@ -29,8 +29,8 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 		{
 			//get data
 			$description = 'What thing you waanna assign to the command? Available options are:'.PHP_EOL;
-			for ($i=0; $i<\count(\ClusterPlus\Utils\CommandHelpers::$options); $i++) { 
-				$description .= ($i+1).'. '.\ClusterPlus\Utils\CommandHelpers::$options[$i].PHP_EOL;
+			for ($i=0; $i<\count(\Animeshz\ClusterPlus\Utils\CommandHelpers::$options); $i++) { 
+				$description .= ($i+1).'. '.\Animeshz\ClusterPlus\Utils\CommandHelpers::$options[$i].PHP_EOL;
 			}
 			$message->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => $description])]);
 
@@ -39,12 +39,12 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 				if($msg->channel === $message->channel && $msg->author === $message->author) {
 
 					$m = (int)$msg->content;
-					if($m<=\count(\ClusterPlus\Utils\CommandHelpers::$options)) {
-						$option = \ClusterPlus\Utils\CommandHelpers::$options[($m-1)];
+					if($m<=\count(\Animeshz\ClusterPlusUtils\CommandHelpers::$options)) {
+						$option = \Animeshz\ClusterPlusUtils\CommandHelpers::$options[($m-1)];
 						$selected['option'] = $option;
 						$description = 'Which thing you waanna assign to the '.$option.'? Available methods are: '.PHP_EOL;
-						for ($i=0; $i<\count(\ClusterPlus\Utils\CommandHelpers::$methods[$option]); $i++) { 
-							$description .= ($i+1).'. '.\ClusterPlus\Utils\CommandHelpers::$methods[$option][$i].PHP_EOL;
+						for ($i=0; $i<\count(\Animeshz\ClusterPlusUtils\CommandHelpers::$methods[$option]); $i++) { 
+							$description .= ($i+1).'. '.\Animeshz\ClusterPlusUtils\CommandHelpers::$methods[$option][$i].PHP_EOL;
 						}
 					}
 					return $msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => $description])])->done(function () use (&$listener)

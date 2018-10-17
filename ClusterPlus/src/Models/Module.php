@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Models;
+namespace Animeshz\ClusterPlus\Models;
 /**
  * A command that can be run in a client.
  *
@@ -180,13 +180,15 @@ abstract class Module implements \JsonSerializable, \Serializable
 		return new self($client, $vars);
 	}
 
-	function createCode()
+	protected function createCode()
 	{
 		//do something with $this->input
+		//algorithmic base
 	}
 
-	function run(\CharlotteDunois\Yasmin\Message $message = null)
+	function run($args)
 	{
+		foreach($args as $key=>$value){ $$key = $value; }
 		$code = $this->createCode();
 		safe_eval($code);
 		flush($code);

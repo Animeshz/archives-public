@@ -1,5 +1,5 @@
 {
-    "name": "animesh/cluster-plus",
+    "name": "animeshz/cluster-plus",
     "description": "A multipurpose discord bot",
     "type": "project",
     "license": "GNU General Public License v3",
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ClusterPlus\\": "src/"
+            "Animeshz\\ClusterPlus\\": "src/"
         }
     }
 }

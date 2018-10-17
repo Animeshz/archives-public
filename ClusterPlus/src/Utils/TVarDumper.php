@@ -10,7 +10,7 @@
  * @package System.Util
  */
 
-namespace ClusterPlus\Utils;
+namespace Animeshz\ClusterPlus\Utils;
 
 /**
  * TVarDumper class.

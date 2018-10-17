@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Commands;
+namespace Animeshz\ClusterPlus\Commands;
 
 class CommandsDispatcher
 {
@@ -50,7 +50,7 @@ class CommandsDispatcher
 			$pattern = empty($this->client->dispatcher->commandPatterns[$prefix]) ? $this->client->dispatcher->buildCommandPattern($prefix) : $this->client->dispatcher->commandPatterns[$prefix];
 			$command = $this->matchCommand($message, $pattern, 2);
 
-			if($command instanceof \ClusterPlus\Models\Command) $command->run($message);
+			if($command instanceof \Animeshz\ClusterPlus\Models\Command) $command->run($message);
 		});
 	}
 
@@ -60,7 +60,7 @@ class CommandsDispatcher
 
 		\preg_match($pattern, $message->content, $matches);
 		if(!empty($matches)) {
-			return $collector->commands->first(function (\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
+			return $collector->commands->first(function (\Animeshz\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
 		}
 
 		return null;

@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Models;
+namespace Animeshz\ClusterPlus\Models;
 /**
  * Invite 
  *

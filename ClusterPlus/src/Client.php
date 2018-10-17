@@ -31,7 +31,7 @@ class Client
 	 * ```
 	 * [
 	 *   'clientConfig' => [], (you client config i've included see mapping of phpdoc)
-	 *   'internal.dependent.eventHandler.instance' => '', (classname of eventhandler and it must extends ClusterPlus\Dependent\EventHandler) (optional)
+	 *   'internal.dependent.eventHandler.instance' => '', (classname of eventhandler and it must extends Animeshz\ClusterPlus\Dependent\EventHandler) (optional)
 	 *   'token' => '', (your client token)
 	 *   'database' => [
 	 *      "server": "",
@@ -82,7 +82,7 @@ class Client
 	protected function setMissings()
 	{
 		$storages = array(
-			'eventHandler.instance' => '\\ClusterPlus\\Dependent\\EventHandler'
+			'eventHandler.instance' => '\\Animeshz\\ClusterPlus\\Dependent\\EventHandler'
 		);
 
 		foreach($storages as $name => $base) {
@@ -95,7 +95,7 @@ class Client
 	public function loadCore()
 	{
 		$this->eventHandler->dispatch();
-		$GLOBALS['collector'] = new \ClusterPlus\Utils\Collector($this->client);
+		$GLOBALS['collector'] = new \Animeshz\ClusterPlus\Utils\Collector($this->client);
 		$factory = new \React\MySQL\Factory($this->loop);
 		$factory->createConnection($this->config['database']['user'].':'.$this->config['database']['pass'].'@'.$this->config['database']['server'].'/'.$this->config['database']['db'])->done(function (\React\MySQL\ConnectionInterface $db)
 		{
@@ -105,13 +105,8 @@ class Client
 				$collector->loadFromDB();
 			});
 		});
-		new \ClusterPlus\Commands\CommandsDispatcher($this->client); //refractor to dispatcher
+		new \Animeshz\ClusterPlus\Commands\CommandsDispatcher($this->client); //refractor to dispatcher
 	}
-
-	// public function loadClasses()
-	// {
-	// 	return \HaydenPierce\ClassFinder\ClassFinder::getClassesInNamespace("ClusterPlus");
-	// }
 
 	public function login(callable $resolve = null, callable $reject = null)
 	{
@@ -127,7 +122,7 @@ class Client
 	 */
 	protected function validateConfigs(array $config) {
 		$validator = \CharlotteDunois\Validation\Validator::make($config, array(
-			'internal.dependent.eventHandler.instance' => 'class:ClusterPlus\\Dependent\\EventHandler,string_only'
+			'internal.dependent.eventHandler.instance' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\EventHandler,string_only'
 		));
 
 		if($validator->fails()) {

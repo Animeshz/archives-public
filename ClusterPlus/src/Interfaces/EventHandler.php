@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace ClusterPlus\Interfaces;
+namespace Animeshz\ClusterPlus\Interfaces;
 
 /**
  * Attaches listener to the client

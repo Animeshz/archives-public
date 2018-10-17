@@ -28,7 +28,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
 			$module = $args['module'];
-			$attachableTo = \ClusterPlus\Models\Module::ATTACHABLE_TO;
+			$attachableTo = \Animeshz\ClusterPlus\Models\Module::ATTACHABLE_TO;
 
 			$attachments = '';
 			for ($i = 0; $i<\count($attachableTo); $i++) {
@@ -48,7 +48,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 
 						if (!($select <= $count)) return $message->say('Wrong Option choose between 1 and '.$count);
 						$selected['option'] = $attachableTo[($select-1)];
-						$prompt = \constant('\ClusterPlus\Models\Module::'.\strtoupper($selected['option']));
+						$prompt = \constant('\Animeshz\ClusterPlusModels\Module::'.\strtoupper($selected['option']));
 
 						if ($selected['option'] === 'command') {
 							//no commands found issue
