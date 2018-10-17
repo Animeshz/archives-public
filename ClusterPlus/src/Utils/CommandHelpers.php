@@ -62,7 +62,7 @@ class CommandHelpers
 				return \React\Promise\resolve($value);
 			} elseif ($value instanceof \CharlotteDunois\Livia\CommandMessage) {
 				return \React\Promise\resolve($value->message->channel);
-			} elseif (($value instanceof \CharlotteDunois\Yasmin\Models\Guild) || ($value instanceof \CharlotteDunois\Yasmin\Client)) {
+			} elseif (($value instanceof \CharlotteDunois\Yasmin\Models\Guild) || ($value instanceof \Animeshz\Client)) {
 				return \React\Promise\resolve($value->channels->get($option));
 			}
 			break;

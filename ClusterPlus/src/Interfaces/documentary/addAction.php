@@ -11,7 +11,7 @@ namespace Animeshz\ClusterPlus\Interfaces\documentary;
 /**
  * Attaches listener to the client
  *
- * @property \CharlotteDunois\Livia\Client<\CharlotteDunois\Yasmin\Client>   $client   Instance of current client.
+ * @property \CharlotteDunois\Livia\Client<\Animeshz\Client>   $client   Instance of current client.
  */
 interface addAction
 {

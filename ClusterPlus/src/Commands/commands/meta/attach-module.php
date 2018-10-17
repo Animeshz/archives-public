@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\CharlotteDunois\Yasmin\Client $client) {
+return function(\Animeshz\ClusterPlus\Client $client) {
 	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
 		function __construct($client) {
 			parent::__construct($client, [

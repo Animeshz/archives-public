@@ -11,11 +11,11 @@ namespace Animeshz\ClusterPlus\Commands;
 class CommandsDispatcher
 {
 	/**
-	 * @var \CharlotteDunois\Livia\LiviaClient<\CharlotteDunois\Yasmin\Client>
+	 * @var \CharlotteDunois\Livia\LiviaClient<\Animeshz\Client>
 	 */
 	protected $client;
 
-	public function __construct(\CharlotteDunois\Yasmin\Client $client)
+	public function __construct(\Animeshz\ClusterPlus\Client $client)
 	{
 		$this->client = $client;
 
@@ -50,17 +50,16 @@ class CommandsDispatcher
 			$pattern = empty($this->client->dispatcher->commandPatterns[$prefix]) ? $this->client->dispatcher->buildCommandPattern($prefix) : $this->client->dispatcher->commandPatterns[$prefix];
 			$command = $this->matchCommand($message, $pattern, 2);
 
+
 			if($command instanceof \Animeshz\ClusterPlus\Models\Command) $command->run($message);
 		});
 	}
 
 	protected function matchCommand(\CharlotteDunois\Yasmin\Models\Message $message, string $pattern, int $commandNameIndex = 1)
 	{
-		global $collector;
-
 		\preg_match($pattern, $message->content, $matches);
 		if(!empty($matches)) {
-			return $collector->commands->first(function (\Animeshz\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
+			return $this->client->collector->commands->first(function (\Animeshz\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
 		}
 
 		return null;

@@ -11,12 +11,12 @@ namespace Animeshz\ClusterPlus\Dependent;
 /**
  * Attaches listener to the client
  *
- * @property \CharlotteDunois\Livia\Client<\CharlotteDunois\Yasmin\Client>   $client   Instance of current client.
+ * @property \CharlotteDunois\Livia\Client<\Animeshz\Client>   $client   Instance of current client.
  */
 class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
 {
 	/**
-	 * @var \CharlotteDunois\Livia\LiviaClient<\CharlotteDunois\Yasmin\Client>
+	 * @var \CharlotteDunois\Livia\LiviaClient<\Animeshz\Client>
 	 */
 	protected $client;
 
@@ -25,9 +25,9 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
 	 */
 	protected $events;
 
-	public function __construct(\Animeshz\ClusterPlusClient $client, array $excludeFuncs = null)
+	public function __construct(\Animeshz\ClusterPlus\Client $client, array $excludeFuncs = null)
 	{
-		$this->client = $client->client;
+		$this->client = $client;
 
 		$magic = [
 			'__construct',

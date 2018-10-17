@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\CharlotteDunois\Yasmin\Client $client) {
+return function(\Animeshz\ClusterPlus\Client $client) {
 	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
 		function __construct($client) {
 			parent::__construct($client, [
@@ -53,7 +53,7 @@ return function(\CharlotteDunois\Yasmin\Client $client) {
 			//create another class for maintaining the command created
 			try {
 				$cmd = new class($this->client, $guild, $name, $description) extends \Animeshz\ClusterPlus\Models\Command {
-					function __construct(\CharlotteDunois\Yasmin\Client $client, $guild, $name, $description) {
+					function __construct(\Animeshz\Client $client, $guild, $name, $description) {
 						parent::__construct($client, [
 							'name' => $name,
 							'description' => $description,
