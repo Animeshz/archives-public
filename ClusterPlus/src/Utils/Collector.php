@@ -10,10 +10,29 @@ namespace Animeshz\ClusterPlus\Utils;
 
 class Collector
 {
+	/**
+	 * @var \ClusterPlus\Client
+	 */
 	protected $client;
+
+	/**
+	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 */
 	protected $commands;
+
+	/**
+	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 */
 	protected $modules;
+
+	/**
+	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 */
 	protected $invites;
+
+	/**
+	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 */
 	protected $inviteCache;
 
 	function __construct(\CharlotteDunois\Livia\LiviaClient $client)
