@@ -8,6 +8,21 @@
 
 namespace Animeshz\ClusterPlus\Utils;
 
+use \Animeshz\ClusterPlus\Client;
+use \Animeshz\ClusterPlus\Models\Command;
+use \Animeshz\ClusterPlus\Models\Invite;
+use \Animeshz\ClusterPlus\Models\Module;
+use \CharlotteDunois\Yasmin\Utils\Collection;
+
+/**
+ * A command that can be run in a client.
+ *
+ * @property \Animeshz\ClusterPlus\Client					$client             The client which initiated the instance.
+ * @property \CharlotteDunois\Yasmin\Utils\Collection		$commands			Collection of commands.
+ * @property \CharlotteDunois\Yasmin\Utils\Collection		$modules			Collection of modules.
+ * @property \CharlotteDunois\Yasmin\Utils\Collection		$invites			Collection of invites.
+ * @property \CharlotteDunois\Yasmin\Utils\Collection		$inviteCache		Collection of inviteCache.
+ */
 class Collector
 {
 	/**
@@ -35,16 +50,21 @@ class Collector
 	 */
 	protected $inviteCache;
 
-	function __construct(\CharlotteDunois\Livia\LiviaClient $client)
+	/**
+	 * Constructor
+	 * 
+	 * @param Client $client 
+	 */
+	function __construct(Client $client)
 	{
 		$this->client = $client;
 
-		$this->commands = new \CharlotteDunois\Yasmin\Utils\Collection;
-		$this->modules = new \CharlotteDunois\Yasmin\Utils\Collection;
-		$this->invites = new \CharlotteDunois\Yasmin\Utils\Collection;
+		$this->commands = new Collection;
+		$this->modules = new Collection;
+		$this->invites = new Collection;
 	}
 
-		/**
+	/**
 	 * @param string  $name
 	 * @return bool
 	 * @throws \Exception
@@ -77,22 +97,52 @@ class Collector
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
 	}
 
+	/**
+	 * Fetch Command from local environment, if second parameter is
+	 * set it'll return command, else return collection of commands.
+	 * 
+	 * @param int $guildID 
+	 * @param string|null $name 
+	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Commands
+	 */
 	function getCommands(int $guildID, string $name = null)
 	{
 		return ($name !== null) ? ($this->commands->get($guildID))->get($name) : $this->commands->get($guildID);
 	}
 
+	/**
+	 * Fetch Invite from local environment, if second parameter is
+	 * set it'll return invite, else return collection of invites.
+	 * 
+	 * @param int $guildID 
+	 * @param string|null $name 
+	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Invite
+	 */
 	function getInvites(int $guildID, string $name = null)
 	{
 		return ($name !== null) ? ($this->commands->get($guildID))->get($name) : $this->commands->get($guildID);
 	}
 
+	/**
+	 * Fetch Modules from local environment, if second parameter
+	 * is set it'll return module, else return collection of modules.
+	 * 
+	 * @param int $guildID 
+	 * @param string|null $name 
+	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Modules
+	 */
 	function getModules(int $guildID, string $name = null)
 	{
 		return ($name !== null) ? ($this->commands->get($guildID))->get($name) : $this->commands->get($guildID);
 	}
 
-	function loadFromDB()
+	/**
+	 * Loads commands, modules and invites from databases.
+	 * $client->provider must be set before calling this function.
+	 * 
+	 * @return void
+	 */
+	function loadFromDB(): void
 	{
 		$this->client->once('ready', function ()
 		{
@@ -104,13 +154,13 @@ class Collector
 				$commands = $this->client->provider->get($guild, 'commands', []);
 
 				foreach ($invites as $invite) {
-					$invs[] = \Animeshz\ClusterPlus\Models\Invite::jsonUnserialize($this->client, $invite);
+					$invs[] = Invite::jsonUnserialize($this->client, $invite);
 				}
 				foreach ($modules as $module) {
-					$mdls[] = \Animeshz\ClusterPlus\Models\Module::jsonUnserialize($this->client, $module);
+					$mdls[] = Module::jsonUnserialize($this->client, $module);
 				}
 				foreach ($commands as $command) {
-					$cmds[] = \Animeshz\ClusterPlus\Models\Command::jsonUnserialize($this->client, $command);
+					$cmds[] = Command::jsonUnserialize($this->client, $command);
 				}
 				
 				if(!empty($invs)) $this->setInvites($invs);
@@ -120,7 +170,12 @@ class Collector
 		});
 	}
 
-	function setCommands(\Animeshz\ClusterPlusModels\Command ...$commands)
+	/**
+	 * Sets commands in local environment. Need to add a unique number identifier before setting to database
+	 * @param Command ...$commands 
+	 * @return type
+	 */
+	function setCommands(Command ...$commands)
 	{
 		foreach ($commands as $command) {
 			$guildID = $command->guild->id;
@@ -131,7 +186,7 @@ class Collector
 		}
 	}
 
-	// function setInvites(\Animeshz\ClusterPlusModels\Invite ...$invites)
+	// function setInvites(Invite ...$invites)
 	// {
 	// 	foreach ($invites as $invite) {
 	// 		$guildID = $invite->guild->id;
@@ -142,7 +197,7 @@ class Collector
 	// 	}
 	// }
 
-	// function setModules(\Animeshz\ClusterPlusModels\Module ...$modules)
+	// function setModules(Module ...$modules)
 	// {
 	// 	foreach ($modules as $module) {
 	// 		$guildID = $module->guild->id;

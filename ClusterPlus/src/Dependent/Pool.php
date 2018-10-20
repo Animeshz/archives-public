@@ -8,19 +8,26 @@
 
 namespace Animeshz\ClusterPlus\Dependent;
 
+use \Animeshz\ClusterPlus\Client;
+use \Animeshz\ClusterPlus\Dependent\Worker;
+use \CharlotteDunois\Phoebe\Message;
+
 /**
- * Attaches listener to the client
- *
- * @property \CharlotteDunois\Livia\Client<\Animeshz\Client>   $client   Instance of current client.
+ * Phoebe Pool implementation
  */
 class Pool extends \CharlotteDunois\Phoebe\Pool
 {
 	/**
-	 * @var \CharlotteDunois\Livia\LiviaClient<\Animeshz\Client>
+	 * @var \Animeshz\ClusterPlus\Client<\CharlotteDunois\Livia\LiviaClient>
 	 */
 	protected $client;
 
-	function __construct(\Animeshz\ClusterPlus\Client $client, array $options)
+	/**
+	 * Constructor.
+	 * @param \Animeshz\ClusterPlus\Client		$client		Client who initiated application
+	 * @param array								$options	Options with worker
+	 */
+	function __construct(Client $client, array $options)
 	{
 		parent::__construct($client->loop, $options, $options['worker'], [$client]);
 		$this->client = $client;
@@ -29,7 +36,7 @@ class Pool extends \CharlotteDunois\Phoebe\Pool
 			$this->client->emit('debug', $msg);
 		});
 
-		$this->on('message', function (\CharlotteDunois\Phoebe\Worker $worker, \CharlotteDunois\Phoebe\Message $message) {
+		$this->on('message', function (Worker $worker, Message $message) {
 			switch($message->getType()) {
 				case 'message-eval-code':
 				$payload = $message->getPayload();
@@ -51,19 +58,19 @@ class Pool extends \CharlotteDunois\Phoebe\Pool
 
 	/**
 	 * {@inheritdoc}
-	 * @param \CharlotteDunois\Phoebe\Worker  $worker
+	 * @param \Animeshz\ClusterPlus\Dependent\Worker  $worker
 	 * @return void
 	 */
-	function stopWorker(\CharlotteDunois\Phoebe\Worker $worker): void
+	function stopWorker(Worker $worker): void
 	{
 		$this->emit('debug', 'Stopping worker #'.$worker->id);
 		parent::stopWorker($worker);
 	}
 	
 	/**
-	 * @return \CharlotteDunois\Phoebe\Worker
+	 * @return \Animeshz\ClusterPlus\Dependent\Worker
 	 */
-	protected function spawnWorker(): \CharlotteDunois\Phoebe\Worker
+	protected function spawnWorker(): Worker
 	{
 		$worker = parent::spawnWorker();
 		$this->emit('debug', 'Spawning new worker #'.$worker->id);

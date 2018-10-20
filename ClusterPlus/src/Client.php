@@ -8,10 +8,23 @@
 
 namespace Animeshz\ClusterPlus;
 
+use \Animeshz\ClusterPlus\Commands\CommandsDispatcher;
+use \Animeshz\ClusterPlus\Utils\Collector;
+use \Animeshz\ClusterPlus\Utils\UniversalHelpers;
+use \CharlotteDunois\Livia\LiviaClient;
+use \CharlotteDunois\Livia\Providers\MySQLProvider;
+use \CharlotteDunois\Validation\Validator;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
+use \React\EventLoop\LoopInterface;
+use \React\MySQL\Factory;
+use \React\MySQL\ConnectionInterface;
+use \React\Promise\Promise;
+use \React\Promise\PromiseInterface;
+
 /**
  * ClusterPlus Client
  */
-class Client extends \CharlotteDunois\Livia\LiviaClient
+class Client extends LiviaClient
 {
 	/**
 	 * @var \Animeshz\ClusterPlus\Utils\Collector
@@ -19,7 +32,7 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 	protected $collector;
 
 	/**
-	 * @var \CharlotteDunois\Phoebe\Pool
+	 * @var \Animeshz\ClusterPlus\Dependent\Pool<\CharlotteDunois\Phoebe\Pool>
 	 */
 	protected $pool;
 
@@ -49,14 +62,14 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 	 * @see https://yasmin.neko.run/master/CharlotteDunois/Yasmin/Client.html#method___construct
 	 * @see https://charlottedunois.github.io/Phoebe/master/CharlotteDunois/Phoebe/Pool.html#method___construct
 	 */
-	public function __construct(array $config = [], ?\React\EventLoop\LoopInterface $loop = null)
+	public function __construct(array $config = [], ?LoopInterface $loop = null)
 	{
 		$this->validateConfigs($config);
 		parent::__construct($config, $loop);
 
-		// if(\CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient === null) {
-		// 	\CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient = $this;
-		// }
+		if(ClientBase::$serializeClient === null) {
+			ClientBase::$serializeClient = $this;
+		}
 
 		$eventHandler = $this->getOption('eventHandler.class', '\\Animeshz\\ClusterPlus\\Dependent\\EventHandler');
 		$pool = $this->getOption('pool.class', '\\Animeshz\\ClusterPlus\\Dependent\\Pool');
@@ -71,27 +84,18 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 
 		$this->eventHandler->dispatch();
 
-		$this->collector = new \Animeshz\ClusterPlus\Utils\Collector($this);
-		$factory = new \React\MySQL\Factory($this->loop);
-		$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (\React\MySQL\ConnectionInterface $db)
+		$this->collector = new Collector($this);
+		$factory = new Factory($this->loop);
+		$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
 		{
-			$this->setProvider(new \CharlotteDunois\Livia\Providers\MySQLProvider($db))->done(function ()
+			$this->setProvider(new MySQLProvider($db))->done(function ()
 			{
 				$this->collector->loadFromDB();
 			});
 		});
-		new \Animeshz\ClusterPlus\Commands\CommandsDispatcher($this);
+		new CommandsDispatcher($this);
 
-		$this->once('ready', function () {
-			$this->pool->submitTask(new class extends \CharlotteDunois\Phoebe\AsyncTask{
-				function run()
-				{
-					$this->wrap(null);
-				}
-			});
-		});
-
-	// serializate modules in command.
+		// serializate modules in command.
 	}
 
 	/**
@@ -105,6 +109,9 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 		switch($name) {
 			case 'collector':
 			return $this->collector;
+			break;
+			case 'pool':
+			return $this->pool;
 			break;
 		}
 
@@ -132,8 +139,8 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
      */
 	function eval(string $code, array $options = array())
 	{
-		if(!(\Animeshz\ClusterPlus\Utils\UniversalHelpers::isValidPHP($code))) return;
-		return (new \React\Promise\Promise(function (callable $resolve, callable $reject) use ($code) {
+		if(!(UniversalHelpers::isValidPHP($code))) return;
+		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
 			if(\mb_substr($code, -1) !== ';') {
 				$code .= ';';
 			}
@@ -148,7 +155,7 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 				return eval($code);
 			})($this, $code);
 
-			if(!($result instanceof \React\Promise\PromiseInterface)) {
+			if(!($result instanceof PromiseInterface)) {
 				return $resolve($result);
 			}
 
@@ -164,7 +171,7 @@ class Client extends \CharlotteDunois\Livia\LiviaClient
 	 */
 	protected function validateConfigs(array $config): void
 	{
-		$validator = \CharlotteDunois\Validation\Validator::make($config, array(
+		$validator = Validator::make($config, array(
 			'eventHandler.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\EventHandler,string_only',
 			'pool.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Pool,string_only',
 			'worker.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Worker,string_only'

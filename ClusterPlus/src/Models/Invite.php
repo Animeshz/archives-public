@@ -21,15 +21,26 @@ abstract class Command implements \JsonSerializable, \Serializable
 {
 	/**
 	 * The client which initiated the instance.
-	 * @var \CharlotteDunois\Livia\LiviaClient
+	 * @var \Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
 
 	/**
-	 * Guild which command belong to
+	 * Guild which invite belong to
 	 * @var \CharlotteDunois\Yasmin\Models\Guild
 	 */
 	protected $guild;
+
+	/**
+	 * User this invite belongs to
+	 * @var \CharlotteDunois\Yasmin\Models\User
+	 */
+	protected $inviter;
+
+	/**
+	 * @var \CharlotteDunois\Yasmin\Utils\Collection<\CharlotteDunois\Yasmin\Models\User>
+	 */
+	protected $invited;
 	
 	/**
 	 * Constructs a new Command. Info is an array as following:
@@ -48,22 +59,9 @@ abstract class Command implements \JsonSerializable, \Serializable
 	 * @param array                                 $info
 	 * @throws \InvalidArgumentException
 	 */
-	function __construct(\CharlotteDunois\Livia\LiviaClient $client, array $info)
+	function __construct(\CharlotteDunois\Livia\LiviaClient $client, \CharlotteDunois\Yasmin\Models\Invite $invite)
 	{
 		$this->client = $client;
-		
-		$validator = \CharlotteDunois\Validation\Validator::make($info, array(
-			'name' => 'required|string|lowercase|nowhitespace',
-			'description' => 'required|string',
-			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild',
-			'examples' => 'array:string',
-		));
-		
-		try {
-			$validator->throw();
-		} catch (\RuntimeException $e) {
-			throw new \InvalidArgumentException($e->getMessage());
-		}
 		
 		$this->name = $info['name'];
 		$this->description = $info['description'];

@@ -8,28 +8,34 @@
 
 namespace Animeshz\ClusterPlus\Dependent;
 
+use \Animeshz\ClusterPlus\Client;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
+
 /**
  * Attaches listener to the client
- *
- * @property \CharlotteDunois\Livia\Client<\Animeshz\Client>   $client   Instance of current client.
  */
-class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
+class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Serializable
 {
 	/**
-	 * @var \CharlotteDunois\Livia\LiviaClient<\Animeshz\Client>
+	 * @var \Animeshz\ClusterPlus\Client<\CharlotteDunois\Livia\LiviaClient>
 	 */
 	protected $client;
 
 	/**
-	 * @var array
+	 * @var string[]
 	 */
-	protected $events;
+	protected $exclude;
 
-	public function __construct(\Animeshz\ClusterPlus\Client $client, array $excludeFuncs = null)
+	/**
+	 * Constructor.
+	 * @param \Animeshz\ClusterPlus\Client		$client			Client who initiated application
+	 * @param string[]							$excludeFuncs	Options with worker
+	 */
+	public function __construct(Client $client, array $excludeFuncs = null)
 	{
 		$this->client = $client;
 
-		$magic = [
+		$exclude = [
 			'__construct',
 			'__destruct',
 			'__call',
@@ -45,20 +51,49 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
 			'__set_state',
 			'__clone',
 			'__debugInfo',
-			'dispatch'
+			'dispatch',
+			'serialize',
+			'unserialize'
 		];
-		if($excludeFuncs !== null) array_merge($magic, $excludeFuncs);
-
-		foreach (get_class_methods($this) as $event) {
-			if(in_array($event, $magic)){ continue; }
-			$e = $this->$event();
-			if(is_array($e) && is_callable($e[1])) {
-				$this->events[] = $e;
-			}
-		}
+		$exclude = $excludeFuncs !== null ? array_merge($magic, $excludeFuncs) : $exclude;
+		$this->exclude = $exclude;
 	}
 
-	protected function ready()
+	/**
+	 * @return string
+	 * @internal
+	 */
+	function serialize(): string
+	{
+		$vars = \get_object_vars($this);
+		unset($vars['client']);
+		
+		return \serialize($vars);
+	}
+	
+	/**
+	 * @return void
+	 * @internal
+	 */
+	function unserialize($data): void
+	{
+		if(ClientBase::$serializeClient === null) {
+			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+		}
+		$vars = \unserialize($data);
+
+		foreach ($vars as $key => $value) {
+			$this->key = $value;
+		}
+		
+		$this->client = ClientBase::$serializeClient;
+	}
+
+	/**
+	 * @return array
+	 * @internal
+	 */
+	protected function ready(): array
 	{
 		return [
 			__FUNCTION__,
@@ -69,13 +104,30 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
 		];
 	}
 
-	public function dispatch()
+	/**
+	 * Dispatches all the events
+	 * 
+	 * @return void
+	 * @internal
+	 */
+	public function dispatch(): void
 	{
-		foreach ($this->events as $event) {
+		foreach (get_class_methods($this) as $event) {
+			if(in_array($event, $this->exclude)){ continue; }
+			$e = $this->$event();
+			if(is_array($e) && is_callable($e[1])) {
+				$events[] = $e;
+			}
+		}
+		foreach ($events as $event) {
 			$this->client->on($event[0], $event[1]);
 		}
 	}
 
+	/**
+	 * @return array
+	 * @internal
+	 */
 	public function debug()
 	{
 		// return [
@@ -87,21 +139,25 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler
 		// ];
 	}
 
-	protected function guildMemberAdd()
-	{
-		return [
-			__FUNCTION__,
-			function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
-			{
-				$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites)
-				{
-					$invites->each(function (\CharlotteDunois\Yasmin\Models\Invite $invite)
-					{
-						//check which invite usage increment create new instance of invite and store it in database
-						// if($invite->uses === $inv
-					});
-				});
-			}
-		];
-	}
+	/**
+	 * @return array
+	 * @internal
+	 */
+	// protected function guildMemberAdd(): array
+	// {
+	// 	return [
+	// 		__FUNCTION__,
+	// 		function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
+	// 		{
+	// 			$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites)
+	// 			{
+	// 				$invites->each(function (\CharlotteDunois\Yasmin\Models\Invite $invite)
+	// 				{
+	// 					//check which invite usage increment create new instance of invite and store it in database
+	// 					// if($invite->uses === $inv
+	// 				});
+	// 			});
+	// 		}
+	// 	];
+	// }
 }

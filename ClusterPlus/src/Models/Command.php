@@ -7,6 +7,13 @@
 */
 
 namespace Animeshz\ClusterPlus\Models;
+
+use \Animeshz\ClusterPlus\Client;
+use \Animeshz\ClusterPlus\Models\Module;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
+use \CharlotteDunois\Yasmin\Models\Message;
+use \CharlotteDunois\Validation\Validator;
+
 /**
  * A command that can be run in a client.
  *
@@ -71,11 +78,11 @@ class Command implements \JsonSerializable, \Serializable
 	 * @param array                                 $info
 	 * @throws \InvalidArgumentException
 	 */
-	function __construct(\CharlotteDunois\Livia\LiviaClient $client, array $info)
+	function __construct(Client $client, array $info)
 	{
 		$this->client = $client;
 		
-		$validator = \CharlotteDunois\Validation\Validator::make($info, array(
+		$validator = Validator::make($info, array(
 			'name' => 'required|string|lowercase|nowhitespace',
 			'description' => 'required|string',
 			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild',
@@ -100,7 +107,7 @@ class Command implements \JsonSerializable, \Serializable
 	 * @throws \Exception
 	 * @internal
 	 */
-	function __isset($name)
+	function __isset($name): bool
 	{
 		try {
 			return $this->$name !== null;
@@ -131,7 +138,7 @@ class Command implements \JsonSerializable, \Serializable
 	 * @return string
 	 * @internal
 	 */
-	function serialize()
+	function serialize(): string
 	{
 		$vars = \get_object_vars($this);
 		unset($vars['client']);
@@ -142,7 +149,7 @@ class Command implements \JsonSerializable, \Serializable
 	 * @return array
 	 * @internal
 	 */
-	public function jsonSerialize()
+	public function jsonSerialize(): array
 	{
 		$vars = \get_object_vars($this);
 		$vars['guild'] = ($vars['guild'])->id;
@@ -156,7 +163,7 @@ class Command implements \JsonSerializable, \Serializable
 	 * @internal
 	 */
 	function unserialize($vars) {
-		if(\CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient === null) {
+		if(ClientBase::$serializeClient === null) {
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
 		
@@ -165,23 +172,23 @@ class Command implements \JsonSerializable, \Serializable
 			$this->$name = $val;
 		}
 		
-		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
+		$this->client = ClientBase::$serializeClient;
 		$this->guild = $this->client->guilds->resolve($this->guild);
 	}
 
-	static function jsonUnserialize($client, $vars)
+	static function jsonUnserialize(Client $client, array $vars)
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 
 		return new self($client, $vars);
 	}
 
-	function attachModules(\Animeshz\ClusterPlus\Models\Module ...$modules)
+	function attachModules(Module ...$modules)
 	{
 		$this->modules = array_merge($this->modules, $modules);
 	}
 	
-	function run(\CharlotteDunois\Yasmin\Message $message)
+	function run(Message $message)
 	{
 		foreach ($this->modules as $module) {
 			//run the module
