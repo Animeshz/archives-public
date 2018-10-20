@@ -9,8 +9,8 @@
 namespace Animeshz\ClusterPlus\Dependent;
 
 use \Animeshz\ClusterPlus\Client;
-use \Animeshz\ClusterPlus\Dependent\Worker;
 use \CharlotteDunois\Phoebe\Message;
+use \CharlotteDunois\Phoebe\Worker;
 
 /**
  * Phoebe Pool implementation

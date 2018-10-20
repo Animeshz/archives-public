@@ -12,7 +12,9 @@ use \Animeshz\ClusterPlus\Client;
 use \Animeshz\ClusterPlus\Models\Command;
 use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
-use \CharlotteDunois\Yasmin\Utils\Collection;
+use \CharlotteDunois\Collect\Collection;
+use \React\Promise\Promise;
+use \React\Promise\PromiseInterface;
 
 /**
  * A command that can be run in a client.
@@ -31,22 +33,22 @@ class Collector
 	protected $client;
 
 	/**
-	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $commands;
 
 	/**
-	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $modules;
 
 	/**
-	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $invites;
 
 	/**
-	 * @var \CharlotteDunois\Yasmin\Utils\Collection
+	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $inviteCache;
 
@@ -62,6 +64,7 @@ class Collector
 		$this->commands = new Collection;
 		$this->modules = new Collection;
 		$this->invites = new Collection;
+		$this->inviteCache = new Collection;
 	}
 
 	/**
@@ -140,34 +143,55 @@ class Collector
 	 * Loads commands, modules and invites from databases.
 	 * $client->provider must be set before calling this function.
 	 * 
-	 * @return void
+	 * @return \React\Promise\PromiseInterface
 	 */
-	function loadFromDB(): void
+	function loadFromDB(): PromiseInterface
 	{
-		$this->client->once('ready', function ()
+		return (new Promise(function(callable $resolve, callable $reject)
 		{
+			$this->client->once('ready', function ()
+			{
+				try {
+					$this->client->guilds->each(function ($guild)
+					{
+						$invs = $mdls = $cmds = [];
+						$invites = $this->client->provider->get($guild, 'invites', []);
+						$modules = $this->client->provider->get($guild, 'modules', []);
+						$commands = $this->client->provider->get($guild, 'commands', []);
+
+						foreach ($invites as $invite) {
+							$invs[] = Invite::jsonUnserialize($this->client, $invite);
+						}
+						foreach ($modules as $module) {
+							$mdls[] = Module::jsonUnserialize($this->client, $module);
+						}
+						foreach ($commands as $command) {
+							$cmds[] = Command::jsonUnserialize($this->client, $command);
+						}
+
+						if(!empty($invs)) $this->setInvites($invs);
+						if(!empty($mdls)) $this->setModules($mdls);
+						if(!empty($cmds)) $this->setCommands($cmds);
+					});
+					$resolve();
+				} catch (\Exception $e) {
+					$reject($e);
+				}
+			});
+		}));	
+	}
+
+	function loadInviteCache(): PromiseInterface
+	{
+		return (new Promise(function (callable $resolve, callable $reject){
 			$this->client->guilds->each(function ($guild)
 			{
-				$invs = $mdls = $cmds = [];
-				$invites = $this->client->provider->get($guild, 'invites', []);
-				$modules = $this->client->provider->get($guild, 'modules', []);
-				$commands = $this->client->provider->get($guild, 'commands', []);
-
-				foreach ($invites as $invite) {
-					$invs[] = Invite::jsonUnserialize($this->client, $invite);
-				}
-				foreach ($modules as $module) {
-					$mdls[] = Module::jsonUnserialize($this->client, $module);
-				}
-				foreach ($commands as $command) {
-					$cmds[] = Command::jsonUnserialize($this->client, $command);
-				}
-				
-				if(!empty($invs)) $this->setInvites($invs);
-				if(!empty($mdls)) $this->setModules($mdls);
-				if(!empty($cmds)) $this->setCommands($cmds);
+				$guild->fetchInvites()->done(function ($invites)
+				{
+					$this->inviteCache->set($guild->id, $invites);
+				});
 			});
-		});
+		}));
 	}
 
 	/**
