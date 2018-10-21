@@ -7,7 +7,7 @@
 */
 
 return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
+	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'create-module',
@@ -25,7 +25,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 			]);
 		}
 
-		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
 			//get data
 			$description = 'What thing you waanna assign to the command? Available options are:'.PHP_EOL;

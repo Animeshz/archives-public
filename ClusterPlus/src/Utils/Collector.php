@@ -14,7 +14,7 @@ use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
 use \CharlotteDunois\Collect\Collection;
 use \React\Promise\Promise;
-use \React\Promise\PromiseInterface;
+use \React\Promise\ExtendedPromiseInterface;
 
 /**
  * A command that can be run in a client.
@@ -145,7 +145,7 @@ class Collector
 	 * 
 	 * @return \React\Promise\PromiseInterface
 	 */
-	function loadFromDB(): PromiseInterface
+	function loadFromDB(): ExtendedPromiseInterface
 	{
 		return (new Promise(function(callable $resolve, callable $reject)
 		{
@@ -181,7 +181,7 @@ class Collector
 		}));	
 	}
 
-	function loadInviteCache(): PromiseInterface
+	function loadInviteCache(): ExtendedPromiseInterface
 	{
 		return (new Promise(function (callable $resolve, callable $reject){
 			$this->client->guilds->each(function ($guild)

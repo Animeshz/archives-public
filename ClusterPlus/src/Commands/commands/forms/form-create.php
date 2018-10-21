@@ -7,7 +7,7 @@
 */
 
 return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
+	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'form-create',
@@ -17,7 +17,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 			]);
 		}
 
-		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
 			$message->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Enter title for the form you wanna create, to cancel command send cancel'])]);
 

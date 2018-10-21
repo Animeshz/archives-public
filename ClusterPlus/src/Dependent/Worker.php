@@ -52,7 +52,7 @@ class Worker extends \CharlotteDunois\Phoebe\Worker
 		$this->bootstrap();
 		
 		static::$me = $this;
-		Worker::$me = $this;
+		\CharlotteDunois\Phoebe\Worker::$me = $this;
 		
 		$client = $this->internalClient;
 		$this->internalClient = null;

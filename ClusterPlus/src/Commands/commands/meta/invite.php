@@ -7,7 +7,7 @@
  */
 
 return function ($client) {
-    return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
+    return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
         function __construct(\CharlotteDunois\Livia\LiviaClient $client) {
             parent::__construct($client, [
                 'name' => 'invite',
@@ -19,7 +19,7 @@ return function ($client) {
             ]);
         }
         
-        function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
+        function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
         	return $message->client->fetchApplication()->done(
         		function( $oauth2 ) use ( $message )
         		{

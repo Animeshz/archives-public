@@ -9,8 +9,10 @@
 namespace Animeshz\ClusterPlus\Dependent;
 
 use \Animeshz\ClusterPlus\Client;
+use \Animeshz\ClusterPlus\Dependent\CommandThread;
 use \CharlotteDunois\Phoebe\Message;
 use \CharlotteDunois\Phoebe\Worker;
+use \React\Promise\ExtendedPromiseInterface;
 
 /**
  * Phoebe Pool implementation
@@ -40,7 +42,6 @@ class Pool extends \CharlotteDunois\Phoebe\Pool
 			switch($message->getType()) {
 				case 'message-eval-code':
 				$payload = $message->getPayload();
-
 				$this->client->eval($payload['code'], ($payload['options'] ?? array()))->done(function ($result) use (&$worker, &$message) {
 					return $worker->sendMessageToWorker($message->reply($result));
 				}, function ($error) use (&$worker, &$message) {
@@ -78,4 +79,13 @@ class Pool extends \CharlotteDunois\Phoebe\Pool
 		return $worker;
 	}
 
+	/**
+	 * Runs a command in worker
+	 * @return \React\Promise\ExtendedPromiseInterface
+	 */
+	function runCommand(string $cmdname, string $method, ...$args): ExtendedPromiseInterface
+	{
+		$thread = new CommandThread($cmdname, $method, $args);
+		return $this->submitTask($thread);
+	}
 }

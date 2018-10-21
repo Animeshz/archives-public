@@ -20,6 +20,7 @@ use \React\MySQL\Factory;
 use \React\MySQL\ConnectionInterface;
 use \React\Promise\Promise;
 use \React\Promise\PromiseInterface;
+use \React\Promise\ExtendedPromiseInterface;
 
 /**
  * ClusterPlus Client
@@ -134,10 +135,10 @@ class Client extends LiviaClient
 	}
 
 	/**
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return \React\Promise\ExtendedPromiseInterface|null
      * @internal
      */
-	function eval(string $code, array $options = array())
+	function eval(string $code, array $options = array()): ?ExtendedPromiseInterface
 	{
 		if(!(UniversalHelpers::isValidPHP($code))) return;
 		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
