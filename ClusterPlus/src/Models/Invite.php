@@ -9,6 +9,7 @@
 namespace Animeshz\ClusterPlus\Models;
 
 use \CharlotteDunois\Collect\Collection;
+use \Animeshz\ClusterPlus\Client;
 use \CharlotteDunois\Yasmin\Models\User;
 /**
  * Invite 
@@ -29,6 +30,12 @@ abstract class Command implements \JsonSerializable, \Serializable
 	protected $client;
 
 	/**
+     * The invite code.
+     * @var string
+     */
+    protected $code;
+
+	/**
 	 * Guild which invite belong to
 	 * @var \CharlotteDunois\Yasmin\Models\Guild
 	 */
@@ -41,6 +48,7 @@ abstract class Command implements \JsonSerializable, \Serializable
 	protected $inviter;
 
 	/**
+	 * A collection of User instances which are invited by $inviter
 	 * @var \CharlotteDunois\Collect\Collection<\CharlotteDunois\Yasmin\Models\User>
 	 */
 	protected $invited;
@@ -62,19 +70,14 @@ abstract class Command implements \JsonSerializable, \Serializable
 	 * @param array                                 $info
 	 * @throws \InvalidArgumentException
 	 */
-	function __construct(\CharlotteDunois\Livia\LiviaClient $client, $invite)
+	function __construct(Client $client, array $info)
 	{
 		$this->client = $client;
 
-		if ($invite instanceof \CharlotteDunois\Yasmin\Models\Invite) {
-			$this->guild = $invite->guild;
-			$this->inviter = $invite->inviter;
-			$this->invited = new \CharlotteDunois\Collect\Collection;
-		} elseif (is_array($invite)) {
-			$this->guild = $invite['guild'];
-			$this->inviter = $invite['inviter'];
-			$this->invited = $invite['invited'];
-		}
+		$this->code = $info['code'];
+		$this->guild = $info['guild'];
+		$this->inviter = $info['inviter'];
+		$this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
 	}
 	
 	/**
@@ -121,6 +124,7 @@ abstract class Command implements \JsonSerializable, \Serializable
 		$vars['guild'] = $vars['guild']->id;
 		$vars['inviter'] = $vars['inviter']->id;
 		$vars['invited'] = $vars['invited']->all();
+
 		return \serialize($vars);
 	}
 
@@ -131,10 +135,10 @@ abstract class Command implements \JsonSerializable, \Serializable
 	public function jsonSerialize(): array
 	{
 		$vars = \get_object_vars($this);
+		unset($vars['client']);
 		$vars['guild'] = $vars['guild']->id;
 		$vars['inviter'] = $vars['inviter']->id;
 		$vars['invited'] = $vars['invited']->all();
-		unset($vars['client']);
 
 		return $vars;
 	}
@@ -150,33 +154,43 @@ abstract class Command implements \JsonSerializable, \Serializable
 		}
 		
 		$vars = \unserialize($vars);
-		foreach($vars as $name => $val) {
-			$this->$name = $val;
-		}
 		
-		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
-		$this->guild = $this->client->guilds->resolve($this->guild);
-		$this->inviter = $this->client->fetchUser($this->inviter);
+		$this->code = $vars['code'];
 		$this->invited = new Collection($vars['invited']);
+
+		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
+		$this->guild = $this->client->guilds->resolve($vars['guild']);
+		$this->inviter = $this->client->fetchUser($vars['inviter']);
 	}
 
 	static function jsonUnserialize($client, $vars)
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 		$vars['inviter'] = $client->fetchUser($vars['inviter']);
-		$vars['invited'] = new Collection($vars['invited']);
 
-		return new self($client, $vars);
+		return new static($client, $vars);
+	}
+
+	static function make(Client $client, \CharlotteDunois\Yasmin\Models\Invite $invite): Invite
+	{
+		$info['code'] = $invite->code;
+		$info['guild'] = $invite->guild;
+		$info['inviter'] = $invite->inviter;
+
+		new static($client, $info);
 	}
 
 	/**
-	 * Description
+	 * @internal
 	 * @param \CharlotteDunois\Yasmin\Models\User $invited 
 	 * @return type
 	 */
-	function _patch(User $invited)
+	function _patch(User ...$invited)
 	{
-		$this->invited->set($this->invited->count(), $invited);
+		foreach ($invited as $i) {
+			$this->invited->set($this->invited->count(), $i);
+		}
+		
 		//update to database
 	}
 }

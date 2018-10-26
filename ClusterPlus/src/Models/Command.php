@@ -180,7 +180,7 @@ class Command implements \JsonSerializable, \Serializable
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 
-		return new self($client, $vars);
+		return new static($client, $vars);
 	}
 
 	function attachModules(Module ...$modules)
@@ -190,9 +190,10 @@ class Command implements \JsonSerializable, \Serializable
 	
 	function run(Message $message)
 	{
-		foreach ($this->modules as $module) {
-			//run the module
-		}
+		echo 'running';
+		// foreach ($this->modules as $module) {
+		// 	//run the module
+		// }
 	}
 
 }

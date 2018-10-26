@@ -12,7 +12,6 @@ use \Animeshz\ClusterPlus\Commands\CommandsDispatcher;
 use \Animeshz\ClusterPlus\Utils\Collector;
 use \Animeshz\ClusterPlus\Utils\UniversalHelpers;
 use \CharlotteDunois\Livia\LiviaClient;
-use \CharlotteDunois\Livia\Providers\MySQLProvider;
 use \CharlotteDunois\Validation\Validator;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \React\EventLoop\LoopInterface;
@@ -89,7 +88,8 @@ class Client extends LiviaClient
 		$factory = new Factory($this->loop);
 		$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
 		{
-			$this->setProvider(new MySQLProvider($db))->done(function ()
+			$provider = $this->getOption('provider.class', '\\CharlotteDunois\\Livia\\Providers\\MySQLProvider');
+			$this->setProvider(new $provider($db))->then(function ()
 			{
 				$this->collector->loadFromDB();
 			});
@@ -140,7 +140,7 @@ class Client extends LiviaClient
      */
 	function eval(string $code, array $options = array()): ?ExtendedPromiseInterface
 	{
-		if(!(UniversalHelpers::isValidPHP($code))) return;
+		if(!(UniversalHelpers::isValidPHP($code))) return null;
 		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
 			if(\mb_substr($code, -1) !== ';') {
 				$code .= ';';
@@ -175,7 +175,9 @@ class Client extends LiviaClient
 		$validator = Validator::make($config, array(
 			'eventHandler.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\EventHandler,string_only',
 			'pool.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Pool,string_only',
-			'worker.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Worker,string_only'
+			'provider.class' => 'class:\\CharlotteDunois\\Livia\\Providers\\MySQLProvider,string_only',
+			'worker.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Worker,string_only',
+			'dialogflow.token' => 'string'
 		));
 
 		if($validator->fails()) {

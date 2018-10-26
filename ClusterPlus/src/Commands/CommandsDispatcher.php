@@ -59,7 +59,10 @@ class CommandsDispatcher
 	{
 		\preg_match($pattern, $message->content, $matches);
 		if(!empty($matches)) {
-			return $this->client->collector->commands->first(function (\Animeshz\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
+			foreach($this->client->collector->commands as $commands) {
+				$found = $commands->first(function (\Animeshz\ClusterPlus\Models\Command $command) use ($matches, $commandNameIndex) { return (strpos($command->name, $matches[$commandNameIndex]) !== false); });
+				if($found !== null) return $found;
+			};
 		}
 
 		return null;

@@ -9,10 +9,14 @@
 namespace Animeshz\ClusterPlus\Utils;
 
 use \Animeshz\ClusterPlus\Client;
+use \Animeshz\ClusterPlus\Dependent\Worker;
 use \Animeshz\ClusterPlus\Models\Command;
 use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
 use \CharlotteDunois\Collect\Collection;
+use \CharlotteDunois\Phoebe\AsyncTask;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
+use \React\MySQL\Factory;
 use \React\Promise\Promise;
 use \React\Promise\ExtendedPromiseInterface;
 
@@ -25,7 +29,7 @@ use \React\Promise\ExtendedPromiseInterface;
  * @property \CharlotteDunois\Yasmin\Utils\Collection		$invites			Collection of invites.
  * @property \CharlotteDunois\Yasmin\Utils\Collection		$inviteCache		Collection of inviteCache.
  */
-class Collector
+class Collector implements \Serializable
 {
 	/**
 	 * @var \ClusterPlus\Client
@@ -101,6 +105,34 @@ class Collector
 	}
 
 	/**
+	 * @return string
+	 * @internal
+	 */
+	function serialize()
+	{
+		$vars = \get_object_vars($this);
+		unset($vars['client']);
+		return \serialize($vars);
+	}
+
+	/**
+	 * @return void
+	 * @internal
+	 */
+	function unserialize($vars) {
+		if(ClientBase::$serializeClient === null) {
+			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+		}
+		
+		$vars = \unserialize($vars);
+		foreach($vars as $name => $val) {
+			$this->$name = $val;
+		}
+		
+		$this->client = ClientBase::$serializeClient;
+	}
+
+	/**
 	 * Fetch Command from local environment, if second parameter is
 	 * set it'll return command, else return collection of commands.
 	 * 
@@ -147,13 +179,31 @@ class Collector
 	 */
 	function loadFromDB(): ExtendedPromiseInterface
 	{
-		return (new Promise(function(callable $resolve, callable $reject)
+		return (new Promise(function (callable $resolve, callable $reject)
 		{
-			$this->client->once('ready', function ()
+			$loader = function () use ($resolve, $reject)
 			{
 				try {
 					$this->client->guilds->each(function ($guild)
 					{
+						$guild->fetchInvites()->done(function ($invites) use ($guild)
+						{
+							$this->inviteCache->set($guild->id, $invites);
+							$new = [];
+							$invites->each(function ($invite) use ($guild, $new)
+							{
+								$invites = $this->provider->get($guild, 'invites', []);
+								$invites = \array_map(function ($invite)
+								{
+									return $invite['code'];
+								}, $invites);
+								if(!\in_array($invite->code, $invites)) {
+									$new[] = Invite::make($this->client, $invite);
+								}
+							});
+							if(!empty($new)) $this->setInvites($new);
+						});
+
 						$invs = $mdls = $cmds = [];
 						$invites = $this->client->provider->get($guild, 'invites', []);
 						$modules = $this->client->provider->get($guild, 'modules', []);
@@ -169,28 +219,21 @@ class Collector
 							$cmds[] = Command::jsonUnserialize($this->client, $command);
 						}
 
-						if(!empty($invs)) $this->setInvites($invs);
-						if(!empty($mdls)) $this->setModules($mdls);
-						if(!empty($cmds)) $this->setCommands($cmds);
+						if(!empty($invs)) $this->setInvites(...$invs);
+						if(!empty($mdls)) $this->setModules(...$mdls);
+						if(!empty($cmds)) $this->setCommands(...$cmds);
 					});
 					$resolve();
 				} catch (\Exception $e) {
 					$reject($e);
 				}
-			});
-		}));	
-	}
+			};
 
-	function loadInviteCache(): ExtendedPromiseInterface
-	{
-		return (new Promise(function (callable $resolve, callable $reject){
-			$this->client->guilds->each(function ($guild)
-			{
-				$guild->fetchInvites()->done(function ($invites)
-				{
-					$this->inviteCache->set($guild->id, $invites);
-				});
-			});
+			if($this->client->readyTimestamp === null) {
+				$this->client->once('ready', $loader);
+			} else {
+				$loader();
+			}
 		}));
 	}
 
@@ -210,16 +253,16 @@ class Collector
 		}
 	}
 
-	// function setInvites(Invite ...$invites)
-	// {
-	// 	foreach ($invites as $invite) {
-	// 		$guildID = $invite->guild->id;
-	// 		if($this->invites->get($guildID) === null) $this->invites->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
-	// 		$cmd = $this->invites->get($guildID);
-	// 		$cmd->set($invite->name, $invite);
-	// 		$this->invites->set($guildID, $cmd);
-	// 	}
-	// }
+	function setInvites(Invite ...$invites)
+	{
+		foreach ($invites as $invite) {
+			$guildID = $invite->guild->id;
+			if($this->invites->get($guildID) === null) $this->invites->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+			$inv = $this->invites->get($guildID);
+			$inv->set($invite->code, $invite);
+			$this->invites->set($guildID, $inv);
+		}
+	}
 
 	// function setModules(Module ...$modules)
 	// {
