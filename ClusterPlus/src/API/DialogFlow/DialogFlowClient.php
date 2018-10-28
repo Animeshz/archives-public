@@ -81,7 +81,7 @@ class DialogFlowClient implements EventEmitterInterface
 			case 'api':
 			case 'APIManager':
 			case 'apiManager':
-			return $this->api
+			return $this->api;
 			break;
 		}
 		

@@ -8,7 +8,7 @@
 
 namespace Animeshz\ClusterPlus\API\DialogFLow\HTTP\Endpoints;
 
-use \Animeshz\ClusterPlus\API\DialogFlow\APIManager;
+use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
 
 final class Agent
 {
@@ -38,19 +38,19 @@ final class Agent
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi]);
 	}
 
-	function importAgent(string $projectid, string $agentUri string $agentContent) {
+	function importAgent(string $projectid, string $agentUri, string $agentContent) {
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['import'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi, 'agentContent' => $agentContent]);
 	}
 
-	function restoreAgent(string $projectid, string $agentUri string $agentContent) {
+	function restoreAgent(string $projectid, string $agentUri, string $agentContent) {
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['restore'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi, 'agentContent' => $agentContent]);
 	}
 
 	function searchAgent(string $projectid, array $agents, string $nextPageToken) {
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['search'], $projectid);
-		return $this->api->makeRequest('GET', $url, ['agents': $agents, 'nextPageToken': $nextPageToken]);
+		return $this->api->makeRequest('GET', $url, ['agents' => $agents, 'nextPageToken' => $nextPageToken]);
 	}
 
 	function trainAgent(string $projectid) {

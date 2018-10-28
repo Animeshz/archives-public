@@ -8,9 +8,9 @@
 
 namespace Animeshz\ClusterPlus\API\DialogFLow\HTTP\Endpoints;
 
-use \Animeshz\ClusterPlus\API\DialogFlow\APIManager;
+use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
 
-final class Agent
+final class EntityTypes
 {
 	const ENDPOINTS = [
 		'batchDelete' => 'projects/%s/agent/entityTypes:batchDelete',

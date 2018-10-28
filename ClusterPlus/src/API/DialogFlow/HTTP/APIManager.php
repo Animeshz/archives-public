@@ -84,7 +84,7 @@ class APIManager
 	 * Default destructor.
 	 * @internal
 	 */
-	function __destruct(): void
+	function __destruct()
 	{
 		$this->clear();
 	}
