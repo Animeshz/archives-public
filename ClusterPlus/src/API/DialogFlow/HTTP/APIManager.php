@@ -185,7 +185,7 @@ class APIManager
 			$item->deferred->reject($error);
 		})->otherwise(function ($error) {
 			$this->dialogflow->handlePromiseRejection($error);
-		})->done(function () use ($ratelimit, $endpoint) {
+		})->done(function (){
 			$this->process();
 		});
 	}

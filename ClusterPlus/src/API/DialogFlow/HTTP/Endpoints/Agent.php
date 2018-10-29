@@ -28,14 +28,14 @@ final class Agent
 		$this->api = $api;
 	}
 
-	function getAgent(string $projectid) {
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $projectid);
-		return $this->api->makeRequest('GET', $url, []);
-	}
-
 	function exportAgent(string $projectid, string $agentUri) {
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['export'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi]);
+	}
+
+	function getAgent(string $projectid) {
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $projectid);
+		return $this->api->makeRequest('GET', $url, []);
 	}
 
 	function importAgent(string $projectid, string $agentUri, string $agentContent) {

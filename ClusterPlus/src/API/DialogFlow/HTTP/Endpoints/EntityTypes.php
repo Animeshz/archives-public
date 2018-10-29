@@ -29,39 +29,45 @@ final class EntityTypes
 		$this->api = $api;
 	}
 
-	function deleteEntities(string $projectid, array $entityTypeNames)
+	function createEnitity(string $projectid, EntityType $entityType)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $projectid);
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $projectid);
+		return $this->api->makeRequest('POST', $url, [$entityType]);
+	}
+
+	function deleteEntities(string $projectid, string ...$entityTypeNames)
+	{
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['batchDelete'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['entityTypeNames' => $entityTypeNames]);
 	}
 
-	function exportAgent(string $guildid)
+	function deleteEntity(string $projectid, string $entityTypeID)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['export'], $guildid);
-		return $this->api->makeRequest('POST', $url, array());
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['delete'], $projectid, $entityTypeID);
+		return $this->api->makeRequest('DELETE', $url, []);
 	}
 
-	function importAgent(string $guildid)
+	function getEntity(string $projectid, string $entityTypeID)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['import'], $guildid);
-		return $this->api->makeRequest('POST', $url, array());
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['get'], $projectid, $entityTypeID);
+		return $this->api->makeRequest('GET', $url, []);
 	}
 
-	function restoreAgent(string $guildid)
+	function listEnitities(string $projectid)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['restore'], $guildid);
-		return $this->api->makeRequest('GET', $url, array());
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['list'], $projectid);
+		return $this->api->makeRequest('GET', $url, []);
 	}
 
-	function searchAgent(string $guildid)
+	function updateEntities(string $projectid, string $languageCode, string $updateMask, string $entityBatchUri, entityTypeBatch ...$entityTypeBatch)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['search'], $guildid);
-		return $this->api->makeRequest('GET', $url, array());
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['batchUpdate'], $projectid);
+		return $this->api->makeRequest('POST', $url, ['languageCode' => $languageCode, 'updateMask' => $updateMask, 'entityBatchUri' => $entityBatchUri, 'entityTypeBatchInline' => $entityTypeBatch]);
 	}
 
-	function trainAgent(string $guildid)
+	function updateEntity(string $projectid, string $entityTypeID)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['train'], $guildid);
-		return $this->api->makeRequest('PATCH', $url, array());
+		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['patch'], $projectid, $entityTypeID);
+		return $this->api->makeRequest('PATCH', $url, [$entityType]);
 	}
 }
