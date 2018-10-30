@@ -29,7 +29,7 @@ final class EntityTypes
 		$this->api = $api;
 	}
 
-	function createEnitityType(string $projectid, EntityType $entityType)
+	function createEntityType(string $projectid, EntityType $entityType)
 	{
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $projectid);
 		return $this->api->makeRequest('POST', $url, [$entityType]);
@@ -65,7 +65,7 @@ final class EntityTypes
 		return $this->api->makeRequest('POST', $url, ['languageCode' => $languageCode, 'updateMask' => $updateMask, 'entityBatchUri' => $entityBatchUri, 'entityTypeBatchInline' => $entityTypeBatch]);
 	}
 
-	function updateEntityType(string $projectid, string $entityTypeID)
+	function updateEntityType(string $projectid, string $entityTypeID, EntityType $entityType)
 	{
 		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['patch'], $projectid, $entityTypeID);
 		return $this->api->makeRequest('PATCH', $url, [$entityType]);
