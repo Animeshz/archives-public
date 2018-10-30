@@ -27,19 +27,19 @@ final class EntityTypes
 
 	function createEnities(string $projectid, EntityType $entityTypeID, string $languageCode, Entity ...$entities)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $projectid, $entityTypeID);
+		$url = APIEndpoints::format(self::ENDPOINTS['batchCreate'], $projectid, $entityTypeID);
 		return $this->api->makeRequest('POST', $url, ['languageCode' => $languageCode, 'entities' => $entities]);
 	}
 
-	function createEnities(string $projectid, EntityType $entityTypeID, string $languageCode, string ...$entityValues)
+	function deleteEnities(string $projectid, EntityType $entityTypeID, string $languageCode, string ...$entityValues)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $projectid, $entityTypeID);
+		$url = APIEndpoints::format(self::ENDPOINTS['batchDelete'], $projectid, $entityTypeID);
 		return $this->api->makeRequest('POST', $url, ['languageCode' => $languageCode, 'entityValues' => $entityValues]);
 	}
 
-	function createEnities(string $projectid, EntityType $entityTypeID, string $languageCode, string $updateMask, Entity ...$entities)
+	function updateEnities(string $projectid, EntityType $entityTypeID, string $languageCode, string $updateMask, Entity ...$entities)
 	{
-		$url = \CharlotteDunois\Yasmin\HTTP\APIEndpoints::format(self::ENDPOINTS['create'], $projectid, $entityTypeID);
+		$url = APIEndpoints::format(self::ENDPOINTS['batchUpdate'], $projectid, $entityTypeID);
 		return $this->api->makeRequest('POST', $url, ['languageCode' => $languageCode, 'updateMask' => $updateMask, 'entities' => $entities]);
 	}
 }
