@@ -150,7 +150,7 @@ class APIManager
 	}
 	
 	/**
-	 * Clears all buckets and the queue.
+	 * Clears all the queue.
 	 * @return void
 	 */
 	function clear(): void

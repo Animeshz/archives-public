@@ -28,32 +28,38 @@ final class Agent
 		$this->api = $api;
 	}
 
-	function exportAgent(string $projectid, string $agentUri) {
+	function exportAgent(string $projectid, string $agentUri)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['export'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi]);
 	}
 
-	function getAgent(string $projectid) {
+	function getAgent(string $projectid)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['get'], $projectid);
 		return $this->api->makeRequest('GET', $url, []);
 	}
 
-	function importAgent(string $projectid, string $agentUri, string $agentContent) {
+	function importAgent(string $projectid, string $agentUri, string $agentContent)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['import'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi, 'agentContent' => $agentContent]);
 	}
 
-	function restoreAgent(string $projectid, string $agentUri, string $agentContent) {
+	function restoreAgent(string $projectid, string $agentUri, string $agentContent)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['restore'], $projectid);
 		return $this->api->makeRequest('POST', $url, ['agentUri' => $agenturi, 'agentContent' => $agentContent]);
 	}
 
-	function searchAgent(string $projectid, array $agents, string $nextPageToken) {
+	function searchAgent(string $projectid, array $agents, string $nextPageToken)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['search'], $projectid);
 		return $this->api->makeRequest('GET', $url, ['agents' => $agents, 'nextPageToken' => $nextPageToken]);
 	}
 
-	function trainAgent(string $projectid) {
+	function trainAgent(string $projectid)
+	{
 		$url = APIEndpoints::format(self::ENDPOINTS['train'], $projectid);
 		return $this->api->makeRequest('POST', $url, []);
 	}
