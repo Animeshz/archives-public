@@ -40,27 +40,15 @@ class APIManager
 	protected $limited = false;
 
 	/**
-	 * Global rate limit limit.
-	 * @var int
-	 */
-	protected $limit = 0;
-
-	/**
 	 * @var \React\EventLoop\LoopInterface
 	 */
 	protected $loop;
-	
-	/**
-	 * Global rate limit remaining.
-	 * @var int
-	 */
-	protected $remaining = \INF;
-	
+
 	/**
 	 * When can we send again?
 	 * @var float
 	 */
-	protected $resetTime = 0.0;
+	protected $remaining = 180;
 	
 	/**
 	 * The queue for our API requests.
@@ -78,6 +66,12 @@ class APIManager
 		$this->dialogflow = $dialogflow;
 		$this->client = $client;
 		$this->endpoints = new APIEndpoints($this);
+
+		$client->loop->addPeriodicTimer(60, function () {
+			$this->limited = false;
+			$this->remaining = 180;
+			$this->process();
+		});
 	}
 
 	/**
@@ -174,6 +168,7 @@ class APIManager
 	protected function execute(APIRequest $item): void
 	{        
 		$this->dialogflow->emit('debug', 'Executing item "'.$item->getEndpoint().'"');
+		$this->remaining--;
 
 		$item->execute()->then(function ($data) use ($item) {
 			if($data === 0) {
@@ -240,20 +235,9 @@ class APIManager
 	 */
 	protected function process(): void
 	{
-		if($this->limited) {
-			if(\microtime(true) < $this->resetTime) {
-				$this->client->addTimer(($this->resetTime - \microtime(true)), function () {
-					$this->process();
-				});
-
-				return;
-			}
-
-			$this->limited = false;
-			$this->remaining = ($this->limit ?: \INF);
-		}
-
-		if(\count($this->queue) === 0) {
+		if($this->remaining === 0) $this->limited = true;
+		
+		if($this->limited || (\count($this->queue) === 0)) {
 			return;
 		}
 
