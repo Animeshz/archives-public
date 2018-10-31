@@ -8,5 +8,5 @@
 
 namespace Animeshz\ClusterPlus\API\DialogFLow;
 
-class DialogFlowClient extends \Exception
+class DialogFlowAPIException extends \Exception
 {}

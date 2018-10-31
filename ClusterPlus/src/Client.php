@@ -118,6 +118,9 @@ class Client extends LiviaClient
 			case 'collector':
 			return $this->collector;
 			break;
+			case 'dialogflow':
+			return $this->dialogflow;
+			break;
 			case 'pool':
 			return $this->pool;
 			break;

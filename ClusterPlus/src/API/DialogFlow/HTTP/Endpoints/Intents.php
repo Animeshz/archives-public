@@ -9,6 +9,7 @@
 namespace Animeshz\ClusterPlus\API\DialogFLow\HTTP\Endpoints;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
+use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIEndpoints;
 
 final class Intents
 {

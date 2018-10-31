@@ -12,6 +12,7 @@ use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
 use \Animeshz\ClusterPlus\Client;
 use \CharlotteDunois\Events\EventEmitterInterface;
 use \CharlotteDunois\Events\EventEmitterTrait;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
 
 /**
  * DialogFlowClient, what you'd expect it to do?
@@ -21,7 +22,7 @@ use \CharlotteDunois\Events\EventEmitterTrait;
  * @see https://github.com/Charlottedunois/Collection
  * @see https://github.com/Charlottedunois/EventEmitter
  */
-class DialogFlowClient implements EventEmitterInterface
+class DialogFlowClient implements EventEmitterInterface, \Serializable
 {
 	use EventEmitterTrait;
 
@@ -86,6 +87,22 @@ class DialogFlowClient implements EventEmitterInterface
 		}
 		
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
+	}
+
+	function serialize(): ?string
+	{
+		return null;
+	}
+
+	function unserialize($vars): void
+	{
+		if(ClientBase::$serializeClient === null) {
+			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+		}
+		\unserialize($vars);
+
+		$this->client = ClientBase::$serializeClient;
+		$this->api = new APIManager($this, $this->client);		
 	}
 
 	/**

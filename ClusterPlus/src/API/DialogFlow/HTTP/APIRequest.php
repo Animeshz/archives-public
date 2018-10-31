@@ -11,9 +11,9 @@ namespace Animeshz\ClusterPlus\API\DialogFLow\HTTP;
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIEndpoints;
 use \Animeshz\ClusterPlus\API\DialogFlow\DialogflowAPIException;
-use \Animeshz\ClusterPlus\API\DialogFlow\Utils\URLHelpers;
 use \CharlotteDunois\Yasmin\Utils\URLHelpers;
 use \GuzzleHttp\Psr7\Request;
+use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 use \React\Promise\ExtendedPromiseInterface;
 
@@ -206,7 +206,8 @@ class APIRequest
 		}
 
 		if($status >= 400 && $status < 500) {
-			$error = new DialogflowAPIException($this->endpoint, $body);
+			// $error = new DialogflowAPIException($this->endpoint, $body);
+			var_dump($body);
 		} else {
 			$error = new \RuntimeException($response->getReasonPhrase());
 		}

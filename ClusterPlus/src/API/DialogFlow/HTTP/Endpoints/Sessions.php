@@ -9,6 +9,8 @@
 namespace Animeshz\ClusterPlus\API\DialogFLow\HTTP\Endpoints;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
+use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIEndpoints;
+use \Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput;
 
 final class Sessions
 {
@@ -71,7 +73,7 @@ final class Sessions
 	function detectIntent(string $projectid, string $sessionid, QueryInput $input)
 	{
 		$url = APIEndpoints::format(self::ENDPOINTS['detectIntent'], $projectid, $sessionid);
-		return $this->api->makeRequest('POST', $url, ['queryInput' => $input]);
+		return $this->api->makeRequest('POST', $url, ['query_input' => $input]);
 	}
 
 	function getContext(string $projectid, string $sessionid, string $contextid)

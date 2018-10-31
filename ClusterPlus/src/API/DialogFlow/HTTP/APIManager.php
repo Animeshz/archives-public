@@ -13,6 +13,7 @@ use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIRequest;
 use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 use \Animeshz\ClusterPlus\Client;
 use \CharlotteDunois\Yasmin\Utils\URLHelpers;
+use \React\Promise\Deferred;
 use \React\Promise\Promise;
 use \React\Promise\ExtendedPromiseInterface;
 
@@ -65,6 +66,7 @@ class APIManager
 	{
 		$this->dialogflow = $dialogflow;
 		$this->client = $client;
+		$this->loop = $client->loop;
 		$this->endpoints = new APIEndpoints($this);
 
 		$client->loop->addPeriodicTimer(60, function () {
@@ -236,7 +238,7 @@ class APIManager
 	protected function process(): void
 	{
 		if($this->remaining === 0) $this->limited = true;
-		
+
 		if($this->limited || (\count($this->queue) === 0)) {
 			return;
 		}
