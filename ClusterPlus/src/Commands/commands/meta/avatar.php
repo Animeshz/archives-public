@@ -13,6 +13,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 				'name' => 'avatar',
 				'group' => 'meta',
 				'description' => 'Shows the avatar of the user if not found nothing is sent',
+				'details' => 'Avatar is profile picture of a user',
 				'guildOnly' => true,
 				'args' => [
 					[
