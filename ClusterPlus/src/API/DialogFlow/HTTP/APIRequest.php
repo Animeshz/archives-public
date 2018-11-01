@@ -228,7 +228,8 @@ class APIRequest
 			'protocols' => array('https'),
 			'expect' => false,
 			'headers' => array(
-				'User-Agent' => 'ClusterPlus (https://github.com/Animeshz/ClusterPlus)'
+				'User-Agent' => 'ClusterPlus (https://github.com/Animeshz/ClusterPlus)',
+				'Content-Type' => 'application/json; charset=utf-8'
 			)
 		);
 		

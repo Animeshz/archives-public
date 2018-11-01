@@ -194,8 +194,11 @@ class APIManager
 	 * @param array   $options
 	 * @return \React\Promise\ExtendedPromiseInterface
 	 */
-	function makeRequest(string $method, string $endpoint, array $options): ExtendedPromiseInterface
+	function makeRequest(string $method, string $endpoint, array $data, ?array $options = null): ExtendedPromiseInterface
 	{
+		if($options === null) $options = [];
+		$options['data'] = $data;
+		
 		$request = new APIRequest($this, $method, $endpoint, $options);
 		return $this->add($request);
 	}
