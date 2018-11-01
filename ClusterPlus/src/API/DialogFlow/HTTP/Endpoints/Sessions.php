@@ -73,7 +73,7 @@ final class Sessions
 	function detectIntent(string $projectid, string $sessionid, QueryInput $input)
 	{
 		$url = APIEndpoints::format(self::ENDPOINTS['detectIntent'], $projectid, $sessionid);
-		return $this->api->makeRequest('POST', $url, ['query_input' => $input]);
+		return $this->api->makeRequest('POST', $url, ['queryInput' => $input]);
 	}
 
 	function getContext(string $projectid, string $sessionid, string $contextid)

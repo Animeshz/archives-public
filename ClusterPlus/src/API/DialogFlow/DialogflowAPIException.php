@@ -9,4 +9,9 @@
 namespace Animeshz\ClusterPlus\API\DialogFlow;
 
 class DialogFlowAPIException extends \Exception
-{}
+{
+	function __construct(string $path, array $errors)
+	{
+		parent::__construct($errors['error']['status'].': '.$errors['error']['message'], $errors['error']['code']);
+	}
+}
