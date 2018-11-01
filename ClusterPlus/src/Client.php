@@ -187,7 +187,7 @@ class Client extends LiviaClient
 			'pool.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Pool,string_only',
 			'provider.class' => 'class:\\CharlotteDunois\\Livia\\Providers\\MySQLProvider,string_only',
 			'worker.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Worker,string_only',
-			'dialogflow.token' => 'string'
+			'dialogflow' => 'string'
 		));
 
 		if($validator->fails()) {

@@ -6,7 +6,7 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-namespace Animeshz\ClusterPlus\API\DialogFLow;
+namespace Animeshz\ClusterPlus\API\DialogFlow;
 
 class DialogFlowAPIException extends \Exception
 {}

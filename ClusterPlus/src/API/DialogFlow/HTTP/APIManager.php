@@ -69,7 +69,7 @@ class APIManager
 		$this->loop = $client->loop;
 		$this->endpoints = new APIEndpoints($this);
 
-		$client->loop->addPeriodicTimer(60, function () {
+		$client->addPeriodicTimer(60, function () {
 			$this->limited = false;
 			$this->remaining = 180;
 			$this->process();

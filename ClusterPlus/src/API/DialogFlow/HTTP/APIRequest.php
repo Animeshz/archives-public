@@ -206,8 +206,8 @@ class APIRequest
 		}
 
 		if($status >= 400 && $status < 500) {
-			// $error = new DialogflowAPIException($this->endpoint, $body);
-			var_dump($body);
+			$error = new DialogflowAPIException($this->endpoint, $body);
+			// var_dump($body);
 		} else {
 			$error = new \RuntimeException($response->getReasonPhrase());
 		}
@@ -232,9 +232,7 @@ class APIRequest
 			)
 		);
 		
-		if(!empty($this->api->client->token)) {
-			$options['headers']['Authorization'] = 'Bearer '.$this->api->client->getOption('dialogflow.token');
-		}
+		$options['headers']['Authorization'] = $this->api->dialogflow->tokenHandler->getTokenType().' '.$this->api->dialogflow->tokenHandler->getToken();
 		
 		if(!empty($this->options['data'])) {
 			$options['json'] = $this->options['data'];
