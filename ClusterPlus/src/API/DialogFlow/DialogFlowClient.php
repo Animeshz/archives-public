@@ -10,10 +10,12 @@ namespace Animeshz\ClusterPlus\API\DialogFlow;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
 use \Animeshz\ClusterPlus\API\DialogFlow\GoogleTokenHandler;
+use \Animeshz\ClusterPlus\API\DialogFlow\Models\Agent;
 use \Animeshz\ClusterPlus\Client;
 use \CharlotteDunois\Events\EventEmitterInterface;
 use \CharlotteDunois\Events\EventEmitterTrait;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
+use \React\Promise\Promise;
 
 /**
  * DialogFlowClient, what you'd expect it to do?
@@ -43,6 +45,16 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	protected $credentials;
 
 	/**
+	 * @var \Animeshz\ClusterPlus\API\DialogFlow\Models\Agent
+	 */
+	public $me;
+
+	/**
+	 * @var array
+	 */
+	protected $project;
+
+	/**
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\GoogleTokenHandler
 	 */
 	protected $tokenHandler;
@@ -56,10 +68,19 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 		$this->client = $client;
 
 		\putenv('GOOGLE_APPLICATION_CREDENTIALS='.$client->getOption('dialogflow'));
+		$this->project = json_decode(file_get_contents($client->getOption('dialogflow')), true);
 		$this->credentials = \Google\Auth\ApplicationDefaultCredentials::getCredentials(['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/dialogflow']);
-		$this->tokenHandler = new GoogleTokenHandler($this);
 
+		$this->tokenHandler = new GoogleTokenHandler($this);
 		$this->api = new APIManager($this, $client);
+
+		$this->api->endpoints->agent->getAgent($this->project['project_id'])->then(function ($data) {
+			$this->me = new Agent($this, $data);
+		}, function (\Exception $e){
+			echo $e->getMessage();
+		})->otherwise(function (\Exception $e){
+			echo $e->getMessage();
+		});
 	}
 	
 	/**
@@ -89,26 +110,34 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	 */
 	function __get($name)
 	{
-		switch ($name) {			
-			case 'api':
-			case 'APIManager':
-			case 'apiManager':
-			return $this->api;
-			break;
+		// switch ($name) {			
+		// 	case 'api':
+		// 	case 'APIManager':
+		// 	case 'apiManager':
+		// 	return $this->api;
+		// 	break;
 
-			case 'client':
-			return $this->client;
-			break;
+		// 	case 'client':
+		// 	return $this->client;
+		// 	break;
 
-			case 'credentials':
-			return $this->credentials;
-			break;
+		// 	case 'credentials':
+		// 	return $this->credentials;
+		// 	break;
 
-			case 'token':
-			case 'tokenHandler':
-			return $this->tokenHandler;
-			break;
-		}
+		// 	case 'token':
+		// 	case 'tokenHandler':
+		// 	return $this->tokenHandler;
+		// 	break;
+
+		// 	case 'me':
+		// 	case 'itself':
+		// 	case 'agent':
+		// 	return $this->me;
+		// 	break;
+		// }
+
+		if(property_exists($this, $name)) return $this->$name;
 		
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
 	}
@@ -140,10 +169,17 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 		$this->emit('error', $error);
 	}
 
-	function getAnswer(string $question)
+	function getAnswer(string $request, string $sessionid)
 	{
-		//create text instance
-		//set text instance to query
-		//send
+		return (new Promise(function (callable $resolve, callable $reject)
+		{
+			$text = new \Animeshz\ClusterPlus\API\DialogFlow\Models\TextInput($request);
+			$input = new \Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput($text);
+			$response = $client->dialogflow->api->endpoints->sessions->detectIntent('clusterplus-b5a7e', $sessionid, $input)->then(function ($user) use ($resolve)
+			{
+				$user = $this->users->factory($user, true);
+				$resolve($user);
+			}, $reject);
+		}));
 	}
 }

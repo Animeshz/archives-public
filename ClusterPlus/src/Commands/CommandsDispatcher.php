@@ -28,6 +28,7 @@ class CommandsDispatcher
 	public function registerGroups()
 	{
 		$this->client->registry->registerGroup(
+			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'ai', 'Cluster Plus Artificial Intelligence', true)),
 			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'moderation', 'Cluster Plus Moderation', true)),
 			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'polls', 'Cluster Plus Polls')),
 			(new \CharlotteDunois\Livia\Commands\CommandGroup($this->client, 'forms', 'Cluster Plus Forms')),
