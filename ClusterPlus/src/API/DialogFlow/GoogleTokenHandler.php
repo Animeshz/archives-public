@@ -19,13 +19,8 @@ use \Animeshz\ClusterPlus\API\DialogFlow\Models\ClientBase;
  * @see https://github.com/Charlottedunois/Collection
  * @see https://github.com/Charlottedunois/EventEmitter
  */
-class GoogleTokenHandler implements \Serializable
+class GoogleTokenHandler extends ClientBase implements \Serializable
 {
-	/**
-	 * @var \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient
-	 */
-	protected $dialogflow;
-
 	/**
 	 * @var bool
 	 */
@@ -43,32 +38,12 @@ class GoogleTokenHandler implements \Serializable
 
 	function __construct(DialogFlowClient $dialogflow)
 	{
-		$this->dialogflow = $dialogflow;
+		parent::__construct($dialogflow);
 	}
 
 	function __get($name)
 	{
 		if(property_exists($this, $name)) return $this->$name;
-	}
-
-	function serialize(): string
-	{
-		$vars = get_object_vars($this);
-		unset($vars['dialogflow']);
-		return \serialize($vars);
-	}
-
-	function unserialize($vars): void
-	{
-		if(ClientBase::$serializeClient === null) {
-			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set in DialogFlow');
-		}
-
-		$vars = \unserialize($vars);
-		foreach ($vars as $key => $value) {
-			$this->key = $value;
-		}
-		$this->dialogflow = ClientBase::$serializeClient;
 	}
 
 	function getToken()

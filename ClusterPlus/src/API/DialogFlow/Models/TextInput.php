@@ -12,7 +12,7 @@ class TextInput implements \JsonSerializable
 {
 	protected $text;
 
-	protected $languageCode = 'en-US';
+	protected $languageCode = 'en';
 
 	function __construct(string $text, ?string $languageCode = null)
 	{

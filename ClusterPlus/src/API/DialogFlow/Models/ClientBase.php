@@ -10,40 +10,51 @@ namespace Animeshz\ClusterPlus\API\DialogFlow\Models;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 
-abstract class ClientBase implements \Serializable
-{    
+abstract class ClientBase implements \Serializable, \JsonSerializable
+{
 	/**
 	 * The client which will be used to unserialize.
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient|null
 	 */
-	public static $serializeClient;
+	public static $serializeDialogflow;
 
-	protected $client;
+	protected $dialogflow;
 
-	function __construct(DialogFlowClient $client)
+	function __construct(DialogFlowClient $dialogflow)
 	{
-		$this->client = $client;
+		$this->dialogflow = $dialogflow;
 	}
 
 	function serialize(): ?string
 	{
 		$vars = get_object_vars($this);
-		unset($vars['client']);
+		unset($vars['dialogflow']);
 		
 		return \serialize($vars);
 	}
 
 	function unserialize($vars): void
 	{
-		if(self::$serializeClient === null) {
-            throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
-        }
+		if(self::$serializeDialogflow === null) throw new \Exception('Unable to unserialize a class without ClientBase::$serializeDialogflow being set');
 
 		$vars = \unserialize($vars);
 		foreach ($vars as $key => $value) {
 			$this->$key = $value;
 		}
 
-		$this->client = self::$serializeClient;
+		$this->client = self::$serializeDialogflow;
+	}
+
+	function __get($name)
+	{
+		if(property_exists($this, $name)) return $this->$name;
+	}
+
+	function jsonSerialize(): array
+	{
+		$vars = \get_object_vars($this);
+		unset($vars['dialogflow']);
+		$vars = \array_filter($vars, function($value) { return $value !== null; });
+		return $vars;
 	}
 }

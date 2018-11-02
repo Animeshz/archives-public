@@ -73,9 +73,7 @@ class Client extends LiviaClient
 		$this->validateConfigs($config);
 		parent::__construct($config, $loop);
 
-		if(ClientBase::$serializeClient === null) {
-			ClientBase::$serializeClient = $this;
-		}
+		if(ClientBase::$serializeClient === null) ClientBase::$serializeClient = $this;
 
 		$eventHandler = $this->getOption('eventHandler.class', '\\Animeshz\\ClusterPlus\\Dependent\\EventHandler');
 		$pool = $this->getOption('pool.class', '\\Animeshz\\ClusterPlus\\Dependent\\Pool');

@@ -10,7 +10,7 @@ namespace Animeshz\ClusterPlus\API\DialogFlow\Models;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 
-class Agent extends ClientBase implements \JsonSerializable
+class Agent extends ClientBase
 {
 	/**
 	 * @var string
@@ -63,19 +63,12 @@ class Agent extends ClientBase implements \JsonSerializable
 	 */
 	protected $classificationThreshold;
 
-	function __construct(DialogFlowClient $client, array $agent)
+	function __construct(DialogFlowClient $dialogflow, array $agent)
 	{
-		parent::__construct($client);
+		parent::__construct($dialogflow);
 		$this->_patch($agent);
 	}
-
-	function jsonSerialize()
-	{
-		$vars = \get_object_vars($this);
-		$vars = \array_filter($vars, function($value) { return $value !== null; });
-		return $vars;
-	}
-
+	
 	/**
 	 * @internal
 	 * @return void
