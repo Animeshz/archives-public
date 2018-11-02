@@ -76,10 +76,8 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 
 		$this->api->endpoints->agent->getAgent($this->project['project_id'])->then(function ($data) {
 			$this->me = new Agent($this, $data);
-		}, function (\Exception $e){
-			echo $e->getMessage();
-		})->otherwise(function (\Exception $e){
-			echo $e->getMessage();
+		}, function (\Exception $e) {
+			$this->emit('error', $e);
 		});
 	}
 	
