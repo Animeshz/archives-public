@@ -26,7 +26,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
 			$answer = $this->client->dialogflow->getAnswer($args['request'], $message->author->id);
-			$message->message->channel->send();
+			$message->message->channel->send($answer);
 		}
 	});
 };

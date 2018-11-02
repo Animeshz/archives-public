@@ -47,7 +47,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	/**
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\Models\Agent
 	 */
-	public $me;
+	protected $me;
 
 	/**
 	 * @var array
@@ -77,7 +77,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 		$this->api->endpoints->agent->getAgent($this->project['project_id'])->then(function ($data) {
 			$this->me = new Agent($this, $data);
 		}, function (\Exception $e) {
-			$this->emit('error', $e);
+			$this->handlePromiseRejection($e);
 		});
 	}
 	
