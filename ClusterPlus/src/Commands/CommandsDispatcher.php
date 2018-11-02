@@ -48,7 +48,7 @@ class CommandsDispatcher
 		$this->client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message)
 		{
 			$prefix = $this->client->getGuildPrefix($message->guild);
-			$pattern = empty($this->client->dispatcher->commandPatterns[$prefix]) ? $this->client->dispatcher->buildCommandPattern($prefix) : $this->client->dispatcher->commandPatterns[$prefix];
+			$pattern = $this->client->dispatcher->commandPatterns[$prefix] ?? $this->client->dispatcher->buildCommandPattern($prefix);
 			$command = $this->matchCommand($message, $pattern, 2);
 
 
