@@ -80,7 +80,7 @@ class Client extends LiviaClient
 		$worker = $this->getOption('worker.class', '\\Animeshz\\ClusterPlus\\Dependent\\Worker');
 		$poolOptions = $this->getOption('pool.options', []);
 		$isDatabaseSet = $this->getOption('database', false);
-		$isDialogflowFileSet = $client->getOption('dialogflow', false);
+		$isDialogflowFileSet = $this->getOption('dialogflow', false);
 
 		if(!isset($poolOptions['size'])) $poolOptions['size'] = 7;
 		$poolOptions['worker'] = $worker;

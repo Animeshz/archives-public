@@ -150,7 +150,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	function serialize(): string
 	{
 		$vars = get_object_vars($this);
-		unset($vars['api'], $vars['client'], $vars['credentials'], $vars['listener'], $vars['onceListener']);
+		unset($vars['api'], $vars['client'], $vars['credentials'], $vars['listeners'], $vars['onceListeners']);
 		return \serialize($vars);
 	}
 
