@@ -10,6 +10,7 @@ namespace Animeshz\ClusterPlus;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 use \Animeshz\ClusterPlus\Commands\CommandsDispatcher;
+use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Utils\Collector;
 use \Animeshz\ClusterPlus\Utils\UniversalHelpers;
 use \CharlotteDunois\Livia\LiviaClient;
@@ -99,10 +100,10 @@ class Client extends LiviaClient
 			$factory = new Factory($this->loop);
 			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
 			{
-				$provider = $this->getOption('provider.class', '\\CharlotteDunois\\Livia\\Providers\\MySQLProvider');
+				$provider = $this->getOption('provider.class', '\\Animeshz\\ClusterPlus\\Dependent\\MySQLProvider');
 				$this->setProvider(new $provider($db))->then(function ()
 				{
-					$this->collector->loadFromDB();
+					// $this->collector->loadFromDB()->otherwise(function (\Exception $e) { $this->handlePromiseRejection($e); });
 				});
 			});
 		}
@@ -159,10 +160,10 @@ class Client extends LiviaClient
      * @return \React\Promise\ExtendedPromiseInterface|null
      * @internal
      */
-	function eval(string $code, array $options = array()): ?ExtendedPromiseInterface
+	function eval(string $code, array $options = array()): ExtendedPromiseInterface
 	{
-		if(!(UniversalHelpers::isValidPHP($code))) return null;
 		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
+			if(!(UniversalHelpers::isValidPHP($code))) return $reject(new \InvalidArgumentException('Code given is not a valid php code'));
 			if(\mb_substr($code, -1) !== ';') {
 				$code .= ';';
 			}

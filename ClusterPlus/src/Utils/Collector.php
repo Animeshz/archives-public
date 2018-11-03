@@ -190,9 +190,9 @@ class Collector implements \Serializable
 						{
 							$this->inviteCache->set($guild->id, $invites);
 							$new = [];
-							$invites->each(function ($invite) use ($guild, $new)
+							$invites->each(function ($invite) use ($guild, &$new)
 							{
-								$invites = $this->provider->get($guild, 'invites', []);
+								$invites = $this->client->provider->get($guild, 'invites', []);
 								$invites = \array_map(function ($invite)
 								{
 									return $invite['code'];
@@ -201,7 +201,7 @@ class Collector implements \Serializable
 									$new[] = Invite::make($this->client, $invite);
 								}
 							});
-							if(!empty($new)) $this->setInvites($new);
+							if(!empty($new)) $this->setInvites(...$new);
 						});
 
 						$invs = $mdls = $cmds = [];

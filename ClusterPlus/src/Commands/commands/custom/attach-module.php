@@ -18,8 +18,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 					[
 						'key' => 'module',
 						'prompt' => 'Name of your module you want to attach to',
-						'type' => 'string',
-						'default' => ''
+						'type' => 'string'
 					]
 				]
 			]);

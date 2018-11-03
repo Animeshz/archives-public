@@ -8,9 +8,11 @@
 
 namespace Animeshz\ClusterPlus\Models;
 
-use \CharlotteDunois\Collect\Collection;
 use \Animeshz\ClusterPlus\Client;
+use \CharlotteDunois\Collect\Collection;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \CharlotteDunois\Yasmin\Models\User;
+use function \React\Promise\all;
 /**
  * Invite 
  *
@@ -21,7 +23,7 @@ use \CharlotteDunois\Yasmin\Models\User;
  * @property string[]                                           $examples           Examples of and for the command.
  * @property string[]|null                                      $userPermissions    The required permissions for the user to use the command.
  */
-abstract class Command implements \JsonSerializable, \Serializable
+class Invite implements \JsonSerializable, \Serializable
 {
 	/**
 	 * The client which initiated the instance.
@@ -74,10 +76,7 @@ abstract class Command implements \JsonSerializable, \Serializable
 	{
 		$this->client = $client;
 
-		$this->code = $info['code'];
-		$this->guild = $info['guild'];
-		$this->inviter = $info['inviter'];
-		$this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
+		$this->_patch($info);
 	}
 	
 	/**
@@ -123,7 +122,10 @@ abstract class Command implements \JsonSerializable, \Serializable
 		unset($vars['client']);
 		$vars['guild'] = $vars['guild']->id;
 		$vars['inviter'] = $vars['inviter']->id;
-		$vars['invited'] = $vars['invited']->all();
+		$vars['invited'] = $vars['invited']->map(function ($user)
+		{
+			return $user->id;
+		})->all();
 
 		return \serialize($vars);
 	}
@@ -138,7 +140,10 @@ abstract class Command implements \JsonSerializable, \Serializable
 		unset($vars['client']);
 		$vars['guild'] = $vars['guild']->id;
 		$vars['inviter'] = $vars['inviter']->id;
-		$vars['invited'] = $vars['invited']->all();
+		$vars['invited'] = $vars['invited']->map(function ($user)
+		{
+			return $user->id;
+		})->all();
 
 		return $vars;
 	}
@@ -149,18 +154,22 @@ abstract class Command implements \JsonSerializable, \Serializable
 	 */
 	function unserialize($vars): void
 	{
-		if(\CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient === null) {
+		if(ClientBase::$serializeClient === null) {
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
 		
 		$vars = \unserialize($vars);
-		
-		$this->code = $vars['code'];
-		$this->invited = new Collection($vars['invited']);
 
 		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
 		$this->guild = $this->client->guilds->resolve($vars['guild']);
 		$this->inviter = $this->client->fetchUser($vars['inviter']);
+		$promisedInvited = (new Collection($vars['invited']))->map(function ($userid) {
+			return $this->client->fetchUser($userid);
+		})->all();
+
+		all($promisedInvited)->then(function ($userFetched) {
+			$this->invited = new Collection($userFetched);
+		});
 	}
 
 	static function jsonUnserialize($client, $vars)
@@ -177,20 +186,41 @@ abstract class Command implements \JsonSerializable, \Serializable
 		$info['guild'] = $invite->guild;
 		$info['inviter'] = $invite->inviter;
 
-		new static($client, $info);
+		return new static($client, $info);
 	}
 
 	/**
 	 * @internal
-	 * @param \CharlotteDunois\Yasmin\Models\User $invited 
-	 * @return type
+	 * @param \CharlotteDunois\Yasmin\Models\User ...$invited
+	 * @return void
 	 */
-	function _patch(User ...$invited)
+	function _patchUser(User ...$invited): void
 	{
 		foreach ($invited as $i) {
 			$this->invited->set($this->invited->count(), $i);
 		}
 		
 		//update to database
+		$oldData = $this->client->provider->get($this->guild, 'invites', []);
+		$data[$this->code] = $this;
+		$this->client->provider->set($this->guild, $data);
+	}
+
+	/**
+	 * @internal
+	 * @param array $info
+	 * @return void
+	 */
+	function _patch(array $info): void
+	{
+		$this->code = $info['code'];
+		$this->guild = $info['guild'];
+		$this->inviter = $info['inviter'];
+		$this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
+
+		//update to database
+		$data = $this->client->provider->get($this->guild, 'invites', []);
+		$data[$this->code] = $this;
+		$this->client->provider->set($this->guild, 'invites', $data);
 	}
 }

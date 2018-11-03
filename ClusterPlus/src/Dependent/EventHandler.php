@@ -99,6 +99,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 			__FUNCTION__,
 			function ()
 			{
+				$this->client->user->setGame($this->client->getOption('game') ?? 'Waving hands, having fun.');
 				echo 'Logged in as '.$this->client->user->tag.' created on '.$this->client->user->createdAt->format('d.m.Y H:i:s').PHP_EOL;
 			}
 		];
@@ -137,6 +138,21 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 		// 		echo $debug.\PHP_EOL;
 		// 	}
 		// ];
+	}
+
+	/**
+	 * @return array
+	 * @internal
+	 */
+	public function error()
+	{
+		return [
+			__FUNCTION__,
+			function ($error)
+			{
+				echo $error->getMessage().\PHP_EOL.$error->getTraceAsString();
+			}
+		];
 	}
 
 	/**
