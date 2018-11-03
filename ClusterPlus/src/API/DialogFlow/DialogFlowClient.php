@@ -9,7 +9,6 @@
 namespace Animeshz\ClusterPlus\API\DialogFlow;
 
 use \Animeshz\ClusterPlus\API\DialogFlow\HTTP\APIManager;
-use \Animeshz\ClusterPlus\API\DialogFlow\GoogleTokenHandler;
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\Agent;
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\Answer;
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\AnswerStorage;
@@ -74,7 +73,6 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	 */
 	function __construct(Client $client)
 	{
-		$this->on('error', [$this, 'err']);
 		$this->client = $client;
 		if(\Animeshz\ClusterPlus\API\DialogFlow\Models\ClientBase::$serializeDialogflow === null) \Animeshz\ClusterPlus\API\DialogFlow\Models\ClientBase::$serializeDialogflow = $this;
 
@@ -88,10 +86,6 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 		$this->api = new APIManager($this, $client);
 
 		$this->retrieveAgent();
-	}
-
-	function err($e = null) {
-		echo ($e !== null) ? $e->getMessage().\PHP_EOL.$e->getTraceAsString() : '';
 	}
 	
 	/**

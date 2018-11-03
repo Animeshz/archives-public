@@ -79,26 +79,36 @@ class Client extends LiviaClient
 		$pool = $this->getOption('pool.class', '\\Animeshz\\ClusterPlus\\Dependent\\Pool');
 		$worker = $this->getOption('worker.class', '\\Animeshz\\ClusterPlus\\Dependent\\Worker');
 		$poolOptions = $this->getOption('pool.options', []);
+		$isDatabaseSet = $this->getOption('database', false);
+		$isDialogflowFileSet = $client->getOption('dialogflow', false);
 
 		if(!isset($poolOptions['size'])) $poolOptions['size'] = 7;
 		$poolOptions['worker'] = $worker;
 
 		$this->eventHandler = new $eventHandler($this);
-		$this->pool = new $pool($this, $poolOptions);
-		$this->dialogflow = new DialogFlowClient($this);
-
 		$this->eventHandler->dispatch();
 
+		$this->pool = new $pool($this, $poolOptions);
 		$this->collector = new Collector($this);
-		$factory = new Factory($this->loop);
-		$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
-		{
-			$provider = $this->getOption('provider.class', '\\CharlotteDunois\\Livia\\Providers\\MySQLProvider');
-			$this->setProvider(new $provider($db))->then(function ()
-			{
-				$this->collector->loadFromDB();
+
+		if ($isDialogflowFileSet !== false) {
+			$this->dialogflow = new DialogFlowClient($this);
+			$this->dialogflow->on('error', function (\Exception $e) {
+				$this->emit('error', $e);
 			});
-		});
+		}
+
+		if ($isDatabaseSet !== false) {
+			$factory = new Factory($this->loop);
+			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
+			{
+				$provider = $this->getOption('provider.class', '\\CharlotteDunois\\Livia\\Providers\\MySQLProvider');
+				$this->setProvider(new $provider($db))->then(function ()
+				{
+					$this->collector->loadFromDB();
+				});
+			});
+		}
 		new CommandsDispatcher($this);
 
 		// serializate modules in command.
