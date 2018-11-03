@@ -190,7 +190,7 @@ class Command implements \JsonSerializable, \Serializable
 	
 	function run(Message $message)
 	{
-		echo 'running';
+		$message->channel->send('executing');
 		// foreach ($this->modules as $module) {
 		// 	//run the module
 		// }

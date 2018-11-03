@@ -11,7 +11,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'attach-module',
-				'group' => 'meta',
+				'group' => 'custom',
 				'description' => 'Attaches a module to any timer or command',
 				'guildOnly' => true,
 				'args' => [

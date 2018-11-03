@@ -89,16 +89,13 @@ class Client extends LiviaClient
 		$this->eventHandler->dispatch();
 
 		$this->pool = new $pool($this, $poolOptions);
+		$this->pool->on('error', function (\Exception $e) {
+			$this->emit('error', $e);
+		});
+
 		$this->collector = new Collector($this);
 
-		if ($isDialogflowFileSet !== false) {
-			$this->dialogflow = new DialogFlowClient($this);
-			$this->dialogflow->on('error', function (\Exception $e) {
-				$this->emit('error', $e);
-			});
-		}
-
-		if ($isDatabaseSet !== false) {
+		if ($isDatabaseSet) {
 			$factory = new Factory($this->loop);
 			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
 			{
@@ -109,9 +106,15 @@ class Client extends LiviaClient
 				});
 			});
 		}
-		new CommandsDispatcher($this);
 
-		// serializate modules in command.
+		if ($isDialogflowFileSet) {
+			$this->dialogflow = new DialogFlowClient($this);
+			$this->dialogflow->on('error', function (\Exception $e) {
+				$this->emit('error', $e);
+			});
+		}
+
+		new CommandsDispatcher($this);
 	}
 
 	/**

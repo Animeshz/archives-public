@@ -246,7 +246,7 @@ class Collector implements \Serializable
 	{
 		foreach ($commands as $command) {
 			$guildID = $command->guild->id;
-			if($this->commands->get($guildID) === null) $this->commands->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+			if($this->commands->get($guildID) === null) $this->commands->set($guildID, new Collection);
 			$cmd = $this->commands->get($guildID);
 			$cmd->set($command->name, $command);
 			$this->commands->set($guildID, $cmd);
@@ -257,7 +257,7 @@ class Collector implements \Serializable
 	{
 		foreach ($invites as $invite) {
 			$guildID = $invite->guild->id;
-			if($this->invites->get($guildID) === null) $this->invites->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+			if($this->invites->get($guildID) === null) $this->invites->set($guildID, new Collection);
 			$inv = $this->invites->get($guildID);
 			$inv->set($invite->code, $invite);
 			$this->invites->set($guildID, $inv);
@@ -268,7 +268,7 @@ class Collector implements \Serializable
 	// {
 	// 	foreach ($modules as $module) {
 	// 		$guildID = $module->guild->id;
-	// 		if($this->modules->get($guildID) === null) $this->modules->set($guildID, new \CharlotteDunois\Yasmin\Utils\Collection);
+	// 		if($this->modules->get($guildID) === null) $this->modules->set($guildID, new Collection);
 	// 		$cmd = $this->modules->get($guildID);
 	// 		$cmd->set($module->name, $module);
 	// 		$this->modules->set($guildID, $cmd);

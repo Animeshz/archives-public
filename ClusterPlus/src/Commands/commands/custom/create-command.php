@@ -11,7 +11,7 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'create-command',
-				'group' => 'meta',
+				'group' => 'custom',
 				'description' => 'Creates a command',
 				'guildOnly' => true,
 				'args' => [
