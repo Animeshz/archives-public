@@ -148,9 +148,9 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	{
 		return [
 			__FUNCTION__,
-			function ($error)
+			function (\Throwable $error)
 			{
-				echo $error->getMessage().\PHP_EOL.$error->getTraceAsString();
+				echo $error->getMessage().\PHP_EOL.$error->getFile().'in line no. '.$error->getLine();
 			}
 		];
 	}

@@ -219,8 +219,8 @@ class Invite implements \JsonSerializable, \Serializable
 		$this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
 
 		//update to database
-		$data = $this->client->provider->get($this->guild, 'invites', []);
-		$data[$this->code] = $this;
-		$this->client->provider->set($this->guild, 'invites', $data);
+		// $data = $this->client->provider->get($this->guild, 'invites', []);
+		// $data[$this->code] = $this;
+		// $this->client->provider->set($this->guild, 'invites', $data);
 	}
 }

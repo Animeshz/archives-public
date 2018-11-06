@@ -90,7 +90,7 @@ class Client extends LiviaClient
 		$this->eventHandler->dispatch();
 
 		$this->pool = new $pool($this, $poolOptions);
-		$this->pool->on('error', function (\Exception $e) {
+		$this->pool->on('error', function (\Throwable $e) {
 			$this->emit('error', $e);
 		});
 
@@ -98,19 +98,23 @@ class Client extends LiviaClient
 
 		if ($isDatabaseSet) {
 			$factory = new Factory($this->loop);
-			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->done(function (ConnectionInterface $db)
+			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->then(function (ConnectionInterface $db)
 			{
 				$provider = $this->getOption('provider.class', '\\Animeshz\\ClusterPlus\\Dependent\\MySQLProvider');
 				$this->setProvider(new $provider($db))->then(function ()
 				{
-					// $this->collector->loadFromDB()->otherwise(function (\Exception $e) { $this->handlePromiseRejection($e); });
+					// return $this->collector->loadFromDB();
+					$this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
+						var_dump(\serialize($this->client->collector));
+					});
+					
 				});
 			});
 		}
 
 		if ($isDialogflowFileSet) {
 			$this->dialogflow = new DialogFlowClient($this);
-			$this->dialogflow->on('error', function (\Exception $e) {
+			$this->dialogflow->on('error', function (\Throwable $e) {
 				$this->emit('error', $e);
 			});
 		}
