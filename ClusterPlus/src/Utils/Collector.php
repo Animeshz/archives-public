@@ -15,6 +15,7 @@ use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
 use \CharlotteDunois\Collect\Collection;
 use \CharlotteDunois\Phoebe\AsyncTask;
+use \CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \React\MySQL\Factory;
 use \React\Promise\Promise;
@@ -199,14 +200,15 @@ class Collector implements \Serializable
 					$client->guilds->each(function ($guild) use (&$fetchedPromises)
 					{
 						$fetchedPromises[] = $guild->fetchInvites();
-					});	
+					});
 
 					all($fetchedPromises)->then(function (array $invites) use ($client): Collection
 					{
-						$guilds = [];
-
+						// echo TVarDumper::dump($invites);
 						foreach ($invites as $guildInvites) {
-							$guilds[] = $guild = ($guildInvites->first())->guild; //Trying to get property 'guild' of non-object
+							if($guildInvites->count() === 0) continue;
+
+							$guild = $guildInvites->first()->guild; //Trying to get property 'guild' of non-object
 							$this->collector->setInviteCache($guild->id, $guildInvites);
 							$newInvites = [];
 
@@ -222,18 +224,17 @@ class Collector implements \Serializable
 							if(!empty($newInvites)) $this->collector->setInvites(...$newInvites);
 						}
 
-						return (new Collection($guilds))->unique();
-
-					})->then(function (Collection $guilds)
+						return $client->guilds;
+					})->then(function (GuildStorageInterface $guilds) use ($client)
 					{
-						$guilds->each(function ($guild) {
+						$guilds->each(function ($guild) use ($client) {
 
 							$invs = $mdls = $cmds = [];
 							$invites = $client->provider->get($guild, 'invites', []);
 							$modules = $client->provider->get($guild, 'modules', []);
 							$commands = $client->provider->get($guild, 'commands', []);
 
-							foreach ($invites as $invite) {
+							foreach ($invites as $invite) {//not executing
 								$invs[] = Invite::jsonUnserialize($client, $invite);
 							}
 							foreach ($modules as $module) {
@@ -247,9 +248,10 @@ class Collector implements \Serializable
 							if(!empty($mdls)) $this->collector->setModules(...$mdls);
 							if(!empty($cmds)) $this->collector->setCommands(...$cmds);
 						});
-						return null;
-					})->then(function () {
-						$this->wrap($this->collector);
+						var_dump(\serialize($this->collector));
+						return $this->collector;
+					})->then(function ($collector) {
+						$this->wrap($collector);
 					}, function (\Throwable $e) {
 						$this->wrap($e);
 					});
@@ -272,7 +274,6 @@ class Collector implements \Serializable
 			if($this->commands->get($guildID) === null) $this->commands->set($guildID, new Collection);
 			$cmd = $this->commands->get($guildID);
 			$cmd->set($command->name, $command);
-			$this->commands->set($guildID, $cmd);
 		}
 	}
 
@@ -281,7 +282,7 @@ class Collector implements \Serializable
 		$invites = new Collection($invites);
 		$invites->each(function ($invite) {
 			$guildID = $invite->guild->id;
-			if($this->invites->get($guildID) === null) $this->invites->set($guildID, new Collection);
+			if(!$this->invites->has($guildID)) $this->invites->set($guildID, new Collection);
 			$inv = $this->invites->get($guildID);
 			$inv->set($invite->code, $invite);
 		});

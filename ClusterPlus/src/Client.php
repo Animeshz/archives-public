@@ -104,9 +104,9 @@ class Client extends LiviaClient
 				$this->setProvider(new $provider($db))->then(function ()
 				{
 					// return $this->collector->loadFromDB();
-					$this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
-						var_dump(\serialize($this->client->collector));
-					});
+					// $this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
+					// 	// var_dump(\serialize($collector));
+					// });
 					
 				});
 			});

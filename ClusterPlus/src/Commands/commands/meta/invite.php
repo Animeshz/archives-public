@@ -1,6 +1,6 @@
 <?php
 /**
- * registers link to invite the bot to any server
+ * sends link to invite the bot to any server
  * 
  * @package    ClusterPlus
  * @author     Animesh Sahu <animeshsahu19@yahoo.com>
