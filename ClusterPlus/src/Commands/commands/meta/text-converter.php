@@ -30,8 +30,8 @@ return function ($client) {
 						'key' => 'type',
 						'prompt' => 'Send the number of identity, List of usable identities are:'.\PHP_EOL.CommandHelpers::getUnicodeSamples(),
 						'type' => 'integer',
-						'min' => 1,
-						'max' => CommandHelpers::getUnicodeTypesCount()
+						'min' => 0,
+						'max' => CommandHelpers::getUnicodeTypesCount() - 1
 					]
 				],
 				'guarded' => true
@@ -39,7 +39,7 @@ return function ($client) {
 		}
 		
 		function run(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
-			return $message->reply(CommandHelpers::unicodeConvert($args['phrase'], ($args['type'] - 1)));
+			return $message->reply(CommandHelpers::unicodeConvert($args['phrase'], $args['type']));
 		}
 	});
 };
