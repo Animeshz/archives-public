@@ -8,11 +8,15 @@
 
 namespace Animeshz\ClusterPlus\Models;
 
-use \Animeshz\ClusterPlus\Client;
-use \CharlotteDunois\Collect\Collection;
-use \CharlotteDunois\Yasmin\Models\ClientBase;
-use \CharlotteDunois\Yasmin\Models\User;
+use Animeshz\ClusterPlus\Client;
+use CharlotteDunois\Collect\Collection;
+use CharlotteDunois\Yasmin\Models\ClientBase;
+use CharlotteDunois\Yasmin\Models\User;
+use React\Promise\ExtendedPromiseInterface;
+use Recoil\React\ReactKernel;
+
 use function \React\Promise\all;
+use function \React\Promise\resolve;
 /**
  * Invite 
  *
@@ -30,12 +34,6 @@ class Invite implements \JsonSerializable, \Serializable
 	 * @var \Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
-
-	/**
-     * The invite code.
-     * @var string
-     */
-    protected $code;
 
 	/**
 	 * Guild which invite belong to
@@ -160,29 +158,42 @@ class Invite implements \JsonSerializable, \Serializable
 		
 		$vars = \unserialize($vars);
 
-		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
+		$this->client = ClientBase::$serializeClient;
 		$this->guild = $this->client->guilds->resolve($vars['guild']);
-		$this->inviter = $this->client->fetchUser($vars['inviter']);
-		$promisedInvited = (new Collection($vars['invited']))->map(function ($userid) {
-			return $this->client->fetchUser($userid);
-		})->all();
 
-		all($promisedInvited)->then(function ($userFetched) {
-			$this->invited = new Collection($userFetched);
+		ReactKernel::start(function () use ($vars) {
+			$this->inviter = yield $this->client->fetchUser($vars['inviter']);
+			$this->invited = (new Collection($vars['invited']))->map(function ($userid) {
+				yield $this->client->fetchUser($userid);
+			});
 		});
+		// $this->client->fetchUser($vars['inviter'])->done(function (User $inviter) {
+		// 	$this->inviter = $inviter;
+		// });
+		// $promisedInvited = (new Collection($vars['invited']))->map(function ($userid) {
+		// 	return $this->client->fetchUser($userid);
+		// })->all();
+
+		// all($promisedInvited)->then(function ($userFetched) {
+		// 	$this->invited = new Collection($userFetched);
+		// });
 	}
 
-	static function jsonUnserialize($client, $vars)
+	static function jsonUnserialize(Client $client, array $vars): self
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
-		$vars['inviter'] = $client->fetchUser($vars['inviter']);
+		ReactKernel::start(function () use (&$vars) {
+			$vars['inviter'] = yield $this->client->fetchUser($vars['inviter']);
+			$vars['invited'] = (new Collection($vars['invited']))->map(function ($userid) {
+				return yield $this->client->fetchUser($userid);
+			});
+		});
 
 		return new static($client, $vars);
 	}
 
-	static function make(Client $client, \CharlotteDunois\Yasmin\Models\Invite $invite): Invite
+	static function make(Client $client, \CharlotteDunois\Yasmin\Models\Invite $invite): self
 	{
-		$info['code'] = $invite->code;
 		$info['guild'] = $invite->guild;
 		$info['inviter'] = $invite->inviter;
 
@@ -201,9 +212,9 @@ class Invite implements \JsonSerializable, \Serializable
 		}
 		
 		//update to database
-		$oldData = $this->client->provider->get($this->guild, 'invites', []);
-		$data[$this->code] = $this;
-		$this->client->provider->set($this->guild, $data);
+		// $oldData = $this->client->provider->get($this->guild, 'invites', []);
+		// $data[$this->code] = $this;
+		// $this->client->provider->set($this->guild, $data);
 	}
 
 	/**
@@ -213,10 +224,30 @@ class Invite implements \JsonSerializable, \Serializable
 	 */
 	function _patch(array $info): void
 	{
-		$this->code = $info['code'];
 		$this->guild = $info['guild'];
-		$this->inviter = $info['inviter'];
-		$this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
+		if (is_string($info['inviter'])) {
+			$this->client->fetchUser($info['inviter'])->done(function (User $user) {
+				$this->inviter = $user;
+			});
+		} else {
+			$this->inviter = $info['inviter'];
+		}
+
+		if (isset($info['invited'])) {
+			if (!$info['invited'] instanceof Collection) {
+				$info['invited'] = new Collection($info['invited']);
+			}
+			$promisedInvited = $info['invited']->map(function ($user) {
+				if(is_string($user)) return $this->client->fetchUser($user);
+				if($user instanceof User) return resolve($user);
+			})->all();
+			all($promisedInvited)->then(function ($userFetched) {
+				$this->invited = new Collection($userFetched);
+			});
+		} else {
+			$this->invited = new Collection;
+		}
+		// $this->invited = (isset($info['invited']) ? ($info['invited'] instanceof Collection ? $info['invited'] : new Collection($info['invited'])) : new Collection);
 
 		//update to database
 		// $data = $this->client->provider->get($this->guild, 'invites', []);

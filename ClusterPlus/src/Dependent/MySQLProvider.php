@@ -16,19 +16,18 @@ use \React\MySQL\ConnectionInterface;
 use \React\Promise\ExtendedPromiseInterface;
 
 /**
- * Livia MySQLProvider implementation
+ * Livia MySQLProvider implementation.
+ * 
+ * To use this provider in threads, you must call threadReady()
+ * providing your client's instance with it, then you can use the
+ * promise returned to do something with this provider in that thread.
  */
 class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider implements \Serializable
 {
-	function __get($name)
-	{
-		if(property_exists($this, $name)) return $this->$name;
-	}
-
 	function serialize(): string
 	{
 		$vars = get_object_vars($this);
-		unset($vars['client'], $vars['db']);
+		unset($vars['client'], $vars['db'], $vars['settings']);
 		return \serialize($vars);
 	}
 
@@ -38,23 +37,6 @@ class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider imple
 		foreach ($data as $key => $value) {
 			$this->key = $value;
 		}
-		// $this->client = ClientBase::$serializeClient;
-		// $this->client->loop->futureTick(function ()
-		// {
-		// 	$factory = new Factory($this->client->loop);
-		// 	$factory->createConnection($this->client->getOption('database')['user'].':'.$this->client->getOption('database')['pass'].'@'.$this->client->getOption('database')['server'].'/'.$this->client->getOption('database')['db'])->done(function (ConnectionInterface $db)
-		// 	{
-		// 		$this->db = $db;
-		// 	});
-		// });
-	}
-
-	function isReady(): bool
-	{
-		// var_dump($this->db);
-		echo \Animeshz\ClusterPlus\Utils\TVarDumper::dump($this->db);
-		return false;
-		// return \isset($this->db);
 	}
 
 	function threadReady(Client $client): ExtendedPromiseInterface

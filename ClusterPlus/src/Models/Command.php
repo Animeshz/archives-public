@@ -141,7 +141,9 @@ class Command implements \JsonSerializable, \Serializable
 	function serialize(): string
 	{
 		$vars = \get_object_vars($this);
+		$vars['guild'] = ($vars['guild'])->id;
 		unset($vars['client']);
+		
 		return \serialize($vars);
 	}
 

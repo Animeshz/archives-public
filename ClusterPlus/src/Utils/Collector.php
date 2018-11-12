@@ -15,7 +15,6 @@ use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
 use \CharlotteDunois\Collect\Collection;
 use \CharlotteDunois\Phoebe\AsyncTask;
-use \CharlotteDunois\Yasmin\Interfaces\GuildStorageInterface;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \React\MySQL\Factory;
 use \React\Promise\Promise;
@@ -42,21 +41,33 @@ class Collector implements \Serializable
 	protected $client;
 
 	/**
+	 * Collection mapped by guild id.
+	 * Inner collection contains commands of guild mapped by their names.
+	 * 
 	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $commands;
 
 	/**
+	 * Collection mapped by guild id.
+	 * Inner collection contains modules of guild mapped by their names.
+	 * 
 	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $modules;
 
 	/**
+	 * Collection mapped by guild id.
+	 * Inner collection contains commands of guild mapped by inviter's id.
+	 * 
 	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $invites;
 
 	/**
+	 * Collection mapped by guild id.
+	 * Inner collection contains Yasmin's invites of guild mapped by their code.
+	 * 
 	 * @var \CharlotteDunois\Collect\Collection
 	 */
 	protected $inviteCache;
@@ -184,13 +195,8 @@ class Collector implements \Serializable
 	 */
 	function loadFromDB(): ?ExtendedPromiseInterface
 	{
-		$task = new class($this) extends AsyncTask
+		$task = new class extends AsyncTask
 		{
-			function __construct($collector)
-			{
-				$this->collector = $collector;
-			}
-
 			function run()
 			{
 				$client = Worker::$client;
@@ -204,37 +210,41 @@ class Collector implements \Serializable
 
 					all($fetchedPromises)->then(function (array $invites) use ($client): Collection
 					{
-						// echo TVarDumper::dump($invites);
+						$invs = $inviteCache = [];
+
 						foreach ($invites as $guildInvites) {
 							if($guildInvites->count() === 0) continue;
 
-							$guild = $guildInvites->first()->guild; //Trying to get property 'guild' of non-object
-							$this->collector->setInviteCache($guild->id, $guildInvites);
-							$newInvites = [];
+							$guild = $guildInvites->first()->guild;
+							$inviteCache = \array_values(\array_merge($inviteCache, $guildInvites->all()));
 
+							$newInvites = [];
 							$dbInvites = $client->provider->get($guild, 'invites', []);
-							$inviteColl = new Collection(array_column($dbInvites, null, 'code'));
+							$inviteColl = new Collection(\array_column($dbInvites, null, 'code'));
 
 							$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl) {
 								return (!$inviteColl->has($invite->code));
 							})->map(function ($invite) use ($client) {
 								return Invite::make($client, $invite);
 							})->all();
-							$newInvites = array_values($newInvites);
-							if(!empty($newInvites)) $this->collector->setInvites(...$newInvites);
+							$invs = array_merge($invs, array_values($newInvites));
 						}
 
-						return $client->guilds;
-					})->then(function (GuildStorageInterface $guilds) use ($client)
+						return new Collection([
+							'invites' => $invs,
+							'inviteCache' => $inviteCache
+						]);
+					})->then(function (Collection $data) use ($client)
 					{
-						$guilds->each(function ($guild) use ($client) {
+						// var_dump(\serialize($data));
+						$client->guilds->each(function ($guild) use ($client, &$data) {
 
 							$invs = $mdls = $cmds = [];
 							$invites = $client->provider->get($guild, 'invites', []);
 							$modules = $client->provider->get($guild, 'modules', []);
 							$commands = $client->provider->get($guild, 'commands', []);
 
-							foreach ($invites as $invite) {//not executing
+							foreach ($invites as $invite) {
 								$invs[] = Invite::jsonUnserialize($client, $invite);
 							}
 							foreach ($modules as $module) {
@@ -244,14 +254,16 @@ class Collector implements \Serializable
 								$cmds[] = Command::jsonUnserialize($client, $command);
 							}
 
-							if(!empty($invs)) $this->collector->setInvites(...$invs);
-							if(!empty($mdls)) $this->collector->setModules(...$mdls);
-							if(!empty($cmds)) $this->collector->setCommands(...$cmds);
+							// if(!empty($invs)) $this->collector->setInvites(...$invs);
+							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites'), $invs));
+							// if(!empty($mdls)) $this->collector->setModules(...$mdls);
+							if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
+							// if(!empty($cmds)) $c = $this->collector->setCommands(...$cmds);
+							if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
 						});
-						var_dump(\serialize($this->collector));
-						return $this->collector;
-					})->then(function ($collector) {
-						$this->wrap($collector);
+						return $data;
+					})->then(function ($data) {
+						$this->wrap($data);
 					}, function (\Throwable $e) {
 						$this->wrap($e);
 					});
@@ -259,7 +271,20 @@ class Collector implements \Serializable
 			}
 		};
 
-		return $this->client->pool->submitTask($task);
+		return $this->client->pool->submitTask($task)->then(function (Collection $data)
+		{
+			$inviteCache = $data->get('inviteCache');
+			$invites = $data->get('invites');
+			$modules = $data->get('modules');
+			$commands = $data->get('commands');
+
+			if(!empty($inviteCache)) $this->setInviteCache(...$inviteCache);
+			if(!empty($invites)) $this->setInvites(...$invites);
+			if(!empty($modules)) $this->setModules(...$modules);
+			if(!empty($commands)) $this->setCommands(...$commands);
+		}, function (\Throwable $error) {
+			$this->client->handlePromiseRejection($error);
+		});
 	}
 
 	/**
@@ -275,6 +300,7 @@ class Collector implements \Serializable
 			$cmd = $this->commands->get($guildID);
 			$cmd->set($command->name, $command);
 		}
+		return $this;
 	}
 
 	function setInvites(Invite ...$invites)
@@ -284,24 +310,28 @@ class Collector implements \Serializable
 			$guildID = $invite->guild->id;
 			if(!$this->invites->has($guildID)) $this->invites->set($guildID, new Collection);
 			$inv = $this->invites->get($guildID);
-			$inv->set($invite->code, $invite);
+			$inv->set($invite->inviter->id, $invite);
 		});
-		var_dump(\serialize($this));
+		// var_dump(\serialize($this));
 	}
 
-	function setInviteCache(string $guildID, Collection ...$invites)
+	function setInviteCache(\CharlotteDunois\Yasmin\Models\Invite ...$invites)
 	{
-		$this->inviteCache->set($guildID, $invites);
+		foreach ($invites as $invite) {
+			$guildID = $invite->guild->id;
+			if($this->inviteCache->get($guildID) === null) $this->inviteCache->set($guildID, new Collection);
+			$invc = $this->inviteCache->get($guildID);
+			$invc->set($invite->code, $invite);
+		}
 	}
 
-	// function setModules(Module ...$modules)
-	// {
-	// 	foreach ($modules as $module) {
-	// 		$guildID = $module->guild->id;
-	// 		if($this->modules->get($guildID) === null) $this->modules->set($guildID, new Collection);
-	// 		$cmd = $this->modules->get($guildID);
-	// 		$cmd->set($module->name, $module);
-	// 		$this->modules->set($guildID, $cmd);
-	// 	}
-	// }
+	function setModules(Module ...$modules)
+	{
+		foreach ($modules as $module) {
+			$guildID = $module->guild->id;
+			if($this->modules->get($guildID) === null) $this->modules->set($guildID, new Collection);
+			$cmd = $this->modules->get($guildID);
+			$cmd->set($module->name, $module);
+		}
+	}
 }

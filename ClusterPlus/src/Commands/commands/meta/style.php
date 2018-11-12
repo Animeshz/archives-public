@@ -15,11 +15,10 @@ return function ($client) {
 	return (new class($client) extends Command {
 		function __construct(Client $client) {
 			parent::__construct($client, [
-				'name' => 'text-converter',
-				'aliases' => ['text', 'text_converter', 'fancy-text'],
+				'name' => 'style',
 				'group' => 'meta',
 				'description' => 'Converts phrase to a fancy unicoded phrase',
-				'examples' => ['text-converter abCD', 'text ABcd', 'text_converter AbcD', 'fancy-text aBCd'],
+				'examples' => ['style Hello World!'],
 				'args' => [
 					[
 						'key' => 'phrase',

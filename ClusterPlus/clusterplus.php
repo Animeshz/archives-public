@@ -9,8 +9,15 @@
 require __DIR__.'/vendor/autoload.php';
 $config = json_decode(file_get_contents(__DIR__.'/config.json'), true);
 
-if(class_exists("\\Animeshz\\ClusterPlus\\Client")) {
-	$client = new \Animeshz\ClusterPlus\Client($config['clientConfig']);
-	$client->login($config['token']);
-	$client->loop->run();
-}
+$client = new \Animeshz\ClusterPlus\Client($config['clientConfig']);
+// $stream = new \React\Stream\ReadableResourceStream(STDIN, $client->loop);
+
+// $stream->on('data', function (string $data) use ($client) {
+// 	if($data === 'stop') {
+// 		$client->destroy();
+// 		echo 'destroy';
+// 	}
+// });
+
+$client->login($config['token']);
+$client->loop->run();

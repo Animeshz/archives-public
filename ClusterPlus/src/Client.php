@@ -8,20 +8,20 @@
 
 namespace Animeshz\ClusterPlus;
 
-use \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
-use \Animeshz\ClusterPlus\Commands\CommandsDispatcher;
-use \Animeshz\ClusterPlus\Models\Invite;
-use \Animeshz\ClusterPlus\Utils\Collector;
-use \Animeshz\ClusterPlus\Utils\UniversalHelpers;
-use \CharlotteDunois\Livia\LiviaClient;
-use \CharlotteDunois\Validation\Validator;
-use \CharlotteDunois\Yasmin\Models\ClientBase;
-use \React\EventLoop\LoopInterface;
-use \React\MySQL\Factory;
-use \React\MySQL\ConnectionInterface;
-use \React\Promise\Promise;
-use \React\Promise\PromiseInterface;
-use \React\Promise\ExtendedPromiseInterface;
+use Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
+use Animeshz\ClusterPlus\Commands\CommandsDispatcher;
+use Animeshz\ClusterPlus\Models\Invite;
+use Animeshz\ClusterPlus\Utils\Collector;
+use Animeshz\ClusterPlus\Utils\UniversalHelpers;
+use CharlotteDunois\Livia\LiviaClient;
+use CharlotteDunois\Validation\Validator;
+use CharlotteDunois\Yasmin\Models\ClientBase;
+use React\EventLoop\LoopInterface;
+use React\MySQL\Factory;
+use React\MySQL\ConnectionInterface;
+use React\Promise\Promise;
+use React\Promise\PromiseInterface;
+use React\Promise\ExtendedPromiseInterface;
 
 /**
  * ClusterPlus Client
@@ -104,9 +104,9 @@ class Client extends LiviaClient
 				$this->setProvider(new $provider($db))->then(function ()
 				{
 					// return $this->collector->loadFromDB();
-					// $this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
-					// 	// var_dump(\serialize($collector));
-					// });
+					$this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
+						// var_dump(\serialize($collector));
+					});
 					
 				});
 			});
@@ -149,7 +149,7 @@ class Client extends LiviaClient
      * @return string
      * @internal
      */
-	function serialize()
+	function serialize(): string
 	{
 		$pool = $this->pool;
 		$this->pool = null;
