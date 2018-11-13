@@ -11,6 +11,7 @@ namespace Animeshz\ClusterPlus\Utils;
 use \Animeshz\ClusterPlus\Client;
 use \Animeshz\ClusterPlus\Dependent\Worker;
 use \Animeshz\ClusterPlus\Models\Command;
+use \Animeshz\ClusterPlus\Models\CommandStorage;
 use \Animeshz\ClusterPlus\Models\Invite;
 use \Animeshz\ClusterPlus\Models\Module;
 use \CharlotteDunois\Collect\Collection;
@@ -81,7 +82,7 @@ class Collector implements \Serializable
 	{
 		$this->client = $client;
 
-		$this->commands = new Collection;
+		$this->commands = new CommandStorage($client);
 		$this->modules = new Collection;
 		$this->invites = new Collection;
 		$this->inviteCache = new Collection;
@@ -300,7 +301,6 @@ class Collector implements \Serializable
 			$cmd = $this->commands->get($guildID);
 			$cmd->set($command->name, $command);
 		}
-		return $this;
 	}
 
 	function setInvites(Invite ...$invites)
@@ -312,7 +312,6 @@ class Collector implements \Serializable
 			$inv = $this->invites->get($guildID);
 			$inv->set($invite->inviter->id, $invite);
 		});
-		// var_dump(\serialize($this));
 	}
 
 	function setInviteCache(\CharlotteDunois\Yasmin\Models\Invite ...$invites)

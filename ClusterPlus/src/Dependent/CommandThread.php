@@ -13,7 +13,8 @@ use \CharlotteDunois\Phoebe\AsyncTask;
 /**
  * Represents a Command thread.
  */
-class CommandThread extends AsyncTask {
+class CommandThread extends AsyncTask
+{
     /**
      * The command name.
      * @var string
@@ -55,10 +56,12 @@ class CommandThread extends AsyncTask {
         $this->wrap(function () {
             $client = \Animeshz\ClusterPlus\Dependent\Worker::$client;
             
-            $cmd = $client->registry->resolveCommand($this->cmdname);
             $args = \unserialize($this->args);
+            $cmd = $client->registry->resolveCommand($this->cmdname);
+            if(!$cmd) $cmd = $client->collector->commands->resolve($args[0]->guild, $this->cmdname);
+            if(!$cmd) $client->handlePromiseRejection(new \Exception("Unable to find {$this->cmdname} in {$args[0]->guild}"));
             
-            return $cmd->threadRun(...$args);
+            return $cmd->$method(...$args);
         });
     }
 }

@@ -9,10 +9,9 @@
 namespace Animeshz\ClusterPlus\Models;
 
 use \Animeshz\ClusterPlus\Client;
-use \Animeshz\ClusterPlus\Models\Module;
+use \CharlotteDunois\Validation\Validator;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \CharlotteDunois\Yasmin\Models\Message;
-use \CharlotteDunois\Validation\Validator;
 
 /**
  * A command that can be run in a client.
@@ -164,7 +163,8 @@ class Command implements \JsonSerializable, \Serializable
 	 * @return void
 	 * @internal
 	 */
-	function unserialize($vars) {
+	function unserialize($vars): void
+	{
 		if(ClientBase::$serializeClient === null) {
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
@@ -178,6 +178,12 @@ class Command implements \JsonSerializable, \Serializable
 		$this->guild = $this->client->guilds->resolve($this->guild);
 	}
 
+	/**
+	 * Recreates instances of Command which are json decoded
+	 * @param \Animeshz\ClusterPlus\Client	$client		Client	instance
+	 * @param array										$vars	json decoded array of this object
+	 * @return self
+	 */
 	static function jsonUnserialize(Client $client, array $vars)
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
@@ -185,17 +191,38 @@ class Command implements \JsonSerializable, \Serializable
 		return new static($client, $vars);
 	}
 
-	function attachModules(Module ...$modules)
+	/**
+	 * Attaches modules to the command so that when someone calls command these modules will run.
+	 * @param \Animeshz\ClusterPlus\Models\Module[]		$modules		Instances of module
+	 * @return void
+	 */
+	function attachModules(Module ...$modules): void
 	{
 		$this->modules = array_merge($this->modules, $modules);
 	}
 	
-	function run(Message $message)
+	/**
+	 * Runs the command by calling run in modules
+	 * @internal
+	 * @param \CharlotteDunois\Yasmin\Models\Message	$message	Message by which this command was triggered
+	 * @return void
+	 */
+	final function run(Message $message): void
 	{
-		$message->channel->send('executing');
-		// foreach ($this->modules as $module) {
-		// 	//run the module
-		// }
+		$this->client->pool->runCommand($this->name, 'threadRun', $message);
+	}
+
+	/**
+	 * Runs the command by calling run in modules
+	 * @internal
+	 * @param \CharlotteDunois\Yasmin\Models\Message	$message	Message by which this command was triggered
+	 * @return void
+	 */
+	final function threadRun(Message $message): void
+	{
+		foreach ($this->modules as $module) {
+			$module->runByCommand($message);
+		}
 	}
 
 }

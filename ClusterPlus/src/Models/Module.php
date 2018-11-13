@@ -7,6 +7,12 @@
 */
 
 namespace Animeshz\ClusterPlus\Models;
+
+use \Animeshz\ClusterPlus\Client;
+use \CharlotteDunois\Validation\Validator;
+use \CharlotteDunois\Yasmin\Models\ClientBase;
+use \CharlotteDunois\Yasmin\Models\Message;
+
 /**
  * A command that can be run in a client.
  *
@@ -17,9 +23,8 @@ namespace Animeshz\ClusterPlus\Models;
  * @property string[]                                           $examples           Examples of and for the command.
  * @property string[]|null                                      $userPermissions    The required permissions for the user to use the command.
  */
-abstract class Module implements \JsonSerializable, \Serializable
+class Module implements \JsonSerializable, \Serializable
 {
-
 	const ATTACHABLE_TO = [
 		'timer',
 		'periodicTimer',
@@ -75,11 +80,11 @@ abstract class Module implements \JsonSerializable, \Serializable
 	 * @param array                                 $info
 	 * @throws \InvalidArgumentException
 	 */
-	function __construct(\CharlotteDunois\Livia\LiviaClient $client, array $info)
+	function __construct(Client $client, array $info)
 	{
 		$this->client = $client;
 		
-		$validator = \CharlotteDunois\Validation\Validator::make($info, array(
+		$validator = Validator::make($info, array(
 			'name' => 'required|string|lowercase|nowhitespace',
 			'description' => 'required|string',
 			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild'
@@ -160,7 +165,7 @@ abstract class Module implements \JsonSerializable, \Serializable
 	 * @internal
 	 */
 	function unserialize($vars) {
-		if(\CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient === null) {
+		if(ClientBase::$serializeClient === null) {
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
 		
@@ -169,7 +174,7 @@ abstract class Module implements \JsonSerializable, \Serializable
 			$this->$name = $val;
 		}
 		
-		$this->client = \CharlotteDunois\Yasmin\Models\ClientBase::$serializeClient;
+		$this->client = ClientBase::$serializeClient;
 		$this->guild = $this->client->guilds->resolve($this->guild);
 	}
 
@@ -186,7 +191,18 @@ abstract class Module implements \JsonSerializable, \Serializable
 		//algorithmic base
 	}
 
-	function run($args)
+	function runByCommand(Message $message): void
+	{
+		$this->run('command', ['message' => $message]);
+	}
+
+	/**
+	 * runs the module
+	 * @param string $type 
+	 * @param array $args 
+	 * @return void
+	 */
+	protected function run(string $type, array $args): void
 	{
 		foreach($args as $key=>$value){ $$key = $value; }
 		$code = $this->createCode();
