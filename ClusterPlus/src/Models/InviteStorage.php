@@ -12,14 +12,14 @@ use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 
 /**
- * Command Storage
+ * Invite Storage
  */
-class CommandStorage extends Storage
+class InviteStorage extends Storage
 {
-	function resolve($guild, string $name): ?Command
+	function resolve($guild, string $name): ?Invite
 	{
 		if ($guild instanceof Guild) $guild = $guild->id;
-		
+
 		if($this->has($guild)) {
 			$collection = $this->get($guild);
 
@@ -31,13 +31,13 @@ class CommandStorage extends Storage
 		return null;
 	}
 
-	function store(Command ...$commands): void
+	function store(Invite ...$invites): void
 	{
-		foreach ($commands as $command) {
-			$guildID = $command->guild->id;
+		foreach ($invites as $invite) {
+			$guildID = $invite->guild->id;
 			if(!$this->has($guildID)) $this->set($guildID, new Collection);
-			$cmd = $this->get($guildID);
-			$cmd->set($command->name, $command);
+			$inv = $this->get($guildID);
+			$inv->set($invite->inviter->id, $invite);
 		}
 	}
 }

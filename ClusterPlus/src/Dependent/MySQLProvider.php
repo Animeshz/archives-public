@@ -8,12 +8,12 @@
 
 namespace Animeshz\ClusterPlus\Dependent;
 
-use \Animeshz\ClusterPlus\Client;
-use \CharlotteDunois\Collect\Collection;
-use \CharlotteDunois\Yasmin\Models\ClientBase;
-use \React\MySQL\Factory;
-use \React\MySQL\ConnectionInterface;
-use \React\Promise\ExtendedPromiseInterface;
+use Animeshz\ClusterPlus\Client;
+use CharlotteDunois\Collect\Collection;
+use CharlotteDunois\Yasmin\Models\ClientBase;
+use React\MySQL\Factory;
+use React\MySQL\ConnectionInterface;
+use React\Promise\ExtendedPromiseInterface;
 
 /**
  * Livia MySQLProvider implementation.
@@ -24,6 +24,29 @@ use \React\Promise\ExtendedPromiseInterface;
  */
 class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider implements \Serializable
 {
+	protected $formdata;
+
+	function __construct(ConnectionInterface $db)
+	{
+		$this->formdata = new Collection();
+		parent::__construct($db);
+	}
+
+	function init(\CharlotteDunois\Livia\LiviaClient $client): ExtendedPromiseInterface
+	{
+		return parent::init($client)->then(function()
+		{
+			$this->runQuery('CREATE TABLE IF NOT EXISTS `formdata` (`guild` VARCHAR(20) NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY (`guild`));')->then(function () {
+				return $this->runQuery('SELECT * FROM `formdata`;')->then(function ($result) {
+					foreach($result->resultRows as $row) {
+						$this->loadFormDataRow($row);
+					}
+					return null;
+				});
+			});
+		});
+	}
+
 	function serialize(): string
 	{
 		$vars = get_object_vars($this);

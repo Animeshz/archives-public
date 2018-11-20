@@ -6,8 +6,14 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
+use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
+use Animeshz\ClusterPlus\Utils\CommandHelpers;
+use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Yasmin\Models\MessageEmbed;
+
+return function(Client $client) {
+	return (new class($client) extends Command {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'avatar',
@@ -26,9 +32,10 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 			]);
 		}
 
-		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			$embed = new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003']);
+			$embed = new MessageEmbed(['color'=> '3447003']);
+			$av;
 			if($args['user'] !== '') {
 				$av = $args['user']->getAvatarURL();
 			} else {

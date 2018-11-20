@@ -6,7 +6,6 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput;
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\TextInput;
 
@@ -35,17 +34,6 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 			}, function (\Exception $e) {
 				$this->client->dialogflow->handlePromiseRejection($e);
 			});
-
-			// $dialogflow = $this->client->dialogflow;
-
-			// $answer = $dialogflow->api->endpoints->sessions->detectIntent($dialogflow->project['project_id'], $message->message->author->id, new QueryInput(new TextInput($args['request'])))->then(function ($data) use ($message, $dialogflow)
-			// {
-			// 	// var_dump($data);
-			// 	$ans = new \Animeshz\ClusterPlus\API\DialogFlow\Models\Answer($dialogflow, $data);
-			// 	return $message->say($ans);
-			// })->otherwise(function (\Exception $e) {
-			// 	echo $e->getMessage();
-			// });
 		}
 	});
 };

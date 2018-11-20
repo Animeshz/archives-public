@@ -6,9 +6,15 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function ($client) {
-	return (new class($client) extends \CharlotteDunois\Livia\Commands\Command {
-		function __construct(\CharlotteDunois\Livia\LiviaClient $client) {
+use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
+use Animeshz\ClusterPlus\Utils\CommandHelpers;
+use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Yasmin\Models\MessageEmbed;
+
+return function (Client $client) {
+	return (new class($client) extends Command {
+		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'report',
 				'aliases' => ['bug', 'bugreport'],
@@ -28,7 +34,7 @@ return function ($client) {
 			]);
 		}
 		
-		function run(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
 			$toSend = \filter_var(\trim( $args['report']));
 			if ($toSend === '' || $toSend === null) {
 				return;
@@ -56,7 +62,7 @@ return function ($client) {
 				$message->reply('An error occurred, we\'ll fix it soon. Sorry but report didn\'t submitted.');
 			}
 
-			$embed = new CharlotteDunois\Yasmin\Models\MessageEmbed(['color' => '3447003']);
+			$embed = new MessageEmbed(['color' => '3447003']);
 			$embed->setTitle($user->tag)
 			->addField('Message', $toSend)
 			->addField('META', 'GUILD: '.$message->guild->name.'<'.$message->guild->id.'>'.PHP_EOL.'CHANNEL: '.$message->channel->name.'<'.$message->channel->id.'>')

@@ -14,6 +14,10 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 				'group' => 'custom',
 				'description' => 'Creates a command',
 				'guildOnly' => true,
+				'userPermissions' => [
+					'MANAGE_CHANNELS',
+					'MANAGE_GUILD'
+				],
 				'args' => [
 					[
 						'key' => 'name',

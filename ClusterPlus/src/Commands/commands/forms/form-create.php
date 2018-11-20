@@ -6,71 +6,91 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
-		function __construct($client) {
+use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
+use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Yasmin\Models\MessageEmbed;
+use CharlotteDunois\Yasmin\Models\Message;
+
+return function(Client $client) {
+	return (new class($client) extends Command {
+		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'form-create',
 				'group' => 'forms',
 				'description' => 'Creates a form, apply command canbe used to fill it',
 				'guildOnly' => true,
+				'userPermissions' => [
+					'MANAGE_GUILD',
+					'MANAGE_CHANNELS'
+				]
 			]);
 		}
 
-		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			$message->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Enter title for the form you wanna create, to cancel command send cancel'])]);
+			$message->say('', [
+				'embed' => new MessageEmbed([
+					'description' => 'Welcome to question setup, type "done" when you have finished inputting your questions or "cancel" to cancel the setup.',
+					'color' => '3447003'
+				])
+			]);
 
+			$q = 1;
 			$questions = [];
-			$listener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($message, &$listener, &$questions) {
-				if($msg->channel === $message->channel && $msg->author === $message->author) {
+			$message->say('', [
+				'embed' => new MessageEmbed([
+					'description' => 'Give your form a title',
+					'color' => '3447003'
+				])
+			]);
 
-					if($msg->content === 'cancel') {
-
-						unset($questions);
-						$this->client->removeListener('message', $listener);
-						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Successfully cancelled form creation'])]);
-
-					} elseif($msg->content === 'done') {
-
-						$this->client->removeListener('message', $listener);
-						$newListener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($message, &$questions, &$newListener) {
-							if($msg->channel->__toString() === $message->channel->__toString() && $msg->author->__toString() === $message->author->__toString()) {
-								if($msg->content === 'yes') {
-									$desc = 'Title: '.$questions[0].\PHP_EOL;
-									for($i = 1; $i<\count($questions); $i++) {
-										$desc .= $i.'. '.$questions[$i];
-									}
-
-									$embed = new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003']);
-									$embed->setDescription($desc);
-
-									$msg->channel->send('', ['embed' => $embed]);
-								} else {
-									unset($questions);
-									$this->client->removeListener('message', $newListener);
-									$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Successfully cancelled form creation'])]);
-								}
-							}
-						};
-						$this->client->on('message', $listener);
-					} elseif($msg->content === 'yes') {
-						$data = $this->client->provider->get($msg->guild, 'forms', []);
-						$data[$title] = $questions;
-
-						$this->client->provider->set($msg->guild, 'forms', $data);
-						$this->client->removeListener('message', $listener);
-						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Successfully created form'])]);
+			$listener = function(Message $msg) use ($message, &$q, &$questions, &$listener)
+			{
+				if ($msg->author === $message->message->author && $msg->channel === $message->message->channel) {
+					if ($msg->content === 'done') {
+						$title = array_shift($questions);
+						$forms = $message->client->provider->get($message->guild, 'forms');
+						if( $forms === null ) {
+							$forms = [$title => $questions];
+						} else {
+							$forms[$title] = $questions;
+						}
+						$message->client->provider->set($message->guild, 'forms', $forms)->then(function () use ($message)
+						{
+							return $message->say('', [
+								'embed' => new MessageEmbed([
+									'description' => 'Form created successfully',
+									'color' => '3447003'
+								])
+							]);
+						});
+						return $message->client->removeListener('message', $listener);
+					} elseif ($msg->content === 'cancel') {
+						unset($q, $questions);
+						$message->say('', [
+							'embed' => new MessageEmbed([
+								'description' => 'Cancelled form creation',
+								'color' => '3447003'
+							])
+						]);
+						return $message->client->removeListener('message', $listener);
 					} else {
-
 						$questions[] = $msg->content;
-						$msg->channel->send('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['color'=> '3447003', 'description' => 'Enter a new question, type done for submitting and cancel for cancelling'])]);
-
+						return $message->say('', [
+							'embed' => new MessageEmbed( [
+								'description' => 'Write your question:' . $q,
+								'color' => '3447003'
+							])
+						])
+						->done(function () use (&$q) {
+							++$q;
+						});
 					}
-
 				}
 			};
-			$this->client->on('message', $listener);
+
+			$message->client->on('message', $listener);
 		}
 	});
 };

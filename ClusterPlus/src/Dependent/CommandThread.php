@@ -58,10 +58,10 @@ class CommandThread extends AsyncTask
             
             $args = \unserialize($this->args);
             $cmd = $client->registry->resolveCommand($this->cmdname);
-            if(!$cmd) $cmd = $client->collector->commands->resolve($args[0]->guild, $this->cmdname);
-            if(!$cmd) $client->handlePromiseRejection(new \Exception("Unable to find {$this->cmdname} in {$args[0]->guild}"));
+            if(is_null($cmd)) $cmd = $client->collector->commands->resolve($args[0]->guild, $this->cmdname);
+            if(is_null($cmd)) $client->handlePromiseRejection(new \Exception("Unable to find {$this->cmdname} in {$args[0]->guild->name}"));
             
-            return $cmd->$method(...$args);
+            return $cmd->threadRun(...$args);
         });
     }
 }

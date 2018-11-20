@@ -1,10 +1,10 @@
 <?php
 /**
- * Converts phrase to a fancy unicoded phrase
- * 
- * @package    ClusterPlus
- * @author     Animesh Sahu <animeshsahu19@yahoo.com>
- */
+ * ClusterPlus
+ * Copyright 2018 Animeshz, All Rights Reserved
+ *
+ * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
+*/
 
 use Animeshz\ClusterPlus\Client;
 use Animeshz\ClusterPlus\Dependent\Command;
@@ -37,7 +37,7 @@ return function ($client) {
 			]);
 		}
 		
-		function run(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
 			return $message->reply(CommandHelpers::unicodeConvert($args['phrase'], $args['type']));
 		}
 	});
