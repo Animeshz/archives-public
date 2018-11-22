@@ -239,7 +239,6 @@ class Collector implements \Serializable
 						]);
 					})->then(function (Collection $data) use ($client)
 					{
-						// var_dump(\serialize($data));
 						$client->guilds->each(function ($guild) use ($client, &$data) {
 
 							$invs = $mdls = $cmds = [];
@@ -278,10 +277,10 @@ class Collector implements \Serializable
 			$modules = $data->get('modules');
 			$commands = $data->get('commands');
 
-			if(!empty($inviteCache)) $this->setInviteCache(...$inviteCache);
-			if(!empty($invites)) $this->setInvites(...$invites);
-			if(!empty($modules)) $this->setModules(...$modules);
-			if(!empty($commands)) $this->setCommands(...$commands);
+			if(!empty($inviteCache)) $this->setInviteCache($inviteCache);
+			if(!empty($invites)) $this->setInvites($invites);
+			if(!empty($modules)) $this->setModules($modules);
+			if(!empty($commands)) $this->setCommands($commands);
 		}, function (\Throwable $error) {
 			$this->client->handlePromiseRejection($error);
 		});
@@ -292,23 +291,23 @@ class Collector implements \Serializable
 	 * @param Command ...$commands 
 	 * @return void
 	 */
-	function setCommands(Command ...$commands): void
+	function setCommands(array $commands, bool $update = false): void
 	{
-		$this->commands->store(...$commands);
+		$this->commands->store($commands, $update);
 	}
 
-	function setInvites(Invite ...$invites): void
+	function setInvites(array $invites): void
 	{
-		$this->invites->store(...$invites);
+		$this->invites->store($invites);
 	}
 
-	function setInviteCache(\CharlotteDunois\Yasmin\Models\Invite ...$invites): void
+	function setInviteCache(array $invites): void
 	{
-		$this->inviteCache->store(...$invites);
+		$this->inviteCache->store($invites);
 	}
 
-	function setModules(Module ...$modules): void
+	function setModules(array $modules): void
 	{
-		$this->modules->store(...$modules);
+		$this->modules->store($modules);
 	}
 }

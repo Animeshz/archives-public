@@ -34,7 +34,7 @@ class CommandStorage extends Storage
 		return null;
 	}
 
-	function store(Command ...$commands): void
+	function store(array $commands, bool $update = false): void
 	{
 		foreach ($commands as $command) {
 			$guildID = $command->guild->id;
@@ -42,9 +42,11 @@ class CommandStorage extends Storage
 			$cmd = $this->get($guildID);
 			$cmd->set($command->name, $command);
 
-			$dbCmds = $this->client->provider->get($command->guild, 'commands', []);
-			$dbCmds[] = $command;
-			$this->client->provider->set($command->guild, 'commands', $cmds);
+			if ($update) { 
+				$dbCmds = $this->client->provider->get($command->guild, 'commands', []);
+				$dbCmds[] = $command;
+				$this->client->provider->set($command->guild, 'commands', $dbCmds);
+			}
 		}
 	}
 }

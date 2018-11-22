@@ -42,7 +42,7 @@ return function(Client $client) {
 					],
 					[
 						'key' => 'description',
-						'prompt' => 'Name of your command',
+						'prompt' => 'Give your command a short description',
 						'type' => 'string',
 						'infinite' => true
 					]
@@ -70,13 +70,10 @@ return function(Client $client) {
 						]);
 					}
 				};
-			} catch (\InvalidArgumentException $e) {
-				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
-			}
-
-			if(!is_null($cmd)) {
 				$this->client->collector->setCommands($cmd);
 				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
+			} catch (\InvalidArgumentException $e) {
+				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
 			}
 		}
 	});

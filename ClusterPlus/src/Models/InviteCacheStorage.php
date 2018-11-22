@@ -31,7 +31,7 @@ class InviteCacheStorage extends Storage
 		return null;
 	}
 
-	function store(\CharlotteDunois\Yasmin\Models\Invite ...$invites): void
+	function store(array $invites): void
 	{
 		foreach ($invites as $invite) {
 			$guildID = $invite->guild->id;

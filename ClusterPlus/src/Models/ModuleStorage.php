@@ -31,7 +31,7 @@ class ModuleStorage extends Storage
 		return null;
 	}
 
-	function store(Command ...$commands): void
+	function store(array $commands): void
 	{
 		foreach ($modules as $module) {
 			$guildID = $module->guild->id;
