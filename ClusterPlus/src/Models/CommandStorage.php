@@ -13,6 +13,9 @@ use CharlotteDunois\Collect\Collection;
 
 /**
  * Command Storage
+ * 
+ * Format this uses is:
+ * Guild => Collection<name:Command>
  */
 class CommandStorage extends Storage
 {
@@ -38,6 +41,10 @@ class CommandStorage extends Storage
 			if(!$this->has($guildID)) $this->set($guildID, new Collection);
 			$cmd = $this->get($guildID);
 			$cmd->set($command->name, $command);
+
+			$dbCmds = $this->client->provider->get($command->guild, 'commands', []);
+			$dbCmds[] = $command;
+			$this->client->provider->set($command->guild, 'commands', $cmds);
 		}
 	}
 }

@@ -6,28 +6,24 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
+use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
+use CharlotteDunois\Livia\CommandMessage;
+
+return function(Client $client) {
+	return (new class($client) extends Command {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'create-module',
 				'group' => 'custom',
 				'description' => 'Creates a module',
 				'guildOnly' => true,
-				'args' => [
-					// [
-					// 	'key' => 'actions',
-					// 	'prompt' => 'Define some actions',
-					// 	'type' => 'string',
-					// 	'infinite' => true
-					// ]
-				]
 			]);
 		}
 
-		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			
+			$message->say('Unfortunately modules can only be created using our android app.');
 		}
 	});
 };

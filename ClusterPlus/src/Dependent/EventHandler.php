@@ -144,13 +144,28 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	public function error()
+	public function error(): array
 	{
 		return [
 			__FUNCTION__,
 			function (\Throwable $error)
 			{
 				echo $error->getMessage().\PHP_EOL.$error->getFile().'in line no. '.$error->getLine();
+			}
+		];
+	}
+
+	/**
+	 * @return array
+	 * @internal
+	 */
+	public function providerSet(): array
+	{
+		return [
+			__FUNCTION__,
+			function (): void
+			{
+				$this->client->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->client->handlePromiseRejection($e); });
 			}
 		];
 	}

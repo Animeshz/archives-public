@@ -39,7 +39,7 @@ class Client extends LiviaClient
 	protected $dialogflow;
 
 	/**
-	 * @var \Animeshz\ClusterPlus\Dependent\Pool<\CharlotteDunois\Phoebe\Pool>
+	 * @var \Animeshz\ClusterPlus\Dependent\Pool
 	 */
 	protected $pool;
 
@@ -101,20 +101,16 @@ class Client extends LiviaClient
 			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->then(function (ConnectionInterface $db)
 			{
 				$provider = $this->getOption('provider.class', '\\Animeshz\\ClusterPlus\\Dependent\\MySQLProvider');
-				$this->setProvider(new $provider($db))->then(function ()
+				$this->setProvider(new $provider($db))->then(function (): ExtendedPromiseInterface
 				{
-					// return $this->collector->loadFromDB();
-					$this->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->handlePromiseRejection($e); })->then(function ($collector){
-						// var_dump(\serialize($collector));
-					});
-					
+					$this->emit('providerSet');
 				});
 			});
 		}
 
 		if ($isDialogflowFileSet) {
 			$this->dialogflow = new DialogFlowClient($this);
-			$this->dialogflow->on('error', function (\Throwable $e) {
+			$this->dialogflow->on('error', function (\Exception $e) {
 				$this->emit('error', $e);
 			});
 		}

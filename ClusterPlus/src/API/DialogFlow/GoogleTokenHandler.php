@@ -41,21 +41,16 @@ class GoogleTokenHandler extends ClientBase implements \Serializable
 		parent::__construct($dialogflow);
 	}
 
-	function __get($name)
-	{
-		if(property_exists($this, $name)) return $this->$name;
-	}
-
 	function getToken()
 	{
-		if($this->expired) $this->generateToken();
+		if ($this->isExpired()) $this->generateToken();
 
 		return $this->token;
 	}
 
 	function getTokenType()
 	{
-		if($this->expired) $this->generateToken();
+		if ($this->isExpired()) $this->generateToken();
 
 		return $this->tokenType;
 	}
@@ -69,5 +64,10 @@ class GoogleTokenHandler extends ClientBase implements \Serializable
 		$this->dialogflow->client->addTimer($token['expires_in'], function () {
 			$this->expired = true;
 		});
+	}
+
+	function isExpired()
+	{
+		return $this->expired;
 	}
 }

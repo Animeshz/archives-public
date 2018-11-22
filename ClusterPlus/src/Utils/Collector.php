@@ -257,11 +257,8 @@ class Collector implements \Serializable
 								$cmds[] = Command::jsonUnserialize($client, $command);
 							}
 
-							// if(!empty($invs)) $this->collector->setInvites(...$invs);
 							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites'), $invs));
-							// if(!empty($mdls)) $this->collector->setModules(...$mdls);
 							if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
-							// if(!empty($cmds)) $c = $this->collector->setCommands(...$cmds);
 							if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
 						});
 						return $data;

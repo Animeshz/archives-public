@@ -6,9 +6,14 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
-		function __construct($client) {
+use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
+use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Yasmin\Models\MessageEmbed;
+
+return function(Client $client) {
+	return (new class($client) extends Command {
+		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'create-command',
 				'group' => 'custom',
@@ -24,15 +29,13 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 						'prompt' => 'Name of your command',
 						'type' => 'string',
 						'validate' => function ($value) {
-							if(\mb_strlen($value) === 0) {
+							if (mb_strlen($value) === 0) {
 								return false;
 							}
 
-							if(\count($this->client->registry->findCommands($value)) > 0) {
+							if (count($this->client->registry->findCommands($value)) > 0) {
 								return 'That command name has already been taken by one of the commands in registry.';
 							}
-
-                            //add check for our command registry
 
 							return true;
 						}
@@ -47,17 +50,19 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 			]);
 		}
 
-		function threadRun(\CharlotteDunois\Livia\CommandMessage $message, \ArrayObject $args, bool $fromPattern)
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
 		{
-			global $collector;
 			$guild = $message->message->guild;
 			$name = $args['name'];
-			$description = \implode(' ', $args['description']);
+			$description = implode(' ', $args['description']);
 
-			//create another class for maintaining the command created
+			if ($this->client->collector->commands->resolve($message->message->guild, $name) !== null) {
+				return $message->say('', ['embed' => new MessageEmbed(['description' => 'A command of name '.$name.' already exists, Use our android app for more options.'])]);
+			}
+
 			try {
 				$cmd = new class($this->client, $guild, $name, $description) extends \Animeshz\ClusterPlus\Models\Command {
-					function __construct(\Animeshz\Client $client, $guild, $name, $description) {
+					function __construct(Client $client, $guild, $name, $description) {
 						parent::__construct($client, [
 							'name' => $name,
 							'description' => $description,
@@ -66,20 +71,13 @@ return function(\Animeshz\ClusterPlus\Client $client) {
 					}
 				};
 			} catch (\InvalidArgumentException $e) {
-				return $message->say('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
+				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
 			}
 
-			//register command in database
-			$commands = $this->client->provider->get($guild, 'commands', []);
-			foreach ($commands as $command)
-			{
-				if($command->name === $cmd->name && $command->guild === $cmd->guild) return $message->say('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['description' => 'Sorry but command with this name is already registered, use command-update or command-delete'])]);
+			if(!is_null($cmd)) {
+				$this->client->collector->setCommands($cmd);
+				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
 			}
-			$commands[] = $cmd;
-			$this->client->provider->set($message->message->guild, 'commands', $commands);
-			//set to a local cache
-			$collector->setCommands($cmd);
-			return $message->say('', ['embed' => new \CharlotteDunois\Yasmin\Models\MessageEmbed(['description' => 'Successfully created command, use create-mudule to create a new module and then use attach-module to attach any module to this command'])]);
 		}
 	});
 };
