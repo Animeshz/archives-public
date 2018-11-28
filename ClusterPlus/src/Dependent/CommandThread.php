@@ -61,7 +61,7 @@ class CommandThread extends AsyncTask
             if(is_null($cmd)) $cmd = $client->collector->commands->resolve($args[0]->guild, $this->cmdname);
             if(is_null($cmd)) $client->handlePromiseRejection(new \Exception("Unable to find {$this->cmdname} in {$args[0]->guild->name}"));
             
-            return $cmd->threadRun(...$args);
+            return $cmd->{$this->method}(...$args);
         });
     }
 }

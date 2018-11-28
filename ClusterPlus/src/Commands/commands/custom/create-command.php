@@ -10,6 +10,8 @@ use Animeshz\ClusterPlus\Client;
 use Animeshz\ClusterPlus\Dependent\Command;
 use CharlotteDunois\Livia\CommandMessage;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
+use React\Promise\ExtendedPromiseInterface;
+use function React\Promise\resolve;
 
 return function(Client $client) {
 	return (new class($client) extends Command {
@@ -43,37 +45,43 @@ return function(Client $client) {
 					[
 						'key' => 'description',
 						'prompt' => 'Give your command a short description',
-						'type' => 'string',
-						'infinite' => true
+						'type' => 'string'
 					]
 				]
 			]);
 		}
 
-		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
-		{
-			$guild = $message->message->guild;
-			$name = $args['name'];
-			$description = implode(' ', $args['description']);
-
-			if ($this->client->collector->commands->resolve($message->message->guild, $name) !== null) {
+		/**
+		 * Invokes the `threadRun` method in a new thread. This method must be overridden, unless you only need the `threadRun` method.
+		 * @return \React\Promise\ExtendedPromiseInterface
+		 */
+		function run(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
+			if ($this->client->collector->commands->resolve($message->message->guild, $args['name']) !== null) {
 				return $message->say('', ['embed' => new MessageEmbed(['description' => 'A command of name '.$name.' already exists, Use our android app for more options.'])]);
 			}
 
+			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern)->then(function ($result) use ($message) {
+				if($result instanceof \Animeshz\ClusterPlus\Models\Command) {
+					$this->client->collector->setCommands([$result], true);
+					return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
+				}
+			});
+		}
+
+		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern): ExtendedPromiseInterface
+		{
+			$guild = $message->message->guild;
+			$name = $args['name'];
+			$description = $args['description'];
+
 			try {
-				$cmd = new class($this->client, $guild, $name, $description) extends \Animeshz\ClusterPlus\Models\Command {
-					function __construct(Client $client, $guild, $name, $description) {
-						parent::__construct($client, [
-							'name' => $name,
-							'description' => $description,
-							'guild' => $guild
-						]);
-					}
-				};
-				$this->client->collector->setCommands($cmd);
-				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
-			} catch (\InvalidArgumentException $e) {
+				$cmd = new \Animeshz\ClusterPlus\Models\Command($this->client, ['guild' => $guild, 'name' => $name, 'description' => $description]);
+				return resolve($cmd);
+			} catch (InvalidArgumentException $e) {
 				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Sorry but command name must be lower-case and should not have any whitespaces between them'])]);
+			} catch (Exception $e) {
+				$this->client->handlePromiseRejection($e);
+				return $message->say('', ['embed' => new MessageEmbed(['description' => 'Oops something went wrong we\'ve cached the problem it\'ll be resolved.'])]);
 			}
 		}
 	});

@@ -12,11 +12,11 @@ use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 
 /**
- * Command Storage
+ * InviteCache Storage
  */
 class InviteCacheStorage extends Storage
 {
-	function resolve($guild, string $name): ?Command
+	function resolve($guild, string $name): ?\CharlotteDunois\Yasmin\Models\Invite
 	{
 		if ($guild instanceof Guild) $guild = $guild->id;
 

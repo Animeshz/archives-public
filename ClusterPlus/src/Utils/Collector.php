@@ -194,7 +194,7 @@ class Collector implements \Serializable
 	 * Loads commands, modules and invites from databases.
 	 * $client->provider must be set before calling this function.
 	 * 
-	 * @return \React\Promise\PromiseInterface
+	 * @return \React\Promise\ExtendedPromiseInterface
 	 */
 	function loadFromDB(): ?ExtendedPromiseInterface
 	{
@@ -204,7 +204,8 @@ class Collector implements \Serializable
 			{
 				$client = Worker::$client;
 
-				$client->provider->threadReady($client)->done(function () use ($client) {
+				$client->provider->threadReady($client)->done(function () use ($client)
+				{
 					$fetchedPromises = [];
 					$client->guilds->each(function ($guild) use (&$fetchedPromises)
 					{
@@ -219,9 +220,10 @@ class Collector implements \Serializable
 							if($guildInvites->count() === 0) continue;
 
 							$guild = $guildInvites->first()->guild;
-							$inviteCache = \array_values(\array_merge($inviteCache, $guildInvites->all()));
+							$inviteCache = array_values(array_merge($inviteCache, $guildInvites->all()));
 
 							$newInvites = [];
+
 							$dbInvites = $client->provider->get($guild, 'invites', []);
 							$inviteColl = new Collection(\array_column($dbInvites, null, 'code'));
 
@@ -247,12 +249,15 @@ class Collector implements \Serializable
 							$commands = $client->provider->get($guild, 'commands', []);
 
 							foreach ($invites as $invite) {
+								$invite['guild'] = $guild;
 								$invs[] = Invite::jsonUnserialize($client, $invite);
 							}
 							foreach ($modules as $module) {
+								$module['guild'] = $guild;
 								$mdls[] = Module::jsonUnserialize($client, $module);
 							}
 							foreach ($commands as $command) {
+								$command['guild'] = $guild;
 								$cmds[] = Command::jsonUnserialize($client, $command);
 							}
 
@@ -263,7 +268,7 @@ class Collector implements \Serializable
 						return $data;
 					})->then(function ($data) {
 						$this->wrap($data);
-					}, function (\Throwable $e) {
+					}, function (\Exception $e) {
 						$this->wrap($e);
 					});
 				});
@@ -281,7 +286,7 @@ class Collector implements \Serializable
 			if(!empty($invites)) $this->setInvites($invites);
 			if(!empty($modules)) $this->setModules($modules);
 			if(!empty($commands)) $this->setCommands($commands);
-		}, function (\Throwable $error) {
+		}, function (\Exception $error) {
 			$this->client->handlePromiseRejection($error);
 		});
 	}

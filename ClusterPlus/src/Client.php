@@ -4,7 +4,7 @@
  * Copyright 2018 Animeshz, All Rights Reserved
  *
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
-*/
+ */
 
 namespace Animeshz\ClusterPlus;
 
@@ -77,6 +77,7 @@ class Client extends LiviaClient
 		if(ClientBase::$serializeClient === null) ClientBase::$serializeClient = $this;
 
 		$eventHandler = $this->getOption('eventHandler.class', '\\Animeshz\\ClusterPlus\\Dependent\\EventHandler');
+		$disabledEvents = $this->getOption('eventHandler.events.disable', []);
 		$pool = $this->getOption('pool.class', '\\Animeshz\\ClusterPlus\\Dependent\\Pool');
 		$worker = $this->getOption('worker.class', '\\Animeshz\\ClusterPlus\\Dependent\\Worker');
 		$poolOptions = $this->getOption('pool.options', []);
@@ -86,7 +87,7 @@ class Client extends LiviaClient
 		if(!isset($poolOptions['size'])) $poolOptions['size'] = 7;
 		$poolOptions['worker'] = $worker;
 
-		$this->eventHandler = new $eventHandler($this);
+		$this->eventHandler = new $eventHandler($this, $disabledEvents);
 		$this->eventHandler->dispatch();
 
 		$this->pool = new $pool($this, $poolOptions);

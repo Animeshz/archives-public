@@ -157,7 +157,7 @@ class Invite implements \JsonSerializable, \Serializable
 				$invited[] = yield $this->client->fetchUser($userid);
 			}
 			$this->invited = new Collection($invited);
-		});
+		}, $this->client->loop);
 	}
 
 	/**

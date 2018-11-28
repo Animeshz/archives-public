@@ -8,10 +8,12 @@
 
 namespace Animeshz\ClusterPlus\Models;
 
-use \Animeshz\ClusterPlus\Client;
-use \CharlotteDunois\Validation\Validator;
-use \CharlotteDunois\Yasmin\Models\ClientBase;
-use \CharlotteDunois\Yasmin\Models\Message;
+use Animeshz\ClusterPlus\Client;
+use CharlotteDunois\Validation\Validator;
+use CharlotteDunois\Yasmin\Models\ClientBase;
+use CharlotteDunois\Yasmin\Models\Guild;
+use CharlotteDunois\Yasmin\Models\Message;
+use Recoil\React\ReactKernel;
 
 /**
  * A command that can be run in a client.
@@ -180,15 +182,18 @@ class Command implements \JsonSerializable, \Serializable
 
 	/**
 	 * Recreates instances of Command which are json decoded
-	 * @param \Animeshz\ClusterPlus\Client	$client		Client	instance
+	 * @param \Animeshz\ClusterPlus\Client				$client	Client instance
 	 * @param array										$vars	json decoded array of this object
 	 * @return self
 	 */
-	static function jsonUnserialize(Client $client, array $vars)
+	static function jsonUnserialize(Client $client, array $vars): self
 	{
-		$vars['guild'] = $client->guilds->resolve($vars['guild']);
-
-		return new static($client, $vars);
+		$guild = $vars['guild'];
+		if(!$guild instanceof Guild) {
+			if(!is_string($guild)) throw new Exception("cannot create instance of Command when guild is not set");
+			$vars['guild'] = $client->guilds->resolve($guild);
+		}
+		return new self($client, $vars);
 	}
 
 	/**

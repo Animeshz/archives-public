@@ -29,9 +29,9 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	/**
 	 * Constructor.
 	 * @param \Animeshz\ClusterPlus\Client		$client			Client who initiated application
-	 * @param string[]							$excludeFuncs	Options with worker
+	 * @param string[]							$excludeFuncs	Event to exclude
 	 */
-	public function __construct(Client $client, array $excludeFuncs = null)
+	public function __construct(Client $client, ?array $excludeFuncs = null)
 	{
 		$this->client = $client;
 
@@ -55,7 +55,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 			'serialize',
 			'unserialize'
 		];
-		$exclude = $excludeFuncs !== null ? array_merge($magic, $excludeFuncs) : $exclude;
+		$exclude = ($excludeFuncs !== null ? array_merge($exclude, $excludeFuncs) : $exclude);
 		$this->exclude = $exclude;
 	}
 
@@ -111,7 +111,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return void
 	 * @internal
 	 */
-	public function dispatch(): void
+	final public function dispatch(): void
 	{
 		foreach (get_class_methods($this) as $event) {
 			if(in_array($event, $this->exclude)){ continue; }
@@ -129,28 +129,28 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	public function debug()
+	private function debug()
 	{
-		// return [
-		// 	__FUNCTION__,
-		// 	function ($debug)
-		// 	{
-		// 		echo $debug.\PHP_EOL;
-		// 	}
-		// ];
+		return [
+			__FUNCTION__,
+			function ($debug)
+			{
+				echo $debug.\PHP_EOL;
+			}
+		];
 	}
 
 	/**
 	 * @return array
 	 * @internal
 	 */
-	public function error(): array
+	private function error(): array
 	{
 		return [
 			__FUNCTION__,
 			function (\Throwable $error)
 			{
-				echo $error->getMessage().\PHP_EOL.$error->getFile().'in line no. '.$error->getLine();
+				echo $error->getMessage().\PHP_EOL.$error->getFile().'in line no. '.$error->getLine().\PHP_EOL;
 			}
 		];
 	}
@@ -159,13 +159,29 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	public function providerSet(): array
+	private function providerSet(): array
 	{
 		return [
 			__FUNCTION__,
 			function (): void
 			{
-				$this->client->collector->loadFromDB()->otherwise(function (\Throwable $e) { $this->client->handlePromiseRejection($e); });
+				$this->client->collector->loadFromDB()->otherwise(function (\Exception $e) { $this->client->handlePromiseRejection($e); });
+			}
+		];
+	}
+
+	/**
+	 * Dump every packet recieved by websocket
+	 * @return array
+	 * @internal
+	 */
+	private function raw(): array
+	{
+		return [
+			__FUNCTION__,
+			function ($packet): void
+			{
+				var_dump($packet);
 			}
 		];
 	}
@@ -174,21 +190,30 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	// protected function guildMemberAdd(): array
-	// {
-	// 	return [
-	// 		__FUNCTION__,
-	// 		function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
-	// 		{
-	// 			$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites)
-	// 			{
-	// 				$invites->each(function (\CharlotteDunois\Yasmin\Models\Invite $invite)
-	// 				{
-	// 					//check which invite usage increment create new instance of invite and store it in database
-	// 					// if($invite->uses === $inv
-	// 				});
-	// 			});
-	// 		}
-	// 	];
-	// }
+	protected function guildMemberAdd(): array
+	{
+		return [
+			__FUNCTION__,
+			function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
+			{
+				$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites) use ($member)
+				{
+					$entryFound = false;
+					foreach ($invites as $invite) {
+						//check which invite usage increment create new instance of invite and store it in database
+						if ($invite->uses > $this->client->collector->inviteCache->resolve($invite->guild, $invite->code)->uses) {
+							$this->client->emit('guildMemberAddByInvite', $invite->inviter, $member);
+							$entryFound = true;
+							//cache it in database
+							break;
+						}
+					}
+
+					if(!$entryFound) {
+						//check if invite is not cached in collector, if one invite is not then emit guildMemberAddByInvite
+					}
+				});
+			}
+		];
+	}
 }

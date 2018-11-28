@@ -28,8 +28,8 @@ class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider imple
 
 	function __construct(ConnectionInterface $db)
 	{
-		$this->formdata = new Collection();
 		parent::__construct($db);
+		$this->formdata = new Collection();
 	}
 
 	function init(\CharlotteDunois\Livia\LiviaClient $client): ExtendedPromiseInterface

@@ -54,7 +54,7 @@ abstract class ClientBase implements \Serializable, \JsonSerializable
 	{
 		$vars = \get_object_vars($this);
 		unset($vars['dialogflow']);
-		$vars = \array_filter($vars, function($value) { return $value !== null; });
+		$vars = \array_filter($vars, function ($value) { return $value !== null; });
 		return $vars;
 	}
 }
