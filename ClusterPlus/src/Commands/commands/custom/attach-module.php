@@ -43,15 +43,10 @@ return function(Client $client) {
 
 				$args['module'] = $module;
 			} catch (MultipleEntryFoundException $e) {
-				return $message->say($e->getMessage());
+				return $message->say('' ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
 			}
 
-			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern)->then(function ($result) use ($message) {
-				if($result instanceof \Animeshz\ClusterPlus\Models\Command) {
-					$this->client->collector->setCommands([$result], true);
-					return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
-				}
-			});
+			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern);
 		}
 
 		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
@@ -85,14 +80,20 @@ return function(Client $client) {
 						if ($selected['option'] !== 'Command') {
 							if(mb_strpos($selected['option'], 'Event')) {
 								list((int)$time, $event) = explode(', ', $input);
-								
+
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); }, $event);
 							} else {
 								$time = (int) $input;
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); });
 							}
 						} else {
-							//attach to command
+							try {
+								$command = $this->client->collector->resolve($command);
+							} catch (MultipleEntryFoundException $e) {
+								return $msg->channel->send('', ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
+							}
+
+							$command->attachModules([$module]);
 						}
 					}
 				}

@@ -8,6 +8,7 @@
 
 namespace Animeshz\ClusterPlus\Models;
 
+use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 use InvalidArgumentException;
@@ -27,9 +28,10 @@ class CommandStorage extends Storage
 	/**
 	 * Resolves instance of command by guild and command name.
 	 * 
-	 * @param string|CharlotteDunois\Yasmin\Models\Guild	$guild	Guild in which to fetcb commands
+	 * @param string|CharlotteDunois\Yasmin\Models\Guild	$guild	Guild in which to fetch commands
 	 * @param string										$name	Name of the command
 	 * @return Animeshz\ClusterPlus\Models\Command|null
+	 * @throws Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException
 	 */
 	function resolve($guild, string $name): ?Command
 	{
@@ -40,6 +42,17 @@ class CommandStorage extends Storage
 
 			if ($collection->has($name)) {
 				return $collection->get($name);
+			} else {
+				$found = $collection->keys()->filter(function ($key) use ($name) {
+					return mb_stripos($key, $name);
+				});
+
+				$count = $found->count();
+				if ($count === 1) {
+					return $found->first();
+				} elseif ($count > 1) {
+					throw new MultipleEntryFoundException("Multiple Commands Found: Try to be more specific");
+				}
 			}
 		}
 

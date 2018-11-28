@@ -20,11 +20,12 @@ use function mb_stripos;
 class ModuleStorage extends Storage
 {
 	/**
-	 * Description
-	 * @param type $guild 
-	 * @param string $name 
-	 * @return type
-	 * @throws Exception
+	 * Resolves instance of module by guild and module name.
+	 * 
+	 * @param string|CharlotteDunois\Yasmin\Models\Guild	$guild	Guild in which to fetch module
+	 * @param string										$name	Name of the module
+	 * @return Animeshz\ClusterPlus\Models\Command|null
+	 * @throws Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException
 	 */
 	function resolve($guild, string $name): ?Module
 	{
@@ -44,7 +45,7 @@ class ModuleStorage extends Storage
 				if ($count === 1) {
 					return $found->first();
 				} elseif ($count > 1) {
-					throw new MultipleEntryFoundException("MultipleEntryFound: Try to be more specific");
+					throw new MultipleEntryFoundException("Multiple Modules Found: Try to be more specific");
 				}
 			}
 		}
