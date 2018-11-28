@@ -36,7 +36,8 @@ class Module implements \JsonSerializable, \Serializable
 	const TIMER = 'The timer duration in second.'.\PHP_EOL;
 	const PEREODICTIMER = 'The periodicTimer duration in second.'.\PHP_EOL;
 	const COMMAND = 'The name of fancy command you like.'.\PHP_EOL;
-	const EVENTTIMER = 'The timer duration in second and event name seperated by a comma+space (e.g. 5, my-event).'
+	const EVENTTIMER = 'The timer duration in second and event name seperated by a comma+space (e.g. 5, my-event).'.\PHP_EOL;
+	const EVENTPERIODICTIMER = 'The timer duration in second and event name seperated by a comma+space (e.g. 5, my-event).'.\PHP_EOL;
 
 	/**
 	 * The client which initiated the instance.
@@ -146,6 +147,7 @@ class Module implements \JsonSerializable, \Serializable
 	function serialize()
 	{
 		$vars = \get_object_vars($this);
+		$vars['guild'] = ($vars['guild'])->id;
 		unset($vars['client'], $vars['code']);
 		return \serialize($vars);
 	}
@@ -181,7 +183,7 @@ class Module implements \JsonSerializable, \Serializable
 		$this->guild = $this->client->guilds->resolve($this->guild);
 	}
 
-	static function jsonUnserialize($client, $vars)
+	public static function jsonUnserialize(Client $client, array $vars)
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 

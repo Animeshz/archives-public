@@ -188,11 +188,7 @@ class Command implements \JsonSerializable, \Serializable
 	 */
 	static function jsonUnserialize(Client $client, array $vars): self
 	{
-		$guild = $vars['guild'];
-		if(!$guild instanceof Guild) {
-			if(!is_string($guild)) throw new Exception("cannot create instance of Command when guild is not set");
-			$vars['guild'] = $client->guilds->resolve($guild);
-		}
+		$vars['guild'] = $client->guilds->resolve($vars['guild']);
 		return new self($client, $vars);
 	}
 

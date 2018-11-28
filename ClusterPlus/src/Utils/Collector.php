@@ -257,6 +257,7 @@ class Collector implements \Serializable
 								$module['guild'] = $guild;
 								$mdls[] = Module::jsonUnserialize($client, $module);
 							}
+
 							foreach ($commands as $command) {
 								$command['guild'] = $guild;
 								$cmds[] = Command::jsonUnserialize($client, $command);
