@@ -199,17 +199,25 @@ class Module implements \JsonSerializable, \Serializable
 		$this->run('command', ['message' => $message]);
 	}
 
+	function runByTimer(Message $message): void
+	{
+		$this->run('command', ['message' => $message]);
+	}
+
 	/**
 	 * runs the module
 	 * @param string $type 
 	 * @param array $args 
 	 * @return void
 	 */
-	protected function run(string $type, array $args): void
+	protected function run(string $type, ?array $args = null): void
 	{
-		foreach($args as $key=>$value){ $$key = $value; }
+		if ($args !== null) {
+			foreach ($args as $key=>$value) { $$key = $value; }
+		}
 		$code = $this->createCode();
-		safe_eval($code);
-		flush($code);
+		// safe_eval($code);
+		// flush($code);
+		$message->say('hmm..');
 	}
 }

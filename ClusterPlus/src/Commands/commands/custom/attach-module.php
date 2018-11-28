@@ -43,7 +43,7 @@ return function(Client $client) {
 
 				$args['module'] = $module;
 			} catch (MultipleEntryFoundException $e) {
-				return $message->say('' ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
+				return $message->say('', ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
 			}
 
 			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern);
@@ -79,7 +79,8 @@ return function(Client $client) {
 
 						if ($selected['option'] !== 'Command') {
 							if(mb_strpos($selected['option'], 'Event')) {
-								list((int)$time, $event) = explode(', ', $input);
+								list($time, $event) = explode(', ', $input);
+								$time = (int) $time;
 
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); }, $event);
 							} else {
