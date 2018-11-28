@@ -36,6 +36,7 @@ class Module implements \JsonSerializable, \Serializable
 	const TIMER = 'The timer duration in second.'.\PHP_EOL;
 	const PEREODICTIMER = 'The periodicTimer duration in second.'.\PHP_EOL;
 	const COMMAND = 'The name of fancy command you like.'.\PHP_EOL;
+	const EVENTTIMER = 'The timer duration in second and event name seperated by a comma+space (e.g. 5, my-event).'
 
 	/**
 	 * The client which initiated the instance.

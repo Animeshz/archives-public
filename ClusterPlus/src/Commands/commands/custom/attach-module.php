@@ -82,12 +82,13 @@ return function(Client $client) {
 					} else {
 						$input = $msg->content;
 
-						//set on certain event needed instead setting now
 						if ($selected['option'] !== 'Command') {
 							if(mb_strpos($selected['option'], 'Event')) {
-								//make the event prompt
+								list((int)$time, $event) = explode(', ', $input);
+								
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); }, $event);
 							} else {
+								$time = (int) $input;
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); });
 							}
 						} else {
