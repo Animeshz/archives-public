@@ -26,14 +26,16 @@ use \CharlotteDunois\Yasmin\Models\Message;
 class Module implements \JsonSerializable, \Serializable
 {
 	const ATTACHABLE_TO = [
-		'timer',
-		'periodicTimer',
-		'command'
+		'Timer',
+		'PeriodicTimer',
+		'Command',
+		'EventTimer',
+		'EventPeriodicTimer'
 	];
 
-	const TIMER = 'Send the timer duration in second.'.\PHP_EOL;
-	const PEREODICTIMER = 'Send the periodicTimer duration in second.'.\PHP_EOL;
-	const COMMAND = 'Send the name of fancy command you like.'.\PHP_EOL;
+	const TIMER = 'The timer duration in second.'.\PHP_EOL;
+	const PEREODICTIMER = 'The periodicTimer duration in second.'.\PHP_EOL;
+	const COMMAND = 'The name of fancy command you like.'.\PHP_EOL;
 
 	/**
 	 * The client which initiated the instance.

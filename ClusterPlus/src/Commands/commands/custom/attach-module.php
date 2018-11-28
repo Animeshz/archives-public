@@ -7,14 +7,14 @@
 */
 
 use Animeshz\ClusterPlus\Client;
+use Animeshz\ClusterPlus\Dependent\Command;
 use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use Animeshz\ClusterPlus\Models\Module;
 use CharlotteDunois\Livia\CommandMessage;
-use CharlotteDunois\Sarah\SarahCommand;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
 
 return function(Client $client) {
-	return (new class($client) extends SarahCommand {
+	return (new class($client) extends Command {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'attach-module',
@@ -43,10 +43,15 @@ return function(Client $client) {
 
 				$args['module'] = $module;
 			} catch (MultipleEntryFoundException $e) {
-				return $message->say('', ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
+				return $message->say($e->getMessage());
 			}
 
-			return $this->client->pool->run($this->name, 'threadRun', $message, $args, $fromPattern);
+			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern)->then(function ($result) use ($message) {
+				if($result instanceof \Animeshz\ClusterPlus\Models\Command) {
+					$this->client->collector->setCommands([$result], true);
+					return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);
+				}
+			});
 		}
 
 		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
@@ -64,7 +69,6 @@ return function(Client $client) {
 			$selected = [];
 			$listener = function (\CharlotteDunois\Yasmin\Models\Message $msg) use ($attachableTo, $message, $module, &$selected, &$listener)
 			{
-				//not listening
 				if ($msg->channel === $message->message->channel && $msg->author === $message->message->author) {
 					if (empty($selected)) {
 						$select = (int) $msg->content;
@@ -78,24 +82,16 @@ return function(Client $client) {
 					} else {
 						$input = $msg->content;
 
+						//set on certain event needed instead setting now
 						if ($selected['option'] !== 'Command') {
 							if(mb_strpos($selected['option'], 'Event')) {
-								list($time, $event) = explode(', ', $input);
-								$time = (int) $time;
-
+								//make the event prompt
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); }, $event);
 							} else {
-								$time = (int) $input;
 								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); });
 							}
 						} else {
-							try {
-								$command = $this->client->collector->resolve($command);
-							} catch (MultipleEntryFoundException $e) {
-								return $msg->channel->send('', ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
-							}
-
-							$command->attachModules([$module]);
+							//attach to command
 						}
 					}
 				}

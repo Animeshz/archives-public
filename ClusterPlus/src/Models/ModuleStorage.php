@@ -8,15 +8,25 @@
 
 namespace Animeshz\ClusterPlus\Models;
 
+use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 
+use function mb_stripos;
+
 /**
- * Command Storage
+ * Module Storage
  */
 class ModuleStorage extends Storage
 {
-	function resolve($guild, string $name): ?Command
+	/**
+	 * Description
+	 * @param type $guild 
+	 * @param string $name 
+	 * @return type
+	 * @throws Exception
+	 */
+	function resolve($guild, string $name): ?Module
 	{
 		if ($guild instanceof Guild) $guild = $guild->id;
 
@@ -25,6 +35,17 @@ class ModuleStorage extends Storage
 
 			if ($collection->has($name)) {
 				return $collection->get($name);
+			} else {
+				$found = $collection->keys()->filter(function ($key) use ($name) {
+					return mb_stripos($key, $name);
+				});
+
+				$count = $found->count();
+				if ($count === 1) {
+					return $found->first();
+				} elseif ($count > 1) {
+					throw new MultipleEntryFoundException("MultipleEntryFound: Try to be more specific");
+				}
 			}
 		}
 
