@@ -13,6 +13,10 @@ use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 use InvalidArgumentException;
 
+use function json_decode;
+use function json_encode;
+use function array_filter;
+
 /**
  * Command Storage
  * 
