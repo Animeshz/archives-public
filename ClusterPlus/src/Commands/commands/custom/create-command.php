@@ -7,14 +7,15 @@
 */
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Command;
 use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Sarah\SarahCommand;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
 use React\Promise\ExtendedPromiseInterface;
+
 use function React\Promise\resolve;
 
 return function(Client $client) {
-	return (new class($client) extends Command {
+	return (new class($client) extends SarahCommand {
 		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'create-command',
@@ -52,7 +53,6 @@ return function(Client $client) {
 		}
 
 		/**
-		 * Invokes the `threadRun` method in a new thread. This method must be overridden, unless you only need the `threadRun` method.
 		 * @return \React\Promise\ExtendedPromiseInterface
 		 */
 		function run(CommandMessage $message, \ArrayObject $args, bool $fromPattern) {
@@ -60,7 +60,7 @@ return function(Client $client) {
 				return $message->say('', ['embed' => new MessageEmbed(['description' => 'A command of name '.$name.' already exists, Use our android app for more options.'])]);
 			}
 
-			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern)->then(function ($result) use ($message) {
+			return $this->client->pool->run($this->name, 'threadRun', $message, $args, $fromPattern)->then(function ($result) use ($message) {
 				if($result instanceof \Animeshz\ClusterPlus\Models\Command) {
 					$this->client->collector->setCommands([$result], true);
 					return $message->say('', ['embed' => new MessageEmbed(['description' => 'Successfully created command. Use our android app to create and attach a module.'])]);

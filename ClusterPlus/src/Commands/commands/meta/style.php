@@ -7,12 +7,12 @@
 */
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Command;
 use Animeshz\ClusterPlus\Utils\CommandHelpers;
+use CharlotteDunois\Sarah\SarahCommand;
 use \CharlotteDunois\Livia\CommandMessage;
 
 return function ($client) {
-	return (new class($client) extends Command {
+	return (new class($client) extends SarahCommand {
 		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'style',

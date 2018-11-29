@@ -6,11 +6,12 @@
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
 */
 
-use \Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput;
-use \Animeshz\ClusterPlus\API\DialogFlow\Models\TextInput;
+use Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput;
+use Animeshz\ClusterPlus\API\DialogFlow\Models\TextInput;
+use CharlotteDunois\Sarah\SarahCommand;
 
 return function(\Animeshz\ClusterPlus\Client $client) {
-	return (new class($client) extends \Animeshz\ClusterPlus\Dependent\Command {
+	return (new class($client) extends SarahCommand {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'talk',

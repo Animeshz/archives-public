@@ -7,11 +7,11 @@
 */
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Command;
 use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Sarah\SarahCommand;
 
 return function(Client $client) {
-	return (new class($client) extends Command {
+	return (new class($client) extends SarahCommand {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'command-info',

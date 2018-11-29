@@ -7,13 +7,13 @@
  */
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Command;
 use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Sarah\SarahCommand;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
 use CharlotteDunois\Yasmin\Models\Message;
 
 return function (Client $client) {
-	return (new class($client) extends Command {
+	return (new class($client) extends SarahCommand {
 		function __construct(Client $client) {
 			parent::__construct($client, [
 				'name' => 'apply',
