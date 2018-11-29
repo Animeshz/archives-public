@@ -13,9 +13,10 @@ use Animeshz\ClusterPlus\Commands\CommandsDispatcher;
 use Animeshz\ClusterPlus\Models\Invite;
 use Animeshz\ClusterPlus\Utils\Collector;
 use Animeshz\ClusterPlus\Utils\UniversalHelpers;
-use CharlotteDunois\Livia\LiviaClient;
+use CharlotteDunois\Sarah\SarahClient;
 use CharlotteDunois\Validation\Validator;
 use CharlotteDunois\Yasmin\Models\ClientBase;
+use InvalidArgumentException;
 use React\EventLoop\LoopInterface;
 use React\MySQL\Factory;
 use React\MySQL\ConnectionInterface;
@@ -26,7 +27,7 @@ use React\Promise\ExtendedPromiseInterface;
 /**
  * ClusterPlus Client
  */
-class Client extends LiviaClient
+class Client extends SarahClient
 {
 	/**
 	 * @var \Animeshz\ClusterPlus\Utils\Collector
@@ -39,17 +40,11 @@ class Client extends LiviaClient
 	protected $dialogflow;
 
 	/**
-	 * @var \Animeshz\ClusterPlus\Dependent\Pool
-	 */
-	protected $pool;
-
-	/**
 	 * Fancy Constructor
 	 *
 	 * ```
 	 * [
 	 *   'eventHandler.class' => '', (classname of eventhandler and it must extends Animeshz\ClusterPlus\Dependent\EventHandler) (optional)
-	 *   'pool.class' => '', (classname of pool and it must extends Animeshz\ClusterPlus\Dependent\Pool) (optional)
 	 *   'worker.class' => '', (classname of worker and it must extends Animeshz\ClusterPlus\Dependent\Worker) (optional)
 	 *   'database' => [
 	 *      "server": "",
@@ -74,13 +69,8 @@ class Client extends LiviaClient
 		$this->validateConfigs($config);
 		parent::__construct($config, $loop);
 
-		if(ClientBase::$serializeClient === null) ClientBase::$serializeClient = $this;
-
 		$eventHandler = $this->getOption('eventHandler.class', '\\Animeshz\\ClusterPlus\\Dependent\\EventHandler');
 		$disabledEvents = $this->getOption('eventHandler.events.disable', []);
-		$pool = $this->getOption('pool.class', '\\Animeshz\\ClusterPlus\\Dependent\\Pool');
-		$worker = $this->getOption('worker.class', '\\Animeshz\\ClusterPlus\\Dependent\\Worker');
-		$poolOptions = $this->getOption('pool.options', []);
 		$isDatabaseSet = $this->getOption('database', false);
 		$isDialogflowFileSet = $this->getOption('dialogflow', false);
 
@@ -89,11 +79,6 @@ class Client extends LiviaClient
 
 		$this->eventHandler = new $eventHandler($this, $disabledEvents);
 		$this->eventHandler->dispatch();
-
-		$this->pool = new $pool($this, $poolOptions);
-		$this->pool->on('error', function (\Throwable $e) {
-			$this->emit('error', $e);
-		});
 
 		$this->collector = new Collector($this);
 
@@ -164,7 +149,7 @@ class Client extends LiviaClient
 	function eval(string $code, array $options = array()): ExtendedPromiseInterface
 	{
 		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
-			if(!(UniversalHelpers::isValidPHP($code))) return $reject(new \InvalidArgumentException('Code given is not a valid php code'));
+			if(!(UniversalHelpers::isValidPHP($code))) return $reject(new InvalidArgumentException('Code given is not a valid php code'));
 			if(\mb_substr($code, -1) !== ';') {
 				$code .= ';';
 			}
@@ -187,6 +172,20 @@ class Client extends LiviaClient
 		}));
 	}
 
+	function addEventTimer($time, callable $listener, string $event)
+	{
+		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
+
+		$this->on($event, function () use ($time, $listener) { $this->addTimer($time, $listener); });
+	}
+
+	function addEventPeriodicTimer($time, callable $listener, string $event)
+	{
+		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
+
+		$this->on($event, function () use ($time, $listener) { $this->addPeriodicTimer($time, $listener); });
+	}
+
 	/**
 	 * Validates the passed config.
 	 * @param array  $config
@@ -197,9 +196,7 @@ class Client extends LiviaClient
 	{
 		$validator = Validator::make($config, array(
 			'eventHandler.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\EventHandler,string_only',
-			'pool.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Pool,string_only',
 			'provider.class' => 'class:\\CharlotteDunois\\Livia\\Providers\\MySQLProvider,string_only',
-			'worker.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\Worker,string_only',
 			'dialogflow' => 'string'
 		));
 
