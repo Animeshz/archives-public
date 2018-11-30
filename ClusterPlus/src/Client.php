@@ -60,6 +60,7 @@ class Client extends SarahClient
 	 * @throws \Exception
 	 * @throws \InvalidArgumentException
 	 * 
+	 * @see https://charlottedunois.github.io/Sarah/master/CharlotteDunois/Sarah/SarahClient.html#method___construct
 	 * @see https://livia.neko.run/master/CharlotteDunois/Livia/LiviaClient.html#method___construct
 	 * @see https://yasmin.neko.run/master/CharlotteDunois/Yasmin/Client.html#method___construct
 	 * @see https://charlottedunois.github.io/Phoebe/master/CharlotteDunois/Phoebe/Pool.html#method___construct

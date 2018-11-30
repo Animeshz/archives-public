@@ -9,7 +9,6 @@
 namespace Animeshz\ClusterPlus\Utils;
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Worker;
 use Animeshz\ClusterPlus\Models\Command;
 use Animeshz\ClusterPlus\Models\CommandStorage;
 use Animeshz\ClusterPlus\Models\Invite;
@@ -19,6 +18,7 @@ use Animeshz\ClusterPlus\Models\Module;
 use Animeshz\ClusterPlus\Models\ModuleStorage;
 use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Phoebe\AsyncTask;
+use CharlotteDunois\Sarah\SarahWorker;
 use CharlotteDunois\Yasmin\Models\ClientBase;
 use React\MySQL\Factory;
 use React\Promise\Promise;
@@ -202,7 +202,7 @@ class Collector implements \Serializable
 		{
 			function run()
 			{
-				$client = Worker::$client;
+				$client = SarahWorker::$client;
 
 				$client->provider->threadReady($client)->done(function () use ($client)
 				{
@@ -241,7 +241,7 @@ class Collector implements \Serializable
 						]);
 					})->then(function (Collection $data) use ($client)
 					{
-						$client->guilds->each(function ($guild) use ($client, &$data) {
+						foreach ($client->guilds as $guild) {
 
 							$invs = $mdls = $cmds = [];
 							$invites = $client->provider->get($guild, 'invites', []);
@@ -252,6 +252,7 @@ class Collector implements \Serializable
 								$invite['guild'] = $guild;
 								$invs[] = Invite::jsonUnserialize($client, $invite);
 							}
+							//problem in here
 							foreach ($modules as $module) {
 								$module['guild'] = $guild;
 								$mdls[] = Module::jsonUnserialize($client, $module);
@@ -261,10 +262,10 @@ class Collector implements \Serializable
 								$cmds[] = Command::jsonUnserialize($client, $command);
 							}
 
-							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites'), $invs));
+							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
 							if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
 							if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
-						});
+						}
 						return $data;
 					})->then(function ($data) {
 						$this->wrap($data);

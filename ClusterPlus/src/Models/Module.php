@@ -87,7 +87,7 @@ class Module implements \JsonSerializable, \Serializable
 		$validator = Validator::make($info, array(
 			'name' => 'required|string|lowercase|nowhitespace',
 			'description' => 'required|string',
-			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild'
+			'guild' => 'required|class:\\CharlotteDunois\\Yasmin\\Models\\Guild',
 			'input' => 'required|string',
 		));
 		
