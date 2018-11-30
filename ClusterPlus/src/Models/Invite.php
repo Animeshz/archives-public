@@ -176,7 +176,7 @@ class Invite implements \JsonSerializable, \Serializable
 				$invited[] = yield $this->client->fetchUser($userid);
 			}
 			$this->invited = new Collection($invited);
-		});
+		}, $this->client->loop);
 
 		return new static($client, $vars);
 	}
@@ -219,7 +219,7 @@ class Invite implements \JsonSerializable, \Serializable
 		if (is_string($info['inviter'])) {
 			ReactKernel::start(function () use (&$info) {
 				$this->inviter = yield $this->client->fetchUser($info['inviter']);
-			});
+			}, $this->client->loop);
 		} elseif ($info['inviter'] instanceof User) {
 			$this->inviter = $info['inviter'];
 		} else {
@@ -237,7 +237,7 @@ class Invite implements \JsonSerializable, \Serializable
 				})->all();
 				$invited = yield all($promisedInvited);				
 				$this->invited = isset($this->invited) ? $this->invited->merge($invited) : new Collection($invited);
-			});
+			}, $this->client->loop);
 		} else {
 			$this->invited = new Collection;
 		}

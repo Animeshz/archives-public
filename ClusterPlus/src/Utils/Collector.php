@@ -230,16 +230,16 @@ class Collector implements \Serializable
 							$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl) {
 								return (!$inviteColl->has($invite->code));
 							})->map(function ($invite) use ($client) {
-								return Invite::make($client, $invite);
+								return [$client, $invite];
 							})->all();
 							$invs = array_merge($invs, array_values($newInvites));
 						}
 
 						return new Collection([
-							'invites' => $invs,
+							'newInvites' => $invs,
 							'inviteCache' => $inviteCache
 						]);
-					})->then(function (Collection $data) use ($client)
+					})->then(function (Collection $data) use ($client): Collection
 					{
 						foreach ($client->guilds as $guild) {
 
@@ -257,13 +257,12 @@ class Collector implements \Serializable
 								$module['guild'] = $guild;
 								$mdls[] = Module::jsonUnserialize($client, $module);
 							}
-
 							foreach ($commands as $command) {
 								$command['guild'] = $guild;
 								$cmds[] = Command::jsonUnserialize($client, $command);
 							}
 
-							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites'), $invs));
+							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
 							if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
 							if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
 						}
@@ -281,11 +280,17 @@ class Collector implements \Serializable
 		{
 			$inviteCache = $data->get('inviteCache');
 			$invites = $data->get('invites');
+			$newInvites = $data->get('newInvites');
 			$modules = $data->get('modules');
 			$commands = $data->get('commands');
 
+			$newInvites = array_map(function (array $invite) {
+				return Invite::make(...$invite);
+			}, $newInvites);
+
 			if(!empty($inviteCache)) $this->setInviteCache($inviteCache);
 			if(!empty($invites)) $this->setInvites($invites);
+			if(!empty($newInvites)) $this->setInvites($newInvites, true);
 			if(!empty($modules)) $this->setModules($modules);
 			if(!empty($commands)) $this->setCommands($commands);
 		}, function (\Exception $error) {
@@ -303,7 +308,7 @@ class Collector implements \Serializable
 		$this->commands->store($commands, $update);
 	}
 
-	function setInvites(array $invites): void
+	function setInvites(array $invites, bool $update = false): void
 	{
 		$this->invites->store($invites);
 	}

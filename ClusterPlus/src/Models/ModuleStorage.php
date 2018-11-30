@@ -12,8 +12,6 @@ use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use CharlotteDunois\Yasmin\Models\Guild;
 use CharlotteDunois\Collect\Collection;
 
-use function mb_stripos;
-
 /**
  * Module Storage
  */
@@ -53,7 +51,7 @@ class ModuleStorage extends Storage
 		return null;
 	}
 
-	function store(array $commands): void
+	function store(array $modules): void
 	{
 		foreach ($modules as $module) {
 			$guildID = $module->guild->id;
