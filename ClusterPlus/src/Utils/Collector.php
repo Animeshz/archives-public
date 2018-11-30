@@ -17,6 +17,7 @@ use Animeshz\ClusterPlus\Models\InviteStorage;
 use Animeshz\ClusterPlus\Models\Module;
 use Animeshz\ClusterPlus\Models\ModuleStorage;
 use CharlotteDunois\Collect\Collection;
+use CharlotteDunois\Livia\Providers\SettingProvider;
 use CharlotteDunois\Phoebe\AsyncTask;
 use CharlotteDunois\Sarah\SarahWorker;
 use CharlotteDunois\Yasmin\Models\ClientBase;
@@ -204,74 +205,75 @@ class Collector implements \Serializable
 			{
 				$client = SarahWorker::$client;
 
-				$client->provider->threadReady($client)->done(function () use ($client)
+				if($client->provider->getState() !== SettingProvider::STATE_READY) {
+					return $client->loop->futureTick(array($this, 'run'));
+				}
+
+				$fetchedPromises = [];
+				$client->guilds->each(function ($guild) use (&$fetchedPromises)
 				{
-					$fetchedPromises = [];
-					$client->guilds->each(function ($guild) use (&$fetchedPromises)
-					{
-						$fetchedPromises[] = $guild->fetchInvites();
-					});
+					$fetchedPromises[] = $guild->fetchInvites();
+				});
 
-					all($fetchedPromises)->then(function (array $invites) use ($client): Collection
-					{
-						$invs = $inviteCache = [];
+				all($fetchedPromises)->then(function (array $invites) use ($client): Collection
+				{
+					$invs = $inviteCache = [];
 
-						foreach ($invites as $guildInvites) {
-							if($guildInvites->count() === 0) continue;
+					foreach ($invites as $guildInvites) {
+						if($guildInvites->count() === 0) continue;
 
-							$guild = $guildInvites->first()->guild;
-							$inviteCache = array_values(array_merge($inviteCache, $guildInvites->all()));
+						$guild = $guildInvites->first()->guild;
+						$inviteCache = array_values(array_merge($inviteCache, $guildInvites->all()));
 
-							$newInvites = [];
+						$newInvites = [];
 
-							$dbInvites = $client->provider->get($guild, 'invites', []);
-							$inviteColl = new Collection(\array_column($dbInvites, null, 'code'));
+						$dbInvites = $client->provider->get($guild, 'invites', []);
+						$inviteColl = new Collection(\array_column($dbInvites, null, 'code'));
 
-							$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl) {
-								return (!$inviteColl->has($invite->code));
-							})->map(function ($invite) use ($client) {
-								return [$client, $invite];
-							})->all();
-							$invs = array_merge($invs, array_values($newInvites));
+						$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl) {
+							return (!$inviteColl->has($invite->code));
+						})->map(function ($invite) use ($client) {
+							return [$client, $invite];
+						})->all();
+						$invs = array_merge($invs, array_values($newInvites));
+					}
+
+					return new Collection([
+						'newInvites' => $invs,
+						'inviteCache' => $inviteCache
+					]);
+				})->then(function (Collection $data) use ($client): Collection
+				{
+					foreach ($client->guilds as $guild) {
+
+						$invs = $mdls = $cmds = [];
+						$invites = $client->provider->get($guild, 'invites', []);
+						$modules = $client->provider->get($guild, 'modules', []);
+						$commands = $client->provider->get($guild, 'commands', []);
+
+						foreach ($invites as $invite) {
+							$invite['guild'] = $guild;
+							$invs[] = Invite::jsonUnserialize($client, $invite);
 						}
-
-						return new Collection([
-							'newInvites' => $invs,
-							'inviteCache' => $inviteCache
-						]);
-					})->then(function (Collection $data) use ($client): Collection
-					{
-						foreach ($client->guilds as $guild) {
-
-							$invs = $mdls = $cmds = [];
-							$invites = $client->provider->get($guild, 'invites', []);
-							$modules = $client->provider->get($guild, 'modules', []);
-							$commands = $client->provider->get($guild, 'commands', []);
-
-							foreach ($invites as $invite) {
-								$invite['guild'] = $guild;
-								$invs[] = Invite::jsonUnserialize($client, $invite);
-							}
 							//problem in here
-							foreach ($modules as $module) {
-								$module['guild'] = $guild;
-								$mdls[] = Module::jsonUnserialize($client, $module);
-							}
-							foreach ($commands as $command) {
-								$command['guild'] = $guild;
-								$cmds[] = Command::jsonUnserialize($client, $command);
-							}
-
-							if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
-							if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
-							if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
+						foreach ($modules as $module) {
+							$module['guild'] = $guild;
+							$mdls[] = Module::jsonUnserialize($client, $module);
 						}
-						return $data;
-					})->then(function ($data) {
-						$this->wrap($data);
-					}, function (\Exception $e) {
-						$this->wrap($e);
-					});
+						foreach ($commands as $command) {
+							$command['guild'] = $guild;
+							$cmds[] = Command::jsonUnserialize($client, $command);
+						}
+
+						if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
+						if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
+						if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
+					}
+					return $data;
+				})->then(function ($data) {
+					$this->wrap($data);
+				}, function (\Exception $e) {
+					$this->wrap($e);
 				});
 			}
 		};

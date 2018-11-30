@@ -20,6 +20,7 @@ class CommandsDispatcher
 		$this->client = $client;
 
 		$this->client->registry->registerDefaults();
+		$this->client->registerThreadedCommands();
 		$this->registerGroups()->registerCommands();
 
 		$this->dispatchCustomCommands();

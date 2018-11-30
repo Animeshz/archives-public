@@ -10,10 +10,13 @@ namespace Animeshz\ClusterPlus\Dependent;
 
 use Animeshz\ClusterPlus\Client;
 use CharlotteDunois\Collect\Collection;
+use CharlotteDunois\Livia\Providers\SettingProvider;
 use CharlotteDunois\Yasmin\Models\ClientBase;
 use React\MySQL\Factory;
 use React\MySQL\ConnectionInterface;
 use React\Promise\ExtendedPromiseInterface;
+
+use Exception;
 
 /**
  * Livia MySQLProvider implementation.
@@ -56,24 +59,24 @@ class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider imple
 
 	function unserialize($data): void
 	{
+		if(ClientBase::$serializeClient === null) throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+		$this->client = ClientBase::$serializeClient;
+
 		$data = \unserialize($data);
 		foreach ($data as $key => $value) {
 			$this->key = $value;
 		}
-	}
 
-	function threadReady(Client $client): ExtendedPromiseInterface
-	{
-		$this->client = $client;
-		$factory = new Factory($client->loop);
-		return $factory->createConnection($client->getOption('database')['user'].':'.$client->getOption('database')['pass'].'@'.$client->getOption('database')['server'].'/'.$client->getOption('database')['db'])->then(function (ConnectionInterface $db)
-		{
-			$this->db = $db;
-		})->then(function () use ($client) {
-			$this->settings = new Collection;
-			return $this->init($client);
-		})->otherwise(function (\Throwable $err) use ($client) {
-			$client->handlePromiseRejection($err);
+		$this->client->loop->futureTick(function () {
+			$factory = new Factory($this->client->loop);
+			$factory->createConnection($this->client->getOption('database')['user'].':'.$this->client->getOption('database')['pass'].'@'.$this->client->getOption('database')['server'].'/'.$this->client->getOption('database')['db'])->then(function (ConnectionInterface $db)
+			{
+				$this->db = $db;
+				$this->providerState = SettingProvider::STATE_READY;
+			})->then(function () {
+				$this->settings = new Collection;
+				return $this->init($this->client);
+			})->otherwise(function (Exception $e) { $this->client->handlePromiseRejection($e); });
 		});
 	}
 }
