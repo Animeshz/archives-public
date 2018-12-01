@@ -13,6 +13,7 @@ use Animeshz\ClusterPlus\Commands\CommandsDispatcher;
 use Animeshz\ClusterPlus\Models\Invite;
 use Animeshz\ClusterPlus\Utils\Collector;
 use Animeshz\ClusterPlus\Utils\UniversalHelpers;
+use CharlotteDunois\Livia\LiviaClient;
 use CharlotteDunois\Sarah\SarahClient;
 use CharlotteDunois\Validation\Validator;
 use CharlotteDunois\Yasmin\Models\ClientBase;
@@ -143,6 +144,20 @@ class Client extends SarahClient
 		return $str;
 	}
 
+	function addEventTimer($time, callable $listener, string $event)
+	{
+		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
+
+		$this->on($event, function () use ($time, $listener) { $this->addTimer($time, $listener); });
+	}
+
+	function addEventPeriodicTimer($time, callable $listener, string $event)
+	{
+		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
+
+		$this->on($event, function () use ($time, $listener) { $this->addPeriodicTimer($time, $listener); });
+	}
+
 	/**
      * @return \React\Promise\ExtendedPromiseInterface|null
      * @internal
@@ -173,18 +188,9 @@ class Client extends SarahClient
 		}));
 	}
 
-	function addEventTimer($time, callable $listener, string $event)
+	function privateEmit(string $event, ...$args)
 	{
-		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
-
-		$this->on($event, function () use ($time, $listener) { $this->addTimer($time, $listener); });
-	}
-
-	function addEventPeriodicTimer($time, callable $listener, string $event)
-	{
-		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
-
-		$this->on($event, function () use ($time, $listener) { $this->addPeriodicTimer($time, $listener); });
+		return LiviaClient::emit($event, ...$args);
 	}
 
 	/**

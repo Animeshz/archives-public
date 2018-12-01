@@ -72,10 +72,11 @@ class MySQLProvider extends \CharlotteDunois\Livia\Providers\MySQLProvider imple
 			$factory->createConnection($this->client->getOption('database')['user'].':'.$this->client->getOption('database')['pass'].'@'.$this->client->getOption('database')['server'].'/'.$this->client->getOption('database')['db'])->then(function (ConnectionInterface $db)
 			{
 				$this->db = $db;
-				$this->providerState = SettingProvider::STATE_READY;
 			})->then(function () {
 				$this->settings = new Collection;
 				return $this->init($this->client);
+			})->then(function () {
+				$this->providerState = SettingProvider::STATE_READY;
 			})->otherwise(function (Exception $e) { $this->client->handlePromiseRejection($e); });
 		});
 	}
