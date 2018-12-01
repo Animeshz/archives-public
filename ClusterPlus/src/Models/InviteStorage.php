@@ -9,7 +9,6 @@
 namespace Animeshz\ClusterPlus\Models;
 
 use CharlotteDunois\Yasmin\Models\Guild;
-use CharlotteDunois\Collect\Collection;
 
 /**
  * Invite Storage
@@ -21,10 +20,10 @@ class InviteStorage extends Storage
 		if ($guild instanceof Guild) $guild = $guild->id;
 
 		if($this->has($guild)) {
-			$collection = $this->get($guild);
+			$context = $this->get($guild);
 
-			if ($collection->has($name)) {
-				return $collection->get($name);
+			if ($context->has($name)) {
+				return $context->get($name);
 			}
 		}
 
@@ -35,7 +34,7 @@ class InviteStorage extends Storage
 	{
 		foreach ($invites as $invite) {
 			$guildID = $invite->guild->id;
-			if(!$this->has($guildID)) $this->set($guildID, new Collection);
+			if(!$this->has($guildID)) $this->set($guildID, new Storage($this->client));
 			$inv = $this->get($guildID);
 			$inv->set($invite->inviter->id, $invite);
 		}

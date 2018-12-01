@@ -13,6 +13,10 @@ use CharlotteDunois\Collect\Collection;
 use CharlotteDunois\Yasmin\Models\ClientBase;
 use CharlotteDunois\Yasmin\Models\Guild;
 
+use Exception;
+use function serialize;
+use function unserialize;
+
 /**
  * Command Storage
  */
@@ -30,14 +34,21 @@ class Storage extends Collection implements \Serializable
 
 	function serialize(): string
 	{
-		return \serialize($this->data);
+		$vars = get_object_vars($this);
+		unset($vars['client']);
+
+		return serialize($vars);
 	}
 
 	function unserialize($data): void
 	{
-		if(ClientBase::$serializeClient === null) throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+		if(ClientBase::$serializeClient === null) throw new Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
+
+		$vars = unserialize($data);
+		foreach ($vars as $key => $value) {
+			$this->$key = $value;
+		}
 
 		$this->client = ClientBase::$serializeClient;
-		$this->data = \unserialize($data);
 	}
 }

@@ -39,7 +39,7 @@ use function React\Promise\all;
 class Collector implements \Serializable
 {
 	/**
-	 * @var \ClusterPlus\Client
+	 * @var Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
 
@@ -47,7 +47,7 @@ class Collector implements \Serializable
 	 * Collection mapped by guild id.
 	 * Inner collection contains commands of guild mapped by their names.
 	 * 
-	 * @var \CharlotteDunois\Collect\Collection
+	 * @var Animeshz\ClusterPlus\Models\CommandStorage
 	 */
 	protected $commands;
 
@@ -55,7 +55,7 @@ class Collector implements \Serializable
 	 * Collection mapped by guild id.
 	 * Inner collection contains modules of guild mapped by their names.
 	 * 
-	 * @var \CharlotteDunois\Collect\Collection
+	 * @var Animeshz\ClusterPlus\Models\ModuleStorage
 	 */
 	protected $modules;
 
@@ -63,7 +63,7 @@ class Collector implements \Serializable
 	 * Collection mapped by guild id.
 	 * Inner collection contains commands of guild mapped by inviter's id.
 	 * 
-	 * @var \CharlotteDunois\Collect\Collection
+	 * @var Animeshz\ClusterPlus\Models\InviteStorage
 	 */
 	protected $invites;
 
@@ -71,7 +71,7 @@ class Collector implements \Serializable
 	 * Collection mapped by guild id.
 	 * Inner collection contains Yasmin's invites of guild mapped by their code.
 	 * 
-	 * @var \CharlotteDunois\Collect\Collection
+	 * @var Animeshz\ClusterPlus\Models\InviteCacheStorage
 	 */
 	protected $inviteCache;
 
@@ -210,10 +210,9 @@ class Collector implements \Serializable
 				}
 
 				$fetchedPromises = [];
-				$client->guilds->each(function ($guild) use (&$fetchedPromises)
-				{
+				foreach ($client->guilds as $guild) {
 					$fetchedPromises[] = $guild->fetchInvites();
-				});
+				}
 
 				all($fetchedPromises)->then(function (array $invites) use ($client): Collection
 				{

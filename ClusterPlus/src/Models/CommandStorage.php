@@ -10,14 +10,13 @@ namespace Animeshz\ClusterPlus\Models;
 
 use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use CharlotteDunois\Yasmin\Models\Guild;
-use CharlotteDunois\Collect\Collection;
 use InvalidArgumentException;
 
 /**
  * Command Storage
  * 
  * Format this uses is:
- * Guild => Collection<name:Command>
+ * Guild => Storage<name:Command>
  */
 class CommandStorage extends Storage
 {
@@ -34,18 +33,18 @@ class CommandStorage extends Storage
 		if ($guild instanceof Guild) $guild = $guild->id;
 		
 		if($this->has($guild)) {
-			$collection = $this->get($guild);
+			$context = $this->get($guild);
 
-			if ($collection->has($name)) {
-				return $collection->get($name);
+			if ($context->has($name)) {
+				return $context->get($name);
 			} else {
-				$found = $collection->keys()->filter(function ($key) use ($name) {
-					return mb_stripos($key, $name);
+				$found = $context->keys()->filter(function ($key) use ($name) {
+					return (mb_stripos($key, $name) !== false);
 				});
 
 				$count = $found->count();
 				if ($count === 1) {
-					return $found->first();
+					return $context->get($found->first());
 				} elseif ($count > 1) {
 					throw new MultipleEntryFoundException("Multiple Commands Found: Try to be more specific");
 				}
@@ -67,7 +66,7 @@ class CommandStorage extends Storage
 		foreach ($commands as $command) {
 			if(!$command instanceof Command) $this->client->handlePromiseRejection(new InvalidArgumentException('Command must be instance of Animeshz\ClusterPlus\Models\Command'));
 			$guildID = $command->guild->id;
-			if(!$this->has($guildID)) $this->set($guildID, new Collection);
+			if(!$this->has($guildID)) $this->set($guildID, new Storage($this->client));
 			$cmd = $this->get($guildID);
 			$cmd->set($command->name, $command);
 

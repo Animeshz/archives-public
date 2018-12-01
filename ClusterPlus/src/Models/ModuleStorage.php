@@ -10,7 +10,6 @@ namespace Animeshz\ClusterPlus\Models;
 
 use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use CharlotteDunois\Yasmin\Models\Guild;
-use CharlotteDunois\Collect\Collection;
 
 /**
  * Module Storage
@@ -30,18 +29,18 @@ class ModuleStorage extends Storage
 		if ($guild instanceof Guild) $guild = $guild->id;
 
 		if($this->has($guild)) {
-			$collection = $this->get($guild);
+			$context = $this->get($guild);
 
-			if ($collection->has($name)) {
-				return $collection->get($name);
+			if ($context->has($name)) {
+				return $context->get($name);
 			} else {
-				$found = $collection->keys()->filter(function ($key) use ($name) {
+				$found = $context->keys()->filter(function ($key) use ($name) {
 					return mb_stripos($key, $name);
 				});
 
 				$count = $found->count();
 				if ($count === 1) {
-					return $found->first();
+					return $context->get($found->first());
 				} elseif ($count > 1) {
 					throw new MultipleEntryFoundException("Multiple Modules Found: Try to be more specific");
 				}
@@ -55,7 +54,7 @@ class ModuleStorage extends Storage
 	{
 		foreach ($modules as $module) {
 			$guildID = $module->guild->id;
-			if(!$this->has($guildID)) $this->set($guildID, new Collection);
+			if(!$this->has($guildID)) $this->set($guildID, new Storage($this->client));
 			$cmd = $this->get($guildID);
 			$cmd->set($module->name, $module);
 		}
