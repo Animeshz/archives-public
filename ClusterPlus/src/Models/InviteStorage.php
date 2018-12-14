@@ -4,7 +4,7 @@
  * Copyright 2018 Animeshz, All Rights Reserved
  *
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
-*/
+ */
 
 namespace Animeshz\ClusterPlus\Models;
 
@@ -19,10 +19,12 @@ class InviteStorage extends Storage
 	{
 		if ($guild instanceof Guild) $guild = $guild->id;
 
-		if($this->has($guild)) {
+		if ($this->has($guild))
+		{
 			$context = $this->get($guild);
 
-			if ($context->has($name)) {
+			if ($context->has($name))
+			{
 				return $context->get($name);
 			}
 		}
@@ -30,13 +32,32 @@ class InviteStorage extends Storage
 		return null;
 	}
 
-	function store(array $invites): void
+	/**
+	 * @param array $invites
+	 * @param bool  $update
+	 * @return void
+	 */
+	function store(array $invites, bool $update = false): void
 	{
-		foreach ($invites as $invite) {
+		foreach ($invites as $invite)
+		{
 			$guildID = $invite->guild->id;
-			if(!$this->has($guildID)) $this->set($guildID, new Storage($this->client));
+			if (!$this->has($guildID)) $this->set($guildID, new Storage($this->client));
 			$inv = $this->get($guildID);
 			$inv->set($invite->inviter->id, $invite);
+
+			if ($update)
+			{
+				$c = (array)json_decode(json_encode($invite));
+				$c = array_filter($c, function ($value, $key)
+				{
+					return $key !== 'guild';
+				});
+
+				$dbCmds = $this->client->provider->get($invite->guild, 'commands', []);
+				$dbCmds[] = $c;
+				$this->client->provider->set($invite->guild, 'commands', $dbCmds);
+			}
 		}
 	}
 }

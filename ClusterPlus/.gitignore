@@ -2,5 +2,3 @@
 /vendor/
 composer.lock
 config.json
-/.phpintel/
-/nbproject/private/

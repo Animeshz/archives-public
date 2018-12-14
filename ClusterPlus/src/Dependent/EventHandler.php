@@ -70,9 +70,11 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 		
 		return \serialize($vars);
 	}
-	
+
 	/**
+	 * @param $data
 	 * @return void
+	 * @throws \Exception
 	 * @internal
 	 */
 	function unserialize($data): void
@@ -109,7 +111,6 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * Dispatches all the events
 	 * 
 	 * @return void
-	 * @internal
 	 */
 	final public function dispatch(): void
 	{
@@ -129,7 +130,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	private function debug()
+	protected function debug()
 	{
 		return [
 			__FUNCTION__,
@@ -144,7 +145,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	private function error(): array
+	protected function error(): array
 	{
 		return [
 			__FUNCTION__,
@@ -159,7 +160,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	private function providerSet(): array
+	protected function providerSet(): array
 	{
 		return [
 			__FUNCTION__,
@@ -175,7 +176,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 	 * @return array
 	 * @internal
 	 */
-	private function raw(): array
+	protected function raw(): array
 	{
 		return [
 			__FUNCTION__,
@@ -196,7 +197,7 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 			__FUNCTION__,
 			function (\CharlotteDunois\Yasmin\Models\GuildMember $member)
 			{
-				$member->guild->fetchInvites()->done(function (\CharlotteDunois\Utils\Collection $invites) use ($member)
+				$member->guild->fetchInvites()->done(function (\CharlotteDunois\Collect\Collection $invites) use ($member)
 				{
 					$entryFound = false;
 					foreach ($invites as $invite) {
@@ -209,9 +210,9 @@ class EventHandler implements \Animeshz\ClusterPlus\Interfaces\EventHandler, \Se
 						}
 					}
 
-					if(!$entryFound) {
-						//check if invite is not cached in collector, if one invite is not then emit guildMemberAddByInvite
-					}
+//					if(!$entryFound) {
+//						//check if invite is not cached in collector, if one invite is not then emit guildMemberAddByInvite
+//					}
 				});
 			}
 		];

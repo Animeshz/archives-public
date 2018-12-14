@@ -4,7 +4,7 @@
  * Copyright 2018 Animeshz, All Rights Reserved
  *
  * License: https://github.com/Animeshz/ClusterPlus/blob/master/LICENSE
-*/
+ */
 
 namespace Animeshz\ClusterPlus\Utils;
 
@@ -21,8 +21,6 @@ use CharlotteDunois\Livia\Providers\SettingProvider;
 use CharlotteDunois\Phoebe\AsyncTask;
 use CharlotteDunois\Sarah\SarahWorker;
 use CharlotteDunois\Yasmin\Models\ClientBase;
-use React\MySQL\Factory;
-use React\Promise\Promise;
 use React\Promise\ExtendedPromiseInterface;
 
 use function React\Promise\all;
@@ -30,55 +28,55 @@ use function React\Promise\all;
 /**
  * A command that can be run in a client.
  *
- * @property \Animeshz\ClusterPlus\Client					$client             The client which initiated the instance.
- * @property \Animeshz\ClusterPlus\Models\CommandStorage	$commands			Collection of commands.
- * @property \CharlotteDunois\Yasmin\Utils\Collection		$modules			Collection of modules.
- * @property \Animeshz\ClusterPlus\Models\InviteStorage		$invites			Collection of invites.
- * @property \CharlotteDunois\Yasmin\Utils\Collection		$inviteCache		Collection of inviteCache.
+ * @property \Animeshz\ClusterPlus\Client                    $client              The client which initiated the instance.
+ * @property \Animeshz\ClusterPlus\Models\CommandStorage     $commands            Collection of commands.
+ * @property \Animeshz\ClusterPlus\Models\ModuleStorage      $modules             Collection of modules.
+ * @property \Animeshz\ClusterPlus\Models\InviteStorage      $invites             Collection of invites.
+ * @property \Animeshz\ClusterPlus\Models\InviteCacheStorage $inviteCache         Collection of inviteCache.
  */
 class Collector implements \Serializable
 {
 	/**
-	 * @var Animeshz\ClusterPlus\Client
+	 * @var \Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
 
 	/**
 	 * Collection mapped by guild id.
 	 * Inner collection contains commands of guild mapped by their names.
-	 * 
-	 * @var Animeshz\ClusterPlus\Models\CommandStorage
+	 *
+	 * @var \Animeshz\ClusterPlus\Models\CommandStorage
 	 */
 	protected $commands;
 
 	/**
 	 * Collection mapped by guild id.
 	 * Inner collection contains modules of guild mapped by their names.
-	 * 
-	 * @var Animeshz\ClusterPlus\Models\ModuleStorage
+	 *
+	 * @var \Animeshz\ClusterPlus\Models\ModuleStorage
 	 */
 	protected $modules;
 
 	/**
 	 * Collection mapped by guild id.
 	 * Inner collection contains commands of guild mapped by inviter's id.
-	 * 
-	 * @var Animeshz\ClusterPlus\Models\InviteStorage
+	 *
+	 * @var \Animeshz\ClusterPlus\Models\InviteStorage
 	 */
 	protected $invites;
 
 	/**
 	 * Collection mapped by guild id.
 	 * Inner collection contains Yasmin's invites of guild mapped by their code.
-	 * 
-	 * @var Animeshz\ClusterPlus\Models\InviteCacheStorage
+	 *
+	 * @var \Animeshz\ClusterPlus\Models\InviteCacheStorage
 	 */
 	protected $inviteCache;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param Client $client 
+	 *
+	 * @param Client $client
 	 */
 	function __construct(Client $client)
 	{
@@ -91,36 +89,40 @@ class Collector implements \Serializable
 	}
 
 	/**
-	 * @param string  $name
+	 * @param string $name
 	 * @return bool
 	 * @throws \Exception
 	 * @internal
 	 */
 	function __isset($name): bool
 	{
-		try {
+		try
+		{
 			return $this->$name !== null;
-		} catch (\RuntimeException $e) {
-			if($e->getTrace()[0]['function'] === '__get') {
+		} catch (\RuntimeException $e)
+		{
+			if ($e->getTrace()[0]['function'] === '__get')
+			{
 				return false;
 			}
-			
+
 			throw $e;
 		}
 	}
-	
+
 	/**
-	 * @param string  $name
+	 * @param string $name
 	 * @return mixed
 	 * @throws \RuntimeException
 	 * @internal
 	 */
 	function __get($name)
 	{
-		if(\property_exists($this, $name)) {
+		if (\property_exists($this, $name))
+		{
 			return $this->$name;
-		}		
-		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
+		}
+		throw new \RuntimeException('Unknown property ' . \get_class($this) . '::$' . $name);
 	}
 
 	/**
@@ -135,30 +137,34 @@ class Collector implements \Serializable
 	}
 
 	/**
+	 * @param $vars
 	 * @return void
+	 * @throws \Exception
 	 * @internal
 	 */
 	function unserialize($vars): void
 	{
-		if(ClientBase::$serializeClient === null) {
+		if (ClientBase::$serializeClient === null)
+		{
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
-		
+
 		$vars = \unserialize($vars);
-		foreach($vars as $name => $val) {
+		foreach ($vars as $name => $val)
+		{
 			$this->$name = $val;
 		}
-		
+
 		$this->client = ClientBase::$serializeClient;
 	}
 
 	/**
 	 * Fetch Command from local environment, if second parameter is
 	 * set it'll return command, else return collection of commands.
-	 * 
-	 * @param int $guildID 
-	 * @param string|null $name 
-	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Commands
+	 *
+	 * @param int         $guildID
+	 * @param string|null $name
+	 * @return \CharlotteDunois\Collect\Collection|\Animeshz\ClusterPlus\Models\Command
 	 */
 	function getCommands(int $guildID, string $name = null)
 	{
@@ -168,10 +174,10 @@ class Collector implements \Serializable
 	/**
 	 * Fetch Invite from local environment, if second parameter is
 	 * set it'll return invite, else return collection of invites.
-	 * 
-	 * @param int $guildID 
-	 * @param string|null $name 
-	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Invite
+	 *
+	 * @param int         $guildID
+	 * @param string|null $name
+	 * @return \CharlotteDunois\Collect\Collection|\Animeshz\ClusterPlus\Models\Invite
 	 */
 	function getInvites(int $guildID, string $name = null)
 	{
@@ -181,10 +187,10 @@ class Collector implements \Serializable
 	/**
 	 * Fetch Modules from local environment, if second parameter
 	 * is set it'll return module, else return collection of modules.
-	 * 
-	 * @param int $guildID 
-	 * @param string|null $name 
-	 * @return \CharlotteDunois\Yasmin\Utils\Collection|\Animeshz\ClusterPlus\Models\Modules
+	 *
+	 * @param int         $guildID
+	 * @param string|null $name
+	 * @return \CharlotteDunois\Collect\Collection|\Animeshz\ClusterPlus\Models\Module
 	 */
 	function getModules(int $guildID, string $name = null)
 	{
@@ -194,10 +200,10 @@ class Collector implements \Serializable
 	/**
 	 * Loads commands, modules and invites from databases.
 	 * $client->provider must be set before calling this function.
-	 * 
-	 * @return \React\Promise\ExtendedPromiseInterface
+	 *
+	 * @return ExtendedPromiseInterface
 	 */
-	function loadFromDB(): ?ExtendedPromiseInterface
+	function loadFromDB(): ExtendedPromiseInterface
 	{
 		$task = new class extends AsyncTask
 		{
@@ -205,12 +211,15 @@ class Collector implements \Serializable
 			{
 				$client = SarahWorker::$client;
 
-				if($client->provider->getState() !== SettingProvider::STATE_READY) {
-					return $client->loop->futureTick(array($this, 'run'));
+				if ($client->provider->getState() !== SettingProvider::STATE_READY)
+				{
+					$client->loop->futureTick(array($this, 'run'));
+					return;
 				}
 
 				$fetchedPromises = [];
-				foreach ($client->guilds as $guild) {
+				foreach ($client->guilds as $guild)
+				{
 					$fetchedPromises[] = $guild->fetchInvites();
 				}
 
@@ -218,60 +227,64 @@ class Collector implements \Serializable
 				{
 					$invs = $inviteCache = [];
 
-					foreach ($invites as $guildInvites) {
-						if($guildInvites->count() === 0) continue;
+					foreach ($invites as $guildInvites)
+					{
+						if ($guildInvites->count() === 0) continue;
 
 						$guild = $guildInvites->first()->guild;
 						$inviteCache = array_values(array_merge($inviteCache, $guildInvites->all()));
 
-						$newInvites = [];
-
 						$dbInvites = $client->provider->get($guild, 'invites', []);
 						$inviteColl = new Collection(\array_column($dbInvites, null, 'code'));
 
-						$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl) {
+						$newInvites = $guildInvites->filter(function ($invite) use ($inviteColl)
+						{
 							return (!$inviteColl->has($invite->code));
-						})->map(function ($invite) use ($client) {
+						})->map(function ($invite) use ($client)
+						{
 							return [$client, $invite];
 						})->all();
 						$invs = array_merge($invs, array_values($newInvites));
 					}
 
-					return new Collection([
-						'newInvites' => $invs,
-						'inviteCache' => $inviteCache
-					]);
+					return new Collection(['newInvites' => $invs, 'inviteCache' => $inviteCache]);
 				})->then(function (Collection $data) use ($client): Collection
 				{
-					foreach ($client->guilds as $guild) {
+					foreach ($client->guilds as $guild)
+					{
 
 						$invs = $mdls = $cmds = [];
 						$invites = $client->provider->get($guild, 'invites', []);
 						$modules = $client->provider->get($guild, 'modules', []);
 						$commands = $client->provider->get($guild, 'commands', []);
 
-						foreach ($invites as $invite) {
+						foreach ($invites as $invite)
+						{
 							$invite['guild'] = $guild;
 							$invs[] = Invite::jsonUnserialize($client, $invite);
 						}
-							//problem in here
-						foreach ($modules as $module) {
+						//problem in here
+						foreach ($modules as $module)
+						{
 							$module['guild'] = $guild;
 							$mdls[] = Module::jsonUnserialize($client, $module);
 						}
-						foreach ($commands as $command) {
+						foreach ($commands as $command)
+						{
 							$command['guild'] = $guild;
 							$cmds[] = Command::jsonUnserialize($client, $command);
 						}
 
-						if(!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
-						if(!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
-						if(!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
+						if (!empty($invs)) $data = $data->set('invites', \array_merge($data->get('invites') ?? [], $invs));
+						if (!empty($mdls)) $data = $data->set('modules', \array_merge($data->get('modules') ?? [], $mdls));
+						if (!empty($cmds)) $data = $data->set('commands', \array_merge($data->get('commands') ?? [], $cmds));
 					}
 					return $data;
-				})->then(function ($data) {
+				})->then(function ($data)
+				{
 					$this->wrap($data);
-				}, function (\Exception $e) {
+				}, function (\Exception $e)
+				{
 					$this->wrap($e);
 				});
 			}
@@ -285,33 +298,40 @@ class Collector implements \Serializable
 			$modules = $data->get('modules');
 			$commands = $data->get('commands');
 
-			$newInvites = array_map(function (array $invite) {
+			$newInvites = array_map(function (array $invite)
+			{
 				return Invite::make(...$invite);
 			}, $newInvites);
 
-			if(!empty($inviteCache)) $this->setInviteCache($inviteCache);
-			if(!empty($invites)) $this->setInvites($invites);
-			if(!empty($newInvites)) $this->setInvites($newInvites, true);
-			if(!empty($modules)) $this->setModules($modules);
-			if(!empty($commands)) $this->setCommands($commands);
-		}, function (\Exception $error) {
+			if (!empty($inviteCache)) $this->setInviteCache($inviteCache);
+			if (!empty($invites)) $this->setInvites($invites);
+			if (!empty($newInvites)) $this->setInvites($newInvites, true);
+			if (!empty($modules)) $this->setModules($modules);
+			if (!empty($commands)) $this->setCommands($commands);
+		}, function (\Exception $error)
+		{
 			$this->client->handlePromiseRejection($error);
 		});
 	}
 
 	/**
-	 * Sets commands in local environment. Need to add a unique number identifier before setting to database
-	 * @param Command ...$commands 
-	 * @return void
+	 * Sets commands. Need to add a unique number identifier before setting to database
+	 * @param array   $commands array of Command instances
+	 * @param boolean $update   should we update the settings to database
 	 */
 	function setCommands(array $commands, bool $update = false): void
 	{
 		$this->commands->store($commands, $update);
 	}
 
+	/**
+	 * sets invites in local environment.
+	 * @param array   $invites [description]
+	 * @param boolean $update  [description]
+	 */
 	function setInvites(array $invites, bool $update = false): void
 	{
-		$this->invites->store($invites);
+		$this->invites->store($invites, $update);
 	}
 
 	function setInviteCache(array $invites): void

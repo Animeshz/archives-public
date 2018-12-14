@@ -82,10 +82,10 @@ return function(Client $client) {
 								list($time, $event) = explode(', ', $input);
 								$time = (int) $time;
 
-								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); }, $event);
+								$this->client->{'add'.$selected['option']}($time, function () use ($module) { $module->runByTimer(); }, $event);
 							} else {
 								$time = (int) $input;
-								[$this->client, 'add'.$selected['option']]($time, function () use ($module) { $module->runByTimer(); });
+								$this->client->{'add'.$selected['option']}($time, function () use ($module) { $module->runByTimer(); });
 							}
 						} else {
 							try {

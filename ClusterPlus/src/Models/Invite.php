@@ -18,7 +18,7 @@ use Recoil\React\ReactKernel;
 use function \React\Promise\all;
 use function \React\Promise\resolve;
 /**
- * Invite 
+ * Invite
  *
  * @property \CharlotteDunois\Livia\LiviaClient                 $client             The client which initiated the instance.
  * @property string                                             $name               The name of the command.
@@ -52,7 +52,7 @@ class Invite implements \JsonSerializable, \Serializable
 	 * @var \CharlotteDunois\Collect\Collection<\CharlotteDunois\Yasmin\Models\User>
 	 */
 	protected $invited;
-	
+
 	/**
 	 * @internal
 	 * @param \CharlotteDunois\Livia\LiviaClient    $client
@@ -65,7 +65,7 @@ class Invite implements \JsonSerializable, \Serializable
 
 		$this->_patch($info);
 	}
-	
+
 	/**
 	 * @param string  $name
 	 * @return bool
@@ -80,11 +80,11 @@ class Invite implements \JsonSerializable, \Serializable
 			if($e->getTrace()[0]['function'] === '__get') {
 				return false;
 			}
-			
+
 			throw $e;
 		}
 	}
-	
+
 	/**
 	 * @param string  $name
 	 * @return mixed
@@ -95,10 +95,10 @@ class Invite implements \JsonSerializable, \Serializable
 	{
 		if(\property_exists($this, $name)) {
 			return $this->$name;
-		}		
+		}
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
 	}
-	
+
 	/**
 	 * @return string
 	 * @internal
@@ -134,7 +134,7 @@ class Invite implements \JsonSerializable, \Serializable
 
 		return $vars;
 	}
-	
+
 	/**
 	 * @return void
 	 * @internal
@@ -144,7 +144,7 @@ class Invite implements \JsonSerializable, \Serializable
 		if(ClientBase::$serializeClient === null) {
 			throw new \Exception('Unable to unserialize a class without ClientBase::$serializeClient being set');
 		}
-		
+
 		$vars = \unserialize($vars);
 
 		$this->client = ClientBase::$serializeClient;
@@ -169,14 +169,6 @@ class Invite implements \JsonSerializable, \Serializable
 	static function jsonUnserialize(Client $client, array $vars): self
 	{
 		$vars['guild'] = $client->guilds->resolve($vars['guild']);
-		ReactKernel::start(function () use (&$vars) {
-			$vars['inviter'] = yield $this->client->fetchUser($vars['inviter']);
-			$invited = [];
-			foreach ($vars['invited'] as $userid) {
-				$invited[] = yield $this->client->fetchUser($userid);
-			}
-			$this->invited = new Collection($invited);
-		}, $this->client->loop);
 
 		return new static($client, $vars);
 	}
@@ -235,7 +227,7 @@ class Invite implements \JsonSerializable, \Serializable
 					if(is_string($user)) return $this->client->fetchUser($user);
 					if($user instanceof User) return resolve($user);
 				})->all();
-				$invited = yield all($promisedInvited);				
+				$invited = yield all($promisedInvited);
 				$this->invited = isset($this->invited) ? $this->invited->merge($invited) : new Collection($invited);
 			}, $this->client->loop);
 		} else {

@@ -10,20 +10,16 @@ namespace Animeshz\ClusterPlus;
 
 use Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient;
 use Animeshz\ClusterPlus\Commands\CommandsDispatcher;
-use Animeshz\ClusterPlus\Models\Invite;
 use Animeshz\ClusterPlus\Utils\Collector;
-use Animeshz\ClusterPlus\Utils\UniversalHelpers;
 use CharlotteDunois\Livia\LiviaClient;
 use CharlotteDunois\Sarah\SarahClient;
 use CharlotteDunois\Validation\Validator;
-use CharlotteDunois\Yasmin\Models\ClientBase;
-use InvalidArgumentException;
 use React\EventLoop\LoopInterface;
 use React\MySQL\Factory;
 use React\MySQL\ConnectionInterface;
-use React\Promise\Promise;
-use React\Promise\PromiseInterface;
 use React\Promise\ExtendedPromiseInterface;
+
+use InvalidArgumentException;
 
 /**
  * ClusterPlus Client
@@ -39,6 +35,11 @@ class Client extends SarahClient
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\DialogFlowClient
 	 */
 	protected $dialogflow;
+
+	/**
+	 * @var \Animeshz\ClusterPlus\Dependent\EventHandler
+	 */
+	protected $eventHandler;
 
 	/**
 	 * Fancy Constructor
@@ -57,10 +58,8 @@ class Client extends SarahClient
 	 * ]
 	 * ```
 	 *
-	 * @param array								$config		Any client options and options listed below.
-	 * @throws \Exception
-	 * @throws \InvalidArgumentException
-	 * 
+	 * @param array              $config Any client options and options listed below.
+	 * @param LoopInterface|null $loop   LoopInterface from EventLoop
 	 * @see https://charlottedunois.github.io/Sarah/master/CharlotteDunois/Sarah/SarahClient.html#method___construct
 	 * @see https://livia.neko.run/master/CharlotteDunois/Livia/LiviaClient.html#method___construct
 	 * @see https://yasmin.neko.run/master/CharlotteDunois/Yasmin/Client.html#method___construct
@@ -76,29 +75,29 @@ class Client extends SarahClient
 		$isDatabaseSet = $this->getOption('database', false);
 		$isDialogflowFileSet = $this->getOption('dialogflow', false);
 
-		if(!isset($poolOptions['size'])) $poolOptions['size'] = 7;
-		$poolOptions['worker'] = $worker;
-
 		$this->eventHandler = new $eventHandler($this, $disabledEvents);
 		$this->eventHandler->dispatch();
 
 		$this->collector = new Collector($this);
 
-		if ($isDatabaseSet) {
+		if ($isDatabaseSet)
+		{
 			$factory = new Factory($this->loop);
-			$factory->createConnection($this->getOption('database')['user'].':'.$this->getOption('database')['pass'].'@'.$this->getOption('database')['server'].'/'.$this->getOption('database')['db'])->then(function (ConnectionInterface $db)
+			$factory->createConnection($this->getOption('database')['user'] . ':' . $this->getOption('database')['pass'] . '@' . $this->getOption('database')['server'] . '/' . $this->getOption('database')['db'])->then(function (ConnectionInterface $db)
 			{
 				$provider = $this->getOption('provider.class', '\\Animeshz\\ClusterPlus\\Dependent\\MySQLProvider');
-				$this->setProvider(new $provider($db))->then(function (): ExtendedPromiseInterface
+				$this->setProvider(new $provider($db))->then(function ()
 				{
 					$this->emit('providerSet');
 				});
 			});
 		}
 
-		if ($isDialogflowFileSet) {
+		if ($isDialogflowFileSet)
+		{
 			$this->dialogflow = new DialogFlowClient($this);
-			$this->dialogflow->on('error', function (\Exception $e) {
+			$this->dialogflow->on('error', function (\Exception $e)
+			{
 				$this->emit('error', $e);
 			});
 		}
@@ -107,113 +106,83 @@ class Client extends SarahClient
 	}
 
 	/**
-     * @param string  $name
-     * @return mixed
-     * @throws \Exception
-     * @internal
-     */
+	 * @param string $name
+	 * @return mixed
+	 * @throws \Exception
+	 * @internal
+	 */
 	function __get($name)
 	{
-		switch($name) {
+		switch ($name)
+		{
 			case 'collector':
-			return $this->collector;
-			break;
+				return $this->collector;
+				break;
 			case 'dialogflow':
-			return $this->dialogflow;
-			break;
+				return $this->dialogflow;
+				break;
 			case 'pool':
-			return $this->pool;
-			break;
+				return $this->pool;
+				break;
 		}
 
 		return parent::__get($name);
 	}
 
-	/**
-     * @return string
-     * @internal
-     */
-	function serialize(): string
+	function addEventTimer($time, callable $listener, string $event): void
 	{
-		$pool = $this->pool;
-		$this->pool = null;
+		if (!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
 
-		$str = parent::serialize();
-		$this->pool = $pool;
-
-		return $str;
+		$this->on($event, function () use ($time, $listener)
+		{
+			$this->addTimer($time, $listener);
+		});
 	}
 
-	function addEventTimer($time, callable $listener, string $event)
+	function addEventPeriodicTimer($time, callable $listener, string $event): void
 	{
-		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
+		if (!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
 
-		$this->on($event, function () use ($time, $listener) { $this->addTimer($time, $listener); });
-	}
-
-	function addEventPeriodicTimer($time, callable $listener, string $event)
-	{
-		if(!(is_int($time) || is_float($time))) throw new InvalidArgumentException('Time must be int or float');
-
-		$this->on($event, function () use ($time, $listener) { $this->addPeriodicTimer($time, $listener); });
+		$this->on($event, function () use ($time, $listener)
+		{
+			$this->addPeriodicTimer($time, $listener);
+		});
 	}
 
 	/**
-     * @return \React\Promise\ExtendedPromiseInterface|null
-     * @internal
-     */
-	function eval(string $code, array $options = array()): ExtendedPromiseInterface
+	 * @internal
+	 * @param string $event   Event name
+	 * @param mixed  ...$args Arguments for event
+	 * @throws \Throwable
+	 */
+	function privateEmit(string $event, ...$args): void
 	{
-		return (new Promise(function (callable $resolve, callable $reject) use ($code) {
-			if(!(UniversalHelpers::isValidPHP($code))) return $reject(new InvalidArgumentException('Code given is not a valid php code'));
-			if(\mb_substr($code, -1) !== ';') {
-				$code .= ';';
-			}
-
-			if(\mb_strpos($code, 'return') === false && \mb_strpos($code, 'echo') === false) {
-				$code = \explode(';', $code);
-				$code[(\count($code) - 2)] = \PHP_EOL.'return '.\trim($code[(\count($code) - 2)]);
-				$code = \implode(';', $code);
-			}
-
-			$result = (function ($client, $code) {
-				return eval($code);
-			})($this, $code);
-
-			if(!($result instanceof PromiseInterface)) {
-				return $resolve($result);
-			}
-
-			return $result;
-		}));
-	}
-
-	function privateEmit(string $event, ...$args)
-	{
-		return LiviaClient::emit($event, ...$args);
+		LiviaClient::emit($event, ...$args);
 	}
 
 	/**
 	 * Validates the passed config.
-	 * @param array  $config
+	 *
+	 * @param array $config
 	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	protected function validateConfigs(array $config): void
 	{
-		$validator = Validator::make($config, array(
+		$validator = Validator::make($config, [
 			'eventHandler.class' => 'class:\\Animeshz\\ClusterPlus\\Dependent\\EventHandler,string_only',
 			'provider.class' => 'class:\\CharlotteDunois\\Livia\\Providers\\MySQLProvider,string_only',
 			'dialogflow' => 'string'
-		));
+		]);
 
-		if($validator->fails()) {
+		if ($validator->fails())
+		{
 			$errors = $validator->errors();
 
 			$name = \array_keys($errors)[0];
 			$error = $errors[$name];
 
-			throw new \InvalidArgumentException('Client Option '.$name.' '.\lcfirst($error));
+			throw new \InvalidArgumentException('Client Option ' . $name . ' ' . \lcfirst($error));
 		}
 	}
 }
