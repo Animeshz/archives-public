@@ -16,7 +16,7 @@ use \Animeshz\ClusterPlus\API\DialogFlow\Models\QueryInput;
 use \Animeshz\ClusterPlus\API\DialogFlow\Models\TextInput;
 use \Animeshz\ClusterPlus\Client;
 use \CharlotteDunois\Events\EventEmitterInterface;
-use \CharlotteDunois\Events\EventEmitterErrorTrait;
+use \CharlotteDunois\Events\EventEmitterTrait;
 use \CharlotteDunois\Yasmin\Models\ClientBase;
 use \React\Promise\ExtendedPromiseInterface;
 use \React\Promise\Promise;
@@ -24,13 +24,13 @@ use \React\Promise\Promise;
  * DialogFlowClient, what you'd expect it to do?
  * Interact with rest api of dialogflow and get objects,
  * store those in this client as Collection.
- * 
+ *
  * @see https://github.com/Charlottedunois/Collection
  * @see https://github.com/Charlottedunois/EventEmitter
  */
 class DialogFlowClient implements EventEmitterInterface, \Serializable
 {
-	use EventEmitterErrorTrait;
+	use EventEmitterTrait;
 
 	/**
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\APIManager
@@ -41,12 +41,12 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	 * @var \Animeshz\ClusterPlus\API\DialogFlow\Models\AnswerStorage
 	 */
 	protected $answers;
-	
+
 	/**
 	 * @var \Animeshz\ClusterPlus\Client
 	 */
 	protected $client;
-	
+
 	/**
 	 * @var \Google\Auth\Credentials\ServiceAccountCredentials<\Google\Auth\CredentialsLoader>
 	 */
@@ -87,7 +87,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 
 		$this->retrieveAgent();
 	}
-	
+
 	/**
 	 * @param string  $name
 	 * @return bool
@@ -102,11 +102,11 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 			if($e->getTrace()[0]['function'] === '__get') {
 				return false;
 			}
-			
+
 			throw $e;
 		}
 	}
-	
+
 	/**
 	 * @param string  $name
 	 * @return mixed
@@ -115,7 +115,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 	 */
 	function __get($name)
 	{
-		switch ($name) {			
+		switch ($name) {
 			case 'api':
 			case 'APIManager':
 			case 'apiManager':
@@ -143,7 +143,7 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 		}
 
 		if(property_exists($this, $name)) return $this->$name;
-		
+
 		throw new \RuntimeException('Unknown property '.\get_class($this).'::$'.$name);
 	}
 
@@ -195,8 +195,8 @@ class DialogFlowClient implements EventEmitterInterface, \Serializable
 
 	/**
 	 * Sends request to dialogflow about the $request. Resolves with an instance of Answer.
-	 * @param string $request 
-	 * @param string $sessionid 
+	 * @param string $request
+	 * @param string $sessionid
 	 * @return \React\Promise\ExtendedPromiseInterface
 	 */
 	function getAnswer(string $request, string $sessionid): ExtendedPromiseInterface
