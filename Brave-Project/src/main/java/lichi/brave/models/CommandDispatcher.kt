@@ -1,14 +1,16 @@
 package lichi.brave.models
 
 import lichi.brave.Resources
+import lichi.brave.models.events.Command.Run
+import lichi.brave.models.events.Command.Blocked
+import lichi.brave.models.events.Command.Error
+import lichi.brave.models.events.Debug
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.SelfUser
-import java.time.Instant
-import java.time.temporal.TemporalAccessor
-import java.util.*
+import net.dv8tion.jda.api.entities.TextChannel
+import java.awt.Color
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -32,6 +34,7 @@ class CommandDispatcher(val jda: JDA)
 		val pattern: Pattern = Pattern.compile("(?iu)^(<@!?${me.id}>\\s+(?:$escapedPrefix\\s*)?|$escapedPrefix\\s*)([^\\s]+)")
 
 		commandPatterns[prefix] = pattern
+		Debug("Built command pattern for prefix $prefix: ${pattern.pattern()}").emit()
 
 		return pattern
 	}
@@ -40,7 +43,9 @@ class CommandDispatcher(val jda: JDA)
 	{
 		val me: SelfUser = jda.selfUser
 		val pattern: Pattern = Pattern.compile("(?iu)^(<@!?${me.id}>\\s+)([^\\s]+)")
+
 		globalCommandPattern = pattern
+		Debug("Built global command pattern: ${pattern.pattern()}").emit()
 
 		return pattern
 	}
@@ -50,105 +55,56 @@ class CommandDispatcher(val jda: JDA)
 	 */
 	fun handleMessage(message: Message, oldMessage: Message? = null)
 	{
-		//		try
-		//		{
 		if (!shouldHandleMessage(message, oldMessage)) return
 
-		val command: Command? = parseCommand(message)
-				println(command)
-
-		//			val runnable: Boolean = inhibit(message)
-		//				if ($cmdMessage->command) {
-		//				if ($cmdMessage->command->isEnabledIn($message->guild)) {
-		//				$cmdMessage->run()->done(function ($responses = null) use ($message, $oldMessage, $cmdMessage, $resolve) {
-		//				if ($responses !== null && !\is_array($responses)) {
-		//				$responses = array($responses);
-		//			}
-		//
-		//				$cmdMessage->finalize($responses);
-		//				$this->cacheCommandMessage($message, $oldMessage, $cmdMessage, $responses);
-		//				$resolve();
-		//			});
-		//			} else {
-		//				$message->reply('The command `'.$cmdMessage->command->name.'` is disabled.')->done(function ($response) use ($message, $oldMessage, $cmdMessage, $resolve) {
-		//				$responses = array($response);
-		//				$cmdMessage->finalize($responses);
-		//
-		//				$this->cacheCommandMessage($message, $oldMessage, $cmdMessage, $responses);
-		//				$resolve();
-		//			});
-		//			}
-		//			} else {
-		//				$this->client->emit('unknownCommand', $cmdMessage);
-		//				if (((bool) $this->client->getOption('unknownCommandResponse', true))) {
-		//				$message->reply('Unknown command. Use '.\CharlotteDunois\Livia\Commands\Command::anyUsage('help').'.')->done(function ($response) use ($message, $oldMessage, $cmdMessage, $resolve) {
-		//				$responses = array($response);
-		//				$cmdMessage->finalize($responses);
-		//
-		//				$this->cacheCommandMessage($message, $oldMessage, $cmdMessage, $responses);
-		//				$resolve();
-		//			});
-		//			}
-		//			}
-		//			}, function ($inhibited) use ($message, $oldMessage, $cmdMessage, $resolve) {
-		//				if (!\ is_array ($inhibited)) {
-		//				$inhibited = array($inhibited, null);
-		//			}
-		//
-		//				$this->client->emit('commandBlocked', $cmdMessage, $inhibited[0]);
-		//
-		//				if (!($inhibited[1] instanceof \React\Promise\PromiseInterface)) {
-		//				$inhibited[1] = \ React \ Promise \ resolve ($inhibited[1]);
-		//			}
-		//
-		//				$inhibited[1]->done(function ($responses) use ($message, $oldMessage, $cmdMessage, $resolve) {
-		//				if ($responses !== null) {
-		//				$responses = array($responses);
-		//			}
-		//
-		//				$cmdMessage->finalize($responses);
-		//				$this->cacheCommandMessage($message, $oldMessage, $cmdMessage, $responses);
-		//				$resolve();
-		//			});
-		//			});
-		//			} elseif ($oldCmdMessage) {
-		//			$oldCmdMessage->finalize(null);
-		//			if (!$this->client->getOption('nonCommandEditable')) {
-		//			$this->results->delete($message->id);
-		//		}
-		//
-		//			$this->cacheCommandMessage($message, $oldMessage, $cmdMessage, array());
-		//			$resolve();
-		//		}
-		//		} catch (\Throwable $error) {
-		//		$this->client->emit('error', $error);
-		//		throw $error;
-		//		}
+		val context = parseCommand(message)
+		val command: Command? = context?.get("command") as Command?
+		if (command != null)
+		{
+			val args: String? = context?.get("args") as String?
+			val inhibited: String? = inhibit(message)
+			if (inhibited == null)
+			{
+				if (command.isEnabledIn(message.guild))
+				{
+					run(command, message, args)
+				} else
+				{
+					message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("Command is disabled in this server").build()).queue()
+				}
+			} else
+			{
+				Blocked(command, message, args, inhibited)
+			}
+		}
 	}
 
-	private fun matchCommand(message: Message, pattern: Pattern, commandIndex: Int = 1): Command?
+	private fun matchCommand(message: Message, pattern: Pattern, commandIndex: Int = 1, prefix: String? = null): Map<String, Any>?
 	{
 		val match: Matcher = pattern.matcher(message.contentRaw)
 		if (match.matches() || match.find())
 		{
+			var matchLength = 0
+			for (i in 1..match.groupCount()) matchLength += match.group(i).length
+
 			val commands = Resources.commandRegistry.findCommands(match.group(commandIndex), true)
 			val commandsCount = commands.count()
 			when (commandsCount)
 			{
-				0 -> if (Resources.configuration.unknownCommandResponse) message.channel.sendMessage(EmbedBuilder().setDescription("Command not found for name: ${message.contentRaw}").build()).queue()
-				1 -> return commands.first()
+				0 -> if (Resources.configuration.unknownCommandResponse) message.channel.sendMessage(EmbedBuilder().setDescription("Unknown command, use" + (prefix ?: "" + "help")).build()).queue()
+				1 -> return mapOf("command" to commands.first(), "args" to message.contentRaw.substring(matchLength))
 			}
 		}
 
 		return null
 	}
 
-	private fun inhibit(message: Message): Boolean
+	private fun inhibit(message: Message): String?
 	{
-		return true
+		return null
 	}
 
-	private fun parseCommand(message: Message): Command?
+	private fun parseCommand(message: Message): Map<String, Any>?
 	{
 		val prefix: String? = Resources.configuration.getGuildPrefix(message.guild)
 
@@ -156,10 +112,34 @@ class CommandDispatcher(val jda: JDA)
 		if (prefix != null && commandPatterns[prefix] == null) buildCommandPattern(prefix)
 		val pattern: Pattern = if (prefix == null) globalCommandPattern else commandPatterns[prefix]!!
 
-		var cmd: Command? = matchCommand(message, pattern, 2)
+		var cmd: Map<String, Any>? = matchCommand(message, pattern, 2, prefix)
 		if (cmd == null && message.guild == null) cmd = matchCommand(message, Pattern.compile("(?i)^([^\\s]+)"))
 
 		return cmd
+	}
+
+	private fun run(command: Command, message: Message, args: String?)
+	{
+		if (command.guildOnly && message.guild == null)
+		{
+			Blocked(command, message, args, "Tried to run guild only command outside guild").emit()
+			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a server.").build()).queue()
+		}
+
+		if (command.nsfw && !message.textChannel.isNSFW)
+		{
+			Blocked(command, message, args, "Tried to run nsfw command in non-nsfw channel").emit()
+			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a NSFW channel.").build()).queue()
+		}
+
+		val missingPerms = command.checkPermission(message)
+		if (missingPerms != null)
+		{
+			Blocked(command, message, args, "Tried to run command without required permission")
+			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
+		}
+
+		command.run(message)
 	}
 
 	private fun shouldHandleMessage(message: Message, oldMessage: Message?): Boolean

@@ -1,6 +1,5 @@
 package lichi.brave
 
-import lichi.brave.models.Command
 import net.dv8tion.jda.api.entities.SelfUser
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
