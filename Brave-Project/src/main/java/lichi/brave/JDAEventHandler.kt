@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
-class EventHandler : ListenerAdapter()
+class JDAEventHandler : ListenerAdapter()
 {
 	override fun onReady(event: ReadyEvent?)
 	{

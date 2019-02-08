@@ -1,4 +1,4 @@
-package lichi.brave
+package lichi.brave.models
 
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable

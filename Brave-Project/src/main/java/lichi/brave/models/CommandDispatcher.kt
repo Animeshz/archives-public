@@ -21,6 +21,14 @@ class CommandDispatcher(val jda: JDA)
 	private val commandPatterns: MutableMap<String, Pattern> = mutableMapOf()
 	private lateinit var globalCommandPattern: Pattern
 
+	private val inhibitors: MutableList<Inhibitor> = mutableListOf()
+
+	fun addInhibitor(inhibitor: Inhibitor): CommandDispatcher
+	{
+		if (!inhibitors.contains(inhibitor)) inhibitors.add(inhibitor)
+		return this
+	}
+
 	/**
 	 * Creates a regular expression to match the command prefix and name in a message.
 	 * Returns string of pattern made by given prefix
@@ -74,7 +82,8 @@ class CommandDispatcher(val jda: JDA)
 				}
 			} else
 			{
-				Blocked(command, message, args, inhibited)
+				message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("CommandBlocked: $inhibited").build()).queue()
+				Blocked(command, message, args, inhibited).emit()
 			}
 		}
 	}
@@ -101,6 +110,11 @@ class CommandDispatcher(val jda: JDA)
 
 	private fun inhibit(message: Message): String?
 	{
+		for (inhibitor in inhibitors)
+		{
+			val inhibited: String? = inhibitor.run(message)
+			if (inhibited != null) return inhibited
+		}
 		return null
 	}
 
@@ -116,6 +130,12 @@ class CommandDispatcher(val jda: JDA)
 		if (cmd == null && message.guild == null) cmd = matchCommand(message, Pattern.compile("(?i)^([^\\s]+)"))
 
 		return cmd
+	}
+
+	fun removeInhibitor(inhibitor: Inhibitor): CommandDispatcher
+	{
+		if (inhibitors.contains(inhibitor)) inhibitors.remove(inhibitor)
+		return this
 	}
 
 	private fun run(command: Command, message: Message, args: String?)
@@ -135,10 +155,11 @@ class CommandDispatcher(val jda: JDA)
 		val missingPerms = command.checkPermission(message)
 		if (missingPerms != null)
 		{
-			Blocked(command, message, args, "Tried to run command without required permission")
+			Blocked(command, message, args, "Tried to run command without required permission").emit()
 			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
 		}
 
+		Run(command, message, args).emit()
 		command.run(message)
 	}
 
