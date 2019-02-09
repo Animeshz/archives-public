@@ -7,6 +7,10 @@ class CommandRegistry(private val jda: JDA)
 {
 	private val commands: MutableList<Command> = mutableListOf()
 
+	/**
+	 * Finds commands by their name, passing exact will not take
+	 * substrings(part of string) of command names or aliases
+	 */
 	fun findCommands(search: String, exact: Boolean = false): List<Command>
 	{
 		val searchString = search.toLowerCase()
@@ -35,6 +39,9 @@ class CommandRegistry(private val jda: JDA)
 		return matches
 	}
 
+	/**
+	 * Searches for commands in specified package and register them
+	 */
 	fun registerCommandsIn(packageName: String)
 	{
 		val commandClasses: MutableList<Command> = mutableListOf()

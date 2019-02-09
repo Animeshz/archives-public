@@ -29,6 +29,9 @@ fun main()
 	})
 }
 
+/**
+ * Handles the events of our application that are emitted by EventEmitter interface
+ */
 fun handleEvents()
 {
 	Command on {

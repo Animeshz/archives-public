@@ -6,9 +6,9 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import java.util.*
 
-class AvatarT(jda: JDA): Command(jda, mapOf<String, Any>("name" to "avatart", "description" to "A simple command for ", "userPermissions" to EnumSet.of(Permission.MESSAGE_WRITE)))
+class AvatarT(jda: JDA) : Command(jda, mapOf<String, Any>("name" to "avatart", "description" to "A simple command for ", "userPermissions" to EnumSet.of(Permission.MESSAGE_WRITE)))
 {
-	override fun run(message: Message?)
+	override fun run(message: Message?, args: Map<String, String>)
 	{
 		println(message?.contentDisplay)
 		println(message?.contentRaw)

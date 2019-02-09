@@ -8,7 +8,7 @@ import java.util.*
 
 class Avatar(jda: JDA): Command(jda, mapOf<String, Any>("name" to "avatar", "description" to "A simple command for ", "userPermissions" to EnumSet.of(Permission.MESSAGE_WRITE)))
 {
-	override fun run(message: Message?)
+	override fun run(message: Message?, args: Map<String, String>)
 	{
 		println(message?.contentDisplay)
 		println(message?.contentRaw)

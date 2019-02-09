@@ -11,9 +11,24 @@ class Resources
 {
 	companion object
 	{
+		/**
+		 * CommandDispatcher instance
+		 */
 		lateinit var commandDispatcher: CommandDispatcher
+
+		/**
+		 * CommandRegistry instance
+		 */
 		lateinit var commandRegistry: CommandRegistry
+
+		/**
+		 * Initializes Configuration instance by config.json present in root directory
+		 */
 		val configuration: Configuration = Json.parse(Configuration.serializer(), DataHelper.fileToString("config.json"))
+
+		/**
+		 * What do you expect?
+		 */
 		lateinit var jda: JDA
 	}
 }

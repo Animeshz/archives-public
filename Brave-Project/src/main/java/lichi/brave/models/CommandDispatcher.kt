@@ -23,6 +23,14 @@ class CommandDispatcher(val jda: JDA)
 
 	private val inhibitors: MutableList<Inhibitor> = mutableListOf()
 
+	/**
+	 * Adds a inhibitor to message handling.
+	 *
+	 * It is intended to return null. If it returns a string,
+	 * then the command will be blocked, user will be
+	 * notified that it is blocked and Command.Blocked
+	 * event will be triggered
+	 */
 	fun addInhibitor(inhibitor: Inhibitor): CommandDispatcher
 	{
 		if (!inhibitors.contains(inhibitor)) inhibitors.add(inhibitor)
@@ -47,6 +55,10 @@ class CommandDispatcher(val jda: JDA)
 		return pattern
 	}
 
+	/**
+	 * Creates a regular expression to match the command in a message globally (without prefix).
+	 * Returns string of pattern
+	 */
 	private fun buildGlobalCommandPattern(): Pattern
 	{
 		val me: SelfUser = jda.selfUser
@@ -88,6 +100,11 @@ class CommandDispatcher(val jda: JDA)
 		}
 	}
 
+	/**
+	 * Matches command from registered commands.
+	 *
+	 * Returns a map of command to Command and args to string from where args are started
+	 */
 	private fun matchCommand(message: Message, pattern: Pattern, commandIndex: Int = 1, prefix: String? = null): Map<String, Any>?
 	{
 		val match: Matcher = pattern.matcher(message.contentRaw)
@@ -108,6 +125,9 @@ class CommandDispatcher(val jda: JDA)
 		return null
 	}
 
+	/**
+	 * Starts inhibiting message
+	 */
 	private fun inhibit(message: Message): String?
 	{
 		for (inhibitor in inhibitors)
@@ -118,6 +138,9 @@ class CommandDispatcher(val jda: JDA)
 		return null
 	}
 
+	/**
+	 * Parses command and generates pattern if necessary
+	 */
 	private fun parseCommand(message: Message): Map<String, Any>?
 	{
 		val prefix: String? = Resources.configuration.getGuildPrefix(message.guild)
@@ -132,12 +155,18 @@ class CommandDispatcher(val jda: JDA)
 		return cmd
 	}
 
+	/**
+	 * Removes inhibitor from registered inhibitors
+	 */
 	fun removeInhibitor(inhibitor: Inhibitor): CommandDispatcher
 	{
 		if (inhibitors.contains(inhibitor)) inhibitors.remove(inhibitor)
 		return this
 	}
 
+	/**
+	 * What you expect this to do?
+	 */
 	private fun run(command: Command, message: Message, args: String?)
 	{
 		if (command.guildOnly && message.guild == null)
@@ -159,10 +188,15 @@ class CommandDispatcher(val jda: JDA)
 			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
 		}
 
+		//arg collector && filter output here
+
 		Run(command, message, args).emit()
-		command.run(message)
+		command.run(message, mapOf())
 	}
 
+	/**
+	 * States should we handle the command or not by returning Boolean value
+	 */
 	private fun shouldHandleMessage(message: Message, oldMessage: Message?): Boolean
 	{
 		val me: SelfUser = jda.selfUser
