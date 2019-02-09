@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import lichi.brave.models.CommandDispatcher
 import lichi.brave.models.CommandRegistry
 import lichi.brave.models.Configuration
+import lichi.brave.models.TaskScheduler
 import lichi.brave.util.DataHelper
 import net.dv8tion.jda.api.JDA
 
@@ -30,5 +31,10 @@ class Resources
 		 * What do you expect?
 		 */
 		lateinit var jda: JDA
+
+		/**
+		 * TaskScheduler
+		 */
+		val taskScheduler: TaskScheduler = TaskScheduler()
 	}
 }

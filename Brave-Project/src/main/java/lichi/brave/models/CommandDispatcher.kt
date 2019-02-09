@@ -7,6 +7,7 @@ import lichi.brave.models.events.Command.Error
 import lichi.brave.models.events.Debug
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.SelfUser
 import net.dv8tion.jda.api.entities.TextChannel
@@ -172,26 +173,42 @@ class CommandDispatcher(val jda: JDA)
 		if (command.guildOnly && message.guild == null)
 		{
 			Blocked(command, message, args, "Tried to run guild only command outside guild").emit()
-			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a server.").build()).queue()
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a server.").build()).queue()
 		}
 
 		if (command.nsfw && !message.textChannel.isNSFW)
 		{
 			Blocked(command, message, args, "Tried to run nsfw command in non-nsfw channel").emit()
-			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a NSFW channel.").build()).queue()
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a NSFW channel.").build()).queue()
 		}
 
 		val missingPerms = command.checkPermission(message)
 		if (missingPerms != null)
 		{
 			Blocked(command, message, args, "Tried to run command without required permission").emit()
-			message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
+		}
+
+		//throttle
+		val throttle = command.throttle(message.author)
+		if (throttle != null && throttle.usages + 1 > command.throttling!!.getValue("usages"))
+		{
+			val currentTime = (System.currentTimeMillis() / 1000).toInt()
+			val remaining = throttle.start + command.throttling.getValue("time") - currentTime
+			Blocked(command, message, args, "Throttle")
+
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("You may not use the `${command.name}` command again for another $remaining seconds.").build()).queue()
 		}
 
 		//arg collector && filter output here
 
 		Run(command, message, args).emit()
-		command.run(message, mapOf())
+		if (throttle != null)
+		{
+			command.incrementThrottle(message.author)
+		}
+		//arg processing remaining
+		return command.run(message, mapOf())
 	}
 
 	/**

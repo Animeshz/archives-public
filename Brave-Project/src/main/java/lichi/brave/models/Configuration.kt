@@ -14,6 +14,11 @@ data class Configuration(val owners: List<String>, @Optional val commandPrefix: 
 	fun isOwner(user: User): Boolean = user.id in owners
 
 	/**
+	 * States if user given is a owner, returns a Boolean value
+	 */
+	fun isOwner(userID: String): Boolean = userID in owners
+
+	/**
 	 * Fetch and return guildPrefix, if not found returns global prefix
 	 */
 	fun getGuildPrefix(guild: Guild): String?
