@@ -31,7 +31,7 @@ import kotlin.concurrent.timerTask
  * throttling: Map<String, Int> (optional)
  *     "usage" to Int (number of usage)
  *     "time" to Int (in sec)
- * args: List<String>
+ * args: List<Map<String, Any>>
  * nsfw: Boolean
  * hidden: (defaults to false)
  * ```
@@ -55,6 +55,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 	val throttling: Map<String, Int>?
 	val throttles: MutableMap<String, Throttle> = mutableMapOf()
 	val args: List<Map<String, Any>>?
+	val argumentCollector: ArgumentCollector?
 	val nsfw: Boolean = info["nsfw"] as Boolean? ?: false
 	val hidden: Boolean = info["hidden"] as Boolean? ?: false
 
@@ -80,6 +81,9 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 		val tempArgs2 = tempArgs?.asSequence()?.filter { it is Map<*, *> }?.map { it as Map<*, *> }?.filter { it.keys.all { key -> key is String } }?.map { it.mapKeys { it2 -> it2.key as String } }?.map { it.mapValues { it2 -> it2.value as Any } }?.toList()
 		if (tempArgs2 != null && tempArgs2.all { it["name"] == null }) throw IllegalStateException("name is missing from args of command $name")
 		args = tempArgs2
+
+		argumentCollector = if (args == null) null else ArgumentCollector(jda, args)
+
 	}
 
 	/**
@@ -90,19 +94,19 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 	 */
 	fun checkPermission(message: Message): String?
 	{
-		//		if (!ownerOnly && userPermissions == null) return null
-		//		if (ownerOnly && !Resources.configuration.isOwner(message.author)) return "This command requires you to be bot's owner"
-		//
-		//		if (message.channel.type == ChannelType.TEXT && userPermissions != null)
-		//		{
-		//			val perms: EnumSet<Permission> = message.member.permissions
-		//			if (!perms.containsAll(userPermissions))
-		//			{
-		//				val missingPermissions = EnumSet.copyOf(userPermissions)
-		//				missingPermissions.removeAll(perms)
-		//				return "This command requires you to have the following permissions: $missingPermissions"
-		//			}
-		//		}
+		if (!ownerOnly && userPermissions == null) return null
+		if (ownerOnly && !Resources.configuration.isOwner(message.author)) return "This command requires you to be bot's owner"
+
+		if (message.channel.type == ChannelType.TEXT && userPermissions != null)
+		{
+			val perms: EnumSet<Permission> = message.member.permissions
+			if (!perms.containsAll(userPermissions))
+			{
+				val missingPermissions = EnumSet.copyOf(userPermissions)
+				missingPermissions.removeAll(perms)
+				return "This command requires you to have the following permissions: $missingPermissions"
+			}
+		}
 		return null
 	}
 

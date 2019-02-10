@@ -1,6 +1,7 @@
 package lichi.brave.models
 
 import lichi.brave.util.ClassHelper
+import lichi.brave.models.events.Error
 import net.dv8tion.jda.api.JDA
 
 class CommandRegistry(private val jda: JDA)
@@ -46,10 +47,16 @@ class CommandRegistry(private val jda: JDA)
 	{
 		val commandClasses: MutableList<Command> = mutableListOf()
 
-		for (cls: Class<*> in ClassHelper.getClasses(packageName))
+		try
 		{
-			val obj: Any = cls.getDeclaredConstructor(JDA::class.java).newInstance(jda)
-			if (obj is Command) commandClasses.add(obj)
+			for (cls: Class<*> in ClassHelper.getClasses(packageName))
+			{
+				val obj: Any = cls.getDeclaredConstructor(JDA::class.java).newInstance(jda)
+				if (obj is Command) commandClasses.add(obj)
+			}
+		} catch (e: Exception)
+		{
+			Error(e).emit()
 		}
 
 		commands.addAll(commandClasses)

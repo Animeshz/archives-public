@@ -17,7 +17,7 @@ import java.util.regex.Pattern
 
 class CommandDispatcher(val jda: JDA)
 {
-	private val awaiting: MutableList<String> = mutableListOf()
+	val awaiting: MutableList<String> = mutableListOf()
 
 	private val commandPatterns: MutableMap<String, Pattern> = mutableMapOf()
 	private lateinit var globalCommandPattern: Pattern
@@ -82,13 +82,13 @@ class CommandDispatcher(val jda: JDA)
 		val command: Command? = context?.get("command") as Command?
 		if (command != null)
 		{
-			val args: String? = context?.get("args") as String?
+			val argString: String = context?.get("args") as String
 			val inhibited: String? = inhibit(message)
 			if (inhibited == null)
 			{
 				if (command.isEnabledIn(message.guild))
 				{
-					run(command, message, args)
+					run(command, message, argString)
 				} else
 				{
 					message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("Command is disabled in this server").build()).queue()
@@ -96,7 +96,7 @@ class CommandDispatcher(val jda: JDA)
 			} else
 			{
 				message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("CommandBlocked: $inhibited").build()).queue()
-				Blocked(command, message, args, inhibited).emit()
+				Blocked(command, message, argString, inhibited).emit()
 			}
 		}
 	}
@@ -168,24 +168,24 @@ class CommandDispatcher(val jda: JDA)
 	/**
 	 * What you expect this to do?
 	 */
-	private fun run(command: Command, message: Message, args: String?)
+	private fun run(command: Command, message: Message, argString: String)
 	{
 		if (command.guildOnly && message.guild == null)
 		{
-			Blocked(command, message, args, "Tried to run guild only command outside guild").emit()
+			Blocked(command, message, argString, "Tried to run guild only command outside guild").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a server.").build()).queue()
 		}
 
 		if (command.nsfw && !message.textChannel.isNSFW)
 		{
-			Blocked(command, message, args, "Tried to run nsfw command in non-nsfw channel").emit()
+			Blocked(command, message, argString, "Tried to run nsfw command in non-nsfw channel").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a NSFW channel.").build()).queue()
 		}
 
 		val missingPerms = command.checkPermission(message)
 		if (missingPerms != null)
 		{
-			Blocked(command, message, args, "Tried to run command without required permission").emit()
+			Blocked(command, message, argString, "Tried to run command without required permission").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
 		}
 
@@ -195,17 +195,22 @@ class CommandDispatcher(val jda: JDA)
 		{
 			val currentTime = (System.currentTimeMillis() / 1000).toInt()
 			val remaining = throttle.start + command.throttling.getValue("time") - currentTime
-			Blocked(command, message, args, "Throttle")
+			Blocked(command, message, argString, "Throttle")
 
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("You may not use the `${command.name}` command again for another $remaining seconds.").build()).queue()
 		}
 
 		//arg collector && filter output here
-		if (command.args != null){
-
+		if (command.args != null)
+		{
+			if (command.args.count() > argString.split(' ').count())
+			{
+				command.argumentCollector!!.collect(message, argString)
+			}
+			//collect args and transform to map
 		}
 
-		Run(command, message, args).emit()
+		Run(command, message, argString).emit()
 		if (throttle != null)
 		{
 			command.incrementThrottle(message.author)
@@ -230,5 +235,16 @@ class CommandDispatcher(val jda: JDA)
 		if (oldMessage != null && message.contentRaw == oldMessage.contentRaw) return false
 
 		return true
+	}
+
+	fun setAwaiting(message: Message)
+	{
+		awaiting.add(message.author.id + message.channel.id)
+	}
+
+	fun removeAwaiting(message: Message)
+	{
+		val search = message.author.id + message.channel.id
+		if (awaiting.contains(search)) awaiting.remove(search)
 	}
 }
