@@ -201,6 +201,9 @@ class CommandDispatcher(val jda: JDA)
 		}
 
 		//arg collector && filter output here
+		if (command.args != null){
+
+		}
 
 		Run(command, message, args).emit()
 		if (throttle != null)

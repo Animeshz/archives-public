@@ -1,7 +1,11 @@
 package lichi.brave.models
 
+import java.util.TimerTask
+
 data class Throttle(var start: Int, var usages: Int)
 {
+	var associatedTask: TimerTask? = null
+
 	fun incrementUsage(): Throttle
 	{
 		usages++

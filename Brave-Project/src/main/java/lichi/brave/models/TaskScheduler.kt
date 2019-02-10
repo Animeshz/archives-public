@@ -5,7 +5,13 @@ import kotlin.concurrent.schedule
 
 class TaskScheduler
 {
-	val timer: Timer = Timer(false)
+	private val timer: Timer = Timer(false)
+
+	fun schedule(time: Long, task: TimerTask): TimerTask
+	{
+		timer.schedule(task, time)
+		return task
+	}
 
 	fun schedule(time: Long, task: TimerTask.() -> Unit)
 	{

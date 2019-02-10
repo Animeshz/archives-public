@@ -2,15 +2,17 @@ package lichi.brave.util
 
 import java.io.File
 import java.io.IOException
+import java.security.Permission
+import java.util.*
 
 class ClassHelper
 {
 	companion object
 	{
 		/**
-		* Scans all classes accessible from the context class loader which belong to the given package and subpackages.
-		* Returns List of classes on the basis of packageName given
-		*/
+		 * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
+		 * Returns List of classes on the basis of packageName given
+		 */
 		@Throws(ClassNotFoundException::class, IOException::class)
 		fun getClasses(packageName: String): List<Class<*>>
 		{
@@ -55,5 +57,8 @@ class ClassHelper
 			}
 			return classes
 		}
+
+		@Suppress("UNCHECKED_CAST")
+		inline fun <reified T : Any> List<*>.checkItemsAre() = if (all { it is T }) this as List<T> else null
 	}
 }
