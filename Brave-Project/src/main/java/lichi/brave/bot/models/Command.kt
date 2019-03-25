@@ -1,9 +1,10 @@
 package lichi.brave.bot.models
 
-import lichi.brave.Resources
+import lichi.brave.bot.Client
+import lichi.brave.configuration
+import lichi.brave.taskScheduler
 import lichi.brave.util.events.Debug
 import lichi.brave.util.ClassHelper.Companion.checkItemsAre
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
@@ -39,7 +40,7 @@ import kotlin.concurrent.timerTask
  * To register commands in a package call
  * CommandRegistry.registerCommandsIn(packageToFindForCommands)
  */
-abstract class Command(val jda: JDA, info: Map<String, Any>)
+abstract class Command(val client: Client, info: Map<String, Any>)
 {
 	val name: String = info["name"] as String
 	val aliases: List<String>
@@ -82,7 +83,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 		if (tempArgs2 != null && tempArgs2.all { it["name"] == null }) throw IllegalStateException("name is missing from args of command $name")
 		args = tempArgs2
 
-		argumentCollector = if (args == null) null else ArgumentCollector(jda, args)
+		argumentCollector = if (args == null) null else ArgumentCollector(client, args)
 
 	}
 
@@ -95,7 +96,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 	fun checkPermission(message: Message): String?
 	{
 		if (!ownerOnly && userPermissions == null) return null
-		if (ownerOnly && !Resources.configuration.isOwner(message.author)) return "This command requires you to be bot's owner"
+		if (ownerOnly && !configuration.isOwner(message.author)) return "This command requires you to be client's owner"
 
 		if (message.channel.type == ChannelType.TEXT && userPermissions != null)
 		{
@@ -131,7 +132,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 	 */
 	fun isEnabledIn(id: Long): Boolean
 	{
-		val guild = jda.getGuildById(id)
+		val guild = client.jda.getGuildById(id)
 		return if (guildEnabled[guild.id] == null) globalEnabled else guildEnabled[guild.id] == true
 	}
 
@@ -140,7 +141,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 	 */
 	fun isEnabledIn(id: String): Boolean
 	{
-		val guild = jda.getGuildById(id)
+		val guild = client.jda.getGuildById(id)
 		return if (guildEnabled[guild.id] == null) globalEnabled else guildEnabled[guild.id] == true
 	}
 
@@ -166,7 +167,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 			throttles[userID] = throttle
 
 			val deleteTime = (throttling.getValue("time") * 1000).toLong()
-			throttle.associatedTask = Resources.taskScheduler.schedule(deleteTime, timerTask { throttle.resetUsage() })
+			throttle.associatedTask = taskScheduler.schedule(deleteTime, timerTask { throttle.resetUsage() })
 			Debug("Created throttle object for $userID its usage will be reset to 0 in ${deleteTime / 1000} seconds").emit()
 		}
 
@@ -188,7 +189,7 @@ abstract class Command(val jda: JDA, info: Map<String, Any>)
 		throttle.associatedTask = null
 
 		val deleteTime = (throttling!!.getValue("time") * 1000).toLong()
-		Resources.taskScheduler.schedule(deleteTime) { throttle.resetUsage() }
+		taskScheduler.schedule(deleteTime) { throttle.resetUsage() }
 		Debug("Throttle usage for $userID incremented to $throttle, will be reset in ${deleteTime / 1000} seconds").emit()
 
 		return throttle

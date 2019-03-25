@@ -1,18 +1,18 @@
 package lichi.brave.bot.models
 
-import lichi.brave.Resources
+import lichi.brave.bot.Client
+import lichi.brave.configuration
 import lichi.brave.util.events.Command.Run
 import lichi.brave.util.events.Command.Blocked
 import lichi.brave.util.events.Debug
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.SelfUser
 import java.awt.Color
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class CommandDispatcher(val jda: JDA)
+class CommandDispatcher(private val client: Client)
 {
 	val awaiting: MutableList<String> = mutableListOf()
 
@@ -43,7 +43,7 @@ class CommandDispatcher(val jda: JDA)
 	{
 		if (prefix == null) return buildGlobalCommandPattern()
 
-		val me: SelfUser = jda.selfUser
+		val me: SelfUser = client.jda.selfUser
 		val escapedPrefix: String = Pattern.quote(prefix)
 		val pattern: Pattern = Pattern.compile("(?iu)^(<@!?${me.id}>\\s+(?:$escapedPrefix\\s*)?|$escapedPrefix\\s*)([^\\s]+)")
 
@@ -59,7 +59,7 @@ class CommandDispatcher(val jda: JDA)
 	 */
 	private fun buildGlobalCommandPattern(): Pattern
 	{
-		val me: SelfUser = jda.selfUser
+		val me: SelfUser = client.jda.selfUser
 		val pattern: Pattern = Pattern.compile("(?iu)^(<@!?${me.id}>\\s+)([^\\s]+)")
 
 		globalCommandPattern = pattern
@@ -111,11 +111,11 @@ class CommandDispatcher(val jda: JDA)
 			var matchLength = 0
 			for (i in 1..match.groupCount()) matchLength += match.group(i).length
 
-			val commands = Resources.commandRegistry.findCommands(match.group(commandIndex), true)
+			val commands = client.commandRegistry.findCommands(match.group(commandIndex), true)
 			val commandsCount = commands.count()
 			when (commandsCount)
 			{
-				0 -> if (Resources.configuration.unknownCommandResponse) message.channel.sendMessage(EmbedBuilder().setDescription("Unknown command, use" + (prefix ?: "" + "help")).build()).queue()
+				0 -> if (configuration.unknownCommandResponse) message.channel.sendMessage(EmbedBuilder().setDescription("Unknown command, use" + (prefix ?: "" + "help")).build()).queue()
 				1 -> return mapOf("command" to commands.first(), "args" to message.contentRaw.substring(matchLength))
 			}
 		}
@@ -141,7 +141,7 @@ class CommandDispatcher(val jda: JDA)
 	 */
 	private fun parseCommand(message: Message): Map<String, Any>?
 	{
-		val prefix: String? = Resources.configuration.getGuildPrefix(message.guild)
+		val prefix: String? = configuration.getGuildPrefix(message.guild)
 
 		if (prefix == null && !::globalCommandPattern.isInitialized) buildCommandPattern()
 		if (prefix != null && commandPatterns[prefix] == null) buildCommandPattern(prefix)
@@ -221,12 +221,12 @@ class CommandDispatcher(val jda: JDA)
 	 */
 	private fun shouldHandleMessage(message: Message, oldMessage: Message?): Boolean
 	{
-		val me: SelfUser = jda.selfUser
+		val me: SelfUser = client.jda.selfUser
 		if (message.author.isBot || message.author.id === me.id) return false
 
 		if (message.guild != null && !message.guild.isAvailable) return false
 
-		// Ignore messages from users that the bot is already waiting for input from
+		// Ignore messages from users that the client is already waiting for input from
 		if (awaiting.contains(message.author.id + message.channel.id)) return false
 
 		if (oldMessage != null && message.contentRaw == oldMessage.contentRaw) return false

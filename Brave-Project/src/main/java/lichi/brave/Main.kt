@@ -1,7 +1,7 @@
 package lichi.brave
 
 import kotlinx.serialization.json.Json
-import lichi.brave.bot.Bot
+import lichi.brave.bot.Client
 import lichi.brave.util.Configuration
 import lichi.brave.util.DataHelper
 import lichi.brave.util.TaskScheduler
@@ -10,11 +10,6 @@ import lichi.brave.util.events.Debug
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.PrintWriter
-
-/**
- * Our discord bot
- */
-lateinit var bot: Bot
 
 /**
  * Initializes Configuration instance by config.json present in root directory
@@ -28,14 +23,16 @@ val taskScheduler: TaskScheduler = TaskScheduler()
 
 fun main()
 {
-	handleEvents()
-	bot = Bot()
+	registerEventHandlers()
+
+	//initiate our bot's client
+	Client()
 }
 
 /**
  * Handles the events of our application that are emitted by EventEmitter interface
  */
-fun handleEvents()
+fun registerEventHandlers()
 {
 	Command on {
 		when (it)

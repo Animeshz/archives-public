@@ -9,17 +9,17 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Message
 
-class Bot
+class Client
 {
 	/**
 	 * CommandDispatcher instance
 	 */
-	private var commandDispatcher: CommandDispatcher
+	val commandDispatcher: CommandDispatcher
 
 	/**
 	 * CommandRegistry instance
 	 */
-	private var commandRegistry: CommandRegistry
+	val commandRegistry: CommandRegistry
 
 	/**
 	 * What do you expect?
@@ -28,8 +28,8 @@ class Bot
 
 	init
 	{
-		commandRegistry = CommandRegistry(jda)
-		commandDispatcher = CommandDispatcher(jda)
+		commandRegistry = CommandRegistry(this)
+		commandDispatcher = CommandDispatcher(this)
 
 		commandRegistry.registerCommandsIn("lichi.brave.bot.commands.static")
 
