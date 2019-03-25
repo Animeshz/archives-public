@@ -75,52 +75,17 @@ class CommandDispatcher(private val client: Client)
 	{
 		if (!shouldHandleMessage(message, oldMessage)) return
 
-		val context = parseCommand(message)
-		val command: Command? = context?.get("command") as Command?
-		if (command != null)
+		val commandMatch = parseCommand(message)
+		val command: Command = commandMatch.command ?: return
+		val argString: String = commandMatch.argString!!
+		val inhibited: String? = inhibit(message)
+
+		if (inhibited != null)
 		{
-			val argString: String = context?.get("args") as String
-			val inhibited: String? = inhibit(message)
-			if (inhibited == null)
-			{
-				if (command.isEnabledIn(message.guild))
-				{
-					run(command, message, argString)
-				} else
-				{
-					message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("Command is disabled in this server").build()).queue()
-				}
-			} else
-			{
-				message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("CommandBlocked: $inhibited").build()).queue()
-				Blocked(command, message, argString, inhibited).emit()
-			}
+			Blocked(command, message, inhibited).emit()
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("CommandBlocked: $inhibited").build()).queue()
 		}
-	}
-
-	/**
-	 * Matches command from registered commands.
-	 *
-	 * Returns a map of command to Command and args to string from where args are started
-	 */
-	private fun matchCommand(message: Message, pattern: Pattern, commandIndex: Int = 1, prefix: String? = null): Map<String, Any>?
-	{
-		val match: Matcher = pattern.matcher(message.contentRaw)
-		if (match.matches() || match.find())
-		{
-			var matchLength = 0
-			for (i in 1..match.groupCount()) matchLength += match.group(i).length
-
-			val commands = client.commandRegistry.findCommands(match.group(commandIndex), true)
-			val commandsCount = commands.count()
-			when (commandsCount)
-			{
-				0 -> if (configuration.unknownCommandResponse) message.channel.sendMessage(EmbedBuilder().setDescription("Unknown command, use" + (prefix ?: "" + "help")).build()).queue()
-				1 -> return mapOf("command" to commands.first(), "args" to message.contentRaw.substring(matchLength))
-			}
-		}
-
-		return null
+		run(command, message, argString)
 	}
 
 	/**
@@ -139,7 +104,7 @@ class CommandDispatcher(private val client: Client)
 	/**
 	 * Parses command and generates pattern if necessary
 	 */
-	private fun parseCommand(message: Message): Map<String, Any>?
+	private fun parseCommand(message: Message): CommandMatcher
 	{
 		val prefix: String? = configuration.getGuildPrefix(message.guild)
 
@@ -147,8 +112,8 @@ class CommandDispatcher(private val client: Client)
 		if (prefix != null && commandPatterns[prefix] == null) buildCommandPattern(prefix)
 		val pattern: Pattern = if (prefix == null) globalCommandPattern else commandPatterns[prefix]!!
 
-		var cmd: Map<String, Any>? = matchCommand(message, pattern, 2, prefix)
-		if (cmd == null && message.guild == null) cmd = matchCommand(message, Pattern.compile("(?i)^([^\\s]+)"))
+		var cmd = CommandMatcher(client, message, pattern, 2)
+		if (!cmd.found && message.guild == null) cmd = CommandMatcher(client, message, Pattern.compile("(?i)^([^\\s]+)"))
 
 		return cmd
 	}
@@ -167,22 +132,27 @@ class CommandDispatcher(private val client: Client)
 	 */
 	private fun run(command: Command, message: Message, argString: String)
 	{
+		if (!command.isEnabledIn(message.guild)) {
+			Blocked(command, message, "Command is disabled in guild").emit()
+			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("Command is disabled in this server").build()).queue()
+		}
+
 		if (command.guildOnly && message.guild == null)
 		{
-			Blocked(command, message, argString, "Tried to run guild only command outside guild").emit()
+			Blocked(command, message, "Tried to run guild only command outside guild").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a server.").build()).queue()
 		}
 
 		if (command.nsfw && !message.textChannel.isNSFW)
 		{
-			Blocked(command, message, argString, "Tried to run nsfw command in non-nsfw channel").emit()
+			Blocked(command, message, "Tried to run nsfw command in non-nsfw channel").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("The `${command.name}` command must be used in a NSFW channel.").build()).queue()
 		}
 
 		val missingPerms = command.checkPermission(message)
 		if (missingPerms != null)
 		{
-			Blocked(command, message, argString, "Tried to run command without required permission").emit()
+			Blocked(command, message, "Tried to run command without required permission").emit()
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription(missingPerms).build()).queue()
 		}
 
@@ -192,12 +162,13 @@ class CommandDispatcher(private val client: Client)
 		{
 			val currentTime = (System.currentTimeMillis() / 1000).toInt()
 			val remaining = throttle.start + command.throttling.getValue("time") - currentTime
-			Blocked(command, message, argString, "Throttle")
+			Blocked(command, message, "Throttle")
 
 			return message.channel.sendMessage(EmbedBuilder().setColor(Color.RED).setDescription("You may not use the `${command.name}` command again for another $remaining seconds.").build()).queue()
 		}
 
 		//arg collector && filter output here
+		val arguments = listOf<Any>()
 		if (command.args != null)
 		{
 			if (command.args.count() > argString.split(' ').count())
@@ -205,14 +176,11 @@ class CommandDispatcher(private val client: Client)
 				command.argumentCollector!!.collect(message, argString)
 			}
 			//collect args and transform to map
+			//arguments =
 		}
 
-		Run(command, message, argString).emit()
-		if (throttle != null)
-		{
-			command.incrementThrottle(message.author)
-		}
-		//arg processing remaining
+		if (throttle != null) command.incrementThrottle(message.author)
+		Run(command, message, arguments).emit()
 		return command.run(message, mapOf())
 	}
 

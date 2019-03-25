@@ -7,19 +7,20 @@ sealed class Command
 {
 	companion object : EventEmitter<Command>()
 
-	class Blocked(val command: lichi.brave.bot.models.Command, val message: Message, val args: String? = null, val reason: String? = null) : Command() {
+	class Blocked(val command: lichi.brave.bot.models.Command, val message: Message, val reason: String? = null) : Command() {
 		fun emit() = Companion.emit(this)
 	}
 
-	class Cancelled(val command: lichi.brave.bot.models.Command, val message: Message, val args: String? = null) : Command() {
+	class Cancelled(val command: lichi.brave.bot.models.Command, val message: Message) : Command() {
 		fun emit() = Companion.emit(this)
 	}
 
-	class Error(val command: lichi.brave.bot.models.Command, val message: Message, val args: String? = null, val reason: String? = null) : Command() {
+	class Error(val command: lichi.brave.bot.models.Command, val message: Message, val reason: String? = null) : Command() {
 		fun emit() = Companion.emit(this)
 	}
 
-	class Run(val command: lichi.brave.bot.models.Command, val message: Message, val args: String?) : Command() {
+	//List of any because under filtration or parse it might converted into some other type
+	class Run(val command: lichi.brave.bot.models.Command, val message: Message, val args: List<Any>?) : Command() {
 		fun emit() = Companion.emit(this)
 	}
 }

@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import lichi.brave.bot.Client
 import lichi.brave.util.Configuration
 import lichi.brave.util.DataHelper
+import lichi.brave.util.DatabaseProvider
 import lichi.brave.util.TaskScheduler
 import lichi.brave.util.events.Command
 import lichi.brave.util.events.Debug
@@ -17,12 +18,18 @@ import java.io.PrintWriter
 val configuration: Configuration = Json.parse(Configuration.serializer(), DataHelper.fileToString("config.json"))
 
 /**
+ * Our database
+ */
+val database: DatabaseProvider = DatabaseProvider()
+
+/**
  * TaskScheduler
  */
 val taskScheduler: TaskScheduler = TaskScheduler()
 
 fun main()
 {
+	configuration.reload(database)
 	registerEventHandlers()
 
 	//initiate our bot's client
@@ -37,10 +44,10 @@ fun registerEventHandlers()
 	Command on {
 		when (it)
 		{
-			is Command.Blocked -> Debug("Command ${it.command.name} blocked(${it.message.author.asTag}): ${it.reason}").emit()
-			is Command.Run -> Debug("Command ${it.command.name} ran by ${it.message.author.asTag}")
-			is Command.Cancelled -> Debug("Command ${it.command.name} cancelled, ran by by ${it.message.author.asTag}")
-			is Command.Error -> Error("An error occurred in Command ${it.command.name} ran by ${it.message.author.asTag} with `${it.args}` arguments")
+			is Command.Blocked -> Debug("Command ${it.command.name} blocked(${it.message.author.asTag}): ${it.reason}. Message: '${it.message}'").emit()
+			is Command.Run -> Debug("Command ${it.command.name} ran by ${it.message.author.asTag}. Message: '${it.message}'")
+			is Command.Cancelled -> Debug("Command ${it.command.name} cancelled, ran by by ${it.message.author.asTag}. Message: '${it.message}'")
+			is Command.Error -> Error("An error occurred in Command ${it.command.name} ran by ${it.message.author.asTag}. Message: '${it.message}'")
 		}
 	}
 	Debug on {
