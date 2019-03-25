@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 
 @Serializable
-data class Configuration(val owners: List<String>, @Optional val commandPrefix: String? = null, @Optional val unknownCommandResponse: Boolean = true, @Optional val disableEveryone: Boolean = true)
+data class Configuration(val token: String, val owners: List<String>, @Optional val commandPrefix: String? = null, @Optional val unknownCommandResponse: Boolean = true, @Optional val disableEveryone: Boolean = true)
 {
 	/**
 	 * States if user given is a owner, returns a Boolean value

@@ -14,7 +14,7 @@ import java.io.PrintWriter
 fun main()
 {
 	handleEvents()
-	Resources.jda = JDABuilder("NTQwMTg5OTg4NjM4MTYzMDA0.Dz3RuQ.GutjtH13S920mHGYjM3X098E_08").addEventListeners(JDAEventHandler()).build()
+	Resources.jda = JDABuilder(Resources.configuration.token).addEventListeners(JDAEventHandler()).build()
 	Resources.commandRegistry = CommandRegistry(Resources.jda)
 	Resources.commandDispatcher = CommandDispatcher(Resources.jda)
 
