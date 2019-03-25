@@ -1,6 +1,6 @@
-package lichi.brave.models.events
+package lichi.brave.util.events
 
-import lichi.brave.models.EventEmitter
+import lichi.brave.util.EventEmitter
 
 data class Debug(val message: String)
 {

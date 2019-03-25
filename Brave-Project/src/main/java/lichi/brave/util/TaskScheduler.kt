@@ -1,4 +1,4 @@
-package lichi.brave.models
+package lichi.brave.util
 
 import java.util.*
 import kotlin.concurrent.schedule

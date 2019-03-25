@@ -1,16 +1,13 @@
-package lichi.brave.models
+package lichi.brave.bot.models
 
 import lichi.brave.Resources
-import lichi.brave.models.events.Command.Run
-import lichi.brave.models.events.Command.Blocked
-import lichi.brave.models.events.Command.Error
-import lichi.brave.models.events.Debug
+import lichi.brave.util.events.Command.Run
+import lichi.brave.util.events.Command.Blocked
+import lichi.brave.util.events.Debug
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.SelfUser
-import net.dv8tion.jda.api.entities.TextChannel
 import java.awt.Color
 import java.util.regex.Matcher
 import java.util.regex.Pattern

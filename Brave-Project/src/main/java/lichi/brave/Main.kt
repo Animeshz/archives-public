@@ -1,32 +1,35 @@
 package lichi.brave
 
-import lichi.brave.models.CommandDispatcher
-import lichi.brave.models.CommandRegistry
-import lichi.brave.models.Inhibitor
-import lichi.brave.models.events.Command
-import lichi.brave.models.events.Debug
-import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.entities.Message
+import kotlinx.serialization.json.Json
+import lichi.brave.bot.Bot
+import lichi.brave.util.Configuration
+import lichi.brave.util.DataHelper
+import lichi.brave.util.TaskScheduler
+import lichi.brave.util.events.Command
+import lichi.brave.util.events.Debug
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.PrintWriter
 
+/**
+ * Our discord bot
+ */
+lateinit var bot: Bot
+
+/**
+ * Initializes Configuration instance by config.json present in root directory
+ */
+val configuration: Configuration = Json.parse(Configuration.serializer(), DataHelper.fileToString("config.json"))
+
+/**
+ * TaskScheduler
+ */
+val taskScheduler: TaskScheduler = TaskScheduler()
+
 fun main()
 {
 	handleEvents()
-	Resources.jda = JDABuilder(Resources.configuration.token).addEventListeners(JDAEventHandler()).build()
-	Resources.commandRegistry = CommandRegistry(Resources.jda)
-	Resources.commandDispatcher = CommandDispatcher(Resources.jda)
-
-	Resources.commandRegistry.registerCommandsIn("lichi.brave.commands.static")
-
-	//temporary testing part
-	Resources.commandDispatcher.addInhibitor(object : Inhibitor {
-		override fun run(message: Message): String?
-		{
-			return null
-		}
-	})
+	bot = Bot()
 }
 
 /**
@@ -49,7 +52,7 @@ fun handleEvents()
 	}
 
 	var counter = 1
-	lichi.brave.models.events.Error on {
+	lichi.brave.util.events.Error on {
 		val fw = FileWriter("exception-logging.txt", true)
 		val bw = BufferedWriter(fw)
 		val pw = PrintWriter(bw)

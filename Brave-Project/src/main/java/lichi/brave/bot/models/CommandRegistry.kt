@@ -1,7 +1,7 @@
-package lichi.brave.models
+package lichi.brave.bot.models
 
 import lichi.brave.util.ClassHelper
-import lichi.brave.models.events.Error
+import lichi.brave.util.events.Error
 import net.dv8tion.jda.api.JDA
 
 class CommandRegistry(private val jda: JDA)

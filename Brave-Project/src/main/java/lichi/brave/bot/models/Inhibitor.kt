@@ -1,4 +1,4 @@
-package lichi.brave.models
+package lichi.brave.bot.models
 
 import net.dv8tion.jda.api.entities.Message
 

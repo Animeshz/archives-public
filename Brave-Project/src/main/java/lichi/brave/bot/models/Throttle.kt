@@ -1,4 +1,4 @@
-package lichi.brave.models
+package lichi.brave.bot.models
 
 import java.util.TimerTask
 

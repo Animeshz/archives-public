@@ -1,6 +1,6 @@
-package lichi.brave.commands.static
+package lichi.brave.bot.commands.static
 
-import lichi.brave.models.Command
+import lichi.brave.bot.models.Command
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message

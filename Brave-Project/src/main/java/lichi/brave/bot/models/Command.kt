@@ -1,7 +1,7 @@
-package lichi.brave.models
+package lichi.brave.bot.models
 
 import lichi.brave.Resources
-import lichi.brave.models.events.Debug
+import lichi.brave.util.events.Debug
 import lichi.brave.util.ClassHelper.Companion.checkItemsAre
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
