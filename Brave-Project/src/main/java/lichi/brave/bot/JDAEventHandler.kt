@@ -1,4 +1,4 @@
-package lichi.brave
+package lichi.brave.bot
 
 import net.dv8tion.jda.api.entities.SelfUser
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 /**
  * Handles events received via JDA
  */
-class JDAEventHandler : ListenerAdapter()
+class JDAEventHandler(val client: Client) : ListenerAdapter()
 {
 	override fun onReady(event: ReadyEvent?)
 	{
@@ -24,7 +24,7 @@ class JDAEventHandler : ListenerAdapter()
 		val message = event?.message
 		if (message != null)
 		{
-			Resources.commandDispatcher.handleMessage(message)
+			client.commandDispatcher.handleMessage(message)
 		}
 	}
 }

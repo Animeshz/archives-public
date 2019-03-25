@@ -1,6 +1,5 @@
 package lichi.brave.bot
 
-import lichi.brave.JDAEventHandler
 import lichi.brave.bot.models.CommandDispatcher
 import lichi.brave.bot.models.CommandRegistry
 import lichi.brave.bot.models.Inhibitor
@@ -24,7 +23,7 @@ class Client
 	/**
 	 * What do you expect?
 	 */
-	var jda: JDA = JDABuilder(configuration.token).addEventListeners(JDAEventHandler()).build()
+	var jda: JDA = JDABuilder(configuration.token).addEventListeners(JDAEventHandler(this)).build()
 
 	init
 	{
