@@ -96,7 +96,7 @@ val promise: PromiseInterface = Promise(resolver)
 ```
 Documentation
 ---
-[Documentation of this library is here](https://github.)
+[Documentation of this library is here](https://animeshz.github.io/promise/promise)
 
 Explore More
 ---
