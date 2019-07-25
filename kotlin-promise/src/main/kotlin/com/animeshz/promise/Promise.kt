@@ -5,15 +5,34 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.isSubclassOf
 
-class Promise private constructor(private var canceller: (() -> Any?)?) : PromiseInterface
+/**
+ * Represents a Promise.
+ *
+ * @since 1.0
+ */
+class Promise internal constructor(private var canceller: (() -> Any?)?) : PromiseInterface
 {
 	private var requiredCancelRequests: Int = 0
-	var state: PromiseState = PromiseState.PENDING
+
+	/**
+	 * Shows state of promise
+	 *
+	 * @see PromiseState
+	 * @since 1.0
+	 */
+	override var state: PromiseState = PromiseState.PENDING
 		private set
 
 	private val handlers = mutableListOf<(PromiseInterface) -> Unit>()
 	private var result: PromiseInterface? = null
 
+	/**
+	 * Constructs a Promise and start the [resolver], after execution of resolver the [state] of promise is transitioned to either [PromiseState.FULFILLED] or [PromiseState.REJECTED].
+	 *
+	 * @param[resolver] a lambda which controls the state of promise and responsible for the work function of the promise.
+	 * @param[canceller] optional parameter, a lambda which is called before cancelling the promise if [cancel] is called.
+	 * @since 1.0
+	 */
 	constructor(resolver: (resolve: (Any?) -> Any?, reject: (Throwable) -> Any?) -> Any?, canceller: (() -> Any?)? = null) : this(canceller)
 	{
 		call(resolver)
@@ -39,9 +58,21 @@ class Promise private constructor(private var canceller: (() -> Any?)?) : Promis
 
 	private fun call(callback: (resolve: (Any?) -> Any?, reject: (Throwable) -> Any?) -> Any?)
 	{
-		callback(this::resolveCallback, this::rejectCallback)
+		try
+		{
+			callback(this::resolveCallback, this::rejectCallback)
+		} catch (e: Throwable) {
+			settle(reject(e))
+		}
 	}
 
+	/**
+	 * Cancels the promise if this promise is not resolved with nested promises, else it will require multiple cancel requests. For more information see below.
+	 *
+	 * If this is resolved with a value or a promise then it will only gonna take single cancel request, if it is resolved by a promise which is again resolved with another promise then it will require 2 cancel requests to cancel out, and so on likewise.
+	 *
+	 * @since 1.0
+	 */
 	override fun cancel()
 	{
 		val canceller = this.canceller
@@ -105,7 +136,7 @@ class Promise private constructor(private var canceller: (() -> Any?)?) : Promis
 
 	override fun otherwise(onRejected: (Any: Throwable) -> Any?): PromiseInterface
 	{
-		return this.then(null, {	e -> onRejected(e) })
+		return this.then(null, { e -> onRejected(e) })
 	}
 
 	private fun rejectCallback(reason: Throwable)

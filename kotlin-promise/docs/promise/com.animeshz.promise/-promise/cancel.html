@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Promise.cancel - promise</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">promise</a>&nbsp;/&nbsp;<a href="../index.html">com.animeshz.promise</a>&nbsp;/&nbsp;<a href="index.html">Promise</a>&nbsp;/&nbsp;<a href="./cancel.html">cancel</a><br/>
+<br/>
+<h1>cancel</h1>
+<a name="com.animeshz.promise.Promise$cancel()"></a>
+<code><span class="keyword">fun </span><span class="identifier">cancel</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Overrides <a href="../-promise-interface/cancel.html">PromiseInterface.cancel</a></p>
+<p>Cancels the promise if this promise is not resolved with nested promises, else it will require multiple cancel requests. For more information see below.</p>
+<p>If this is resolved with a value or a promise then it will only gonna take single cancel request, if it is resolved by a promise which is again resolved with another promise then it will require 2 cancel requests to cancel out, and so on likewise.</p>
+<p><strong>Since</strong><br/>
+1.0</p>
+</BODY>
+</HTML>

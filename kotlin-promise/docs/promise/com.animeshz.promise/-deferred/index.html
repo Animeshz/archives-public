@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Deferred - promise</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">promise</a>&nbsp;/&nbsp;<a href="../index.html">com.animeshz.promise</a>&nbsp;/&nbsp;<a href="./index.html">Deferred</a><br/>
+<br/>
+<h1>Deferred</h1>
+<code><span class="keyword">class </span><span class="identifier">Deferred</span></code>
+<p>Represents a process which may complete or fail in future</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">Deferred</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.Deferred$<init>(kotlin.Function0((kotlin.Unit)))/canceller">canceller</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<p>optional parameter <a href="#">canceller</a> is handover to the promise and called before cancellation of the promise associated (maybe used for closing resources or cleanup of cache).
+<a href="#">canceller</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="promise.html">promise</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">promise</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-promise-interface/index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Returns the promise associated with this deferred.
+State of promise is controlled by <a href="resolve.html">resolve</a> and <a href="reject.html">reject</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reject.html">reject</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reject</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.Deferred$reject(kotlin.Throwable)/reason">reason</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Rejects the promise associated with this deferred with <a href="reject.html#com.animeshz.promise.Deferred$reject(kotlin.Throwable)/reason">reason</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="resolve.html">resolve</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">resolve</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.Deferred$resolve(kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Resolves the promise associated with this deferred with <a href="resolve.html#com.animeshz.promise.Deferred$resolve(kotlin.Any)/value">value</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

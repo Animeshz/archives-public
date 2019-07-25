@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PromiseInterface - promise</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">promise</a>&nbsp;/&nbsp;<a href="../index.html">com.animeshz.promise</a>&nbsp;/&nbsp;<a href="./index.html">PromiseInterface</a><br/>
+<br/>
+<h1>PromiseInterface</h1>
+<code><span class="keyword">interface </span><span class="identifier">PromiseInterface</span></code>
+<p>A common interface for all the Promises.</p>
+<p><strong>Since</strong><br/>
+1.0</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="state.html">state</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">state</span><span class="symbol">: </span><a href="../-promise-state/index.html"><span class="identifier">PromiseState</span></a></code>
+<p>Shows the state of promise.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="always.html">always</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">always</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$always(kotlin.Function0((kotlin.Unit)))/onFulfilledOrRejected">onFulfilledOrRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p><a href="always.html#com.animeshz.promise.PromiseInterface$always(kotlin.Function0((kotlin.Unit)))/onFulfilledOrRejected">onFulfilledOrRejected</a> executes in order as attached regardless the promise fails or get resolved. It is just like always call, but the original value of promise is conserved and is handover to next call of consumer(then/done/otherwise).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="cancel.html">cancel</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">cancel</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Cancels the promise.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="done.html">done</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">done</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Suppress everything, complete silence. i.e. you don't want to use the value of promise or handle the exception. Calling this will break the chain, however any variable containing promise will still be able to use the promise.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">done</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$done(kotlin.Function1((kotlin.Any, )))/onFulfilled">onFulfilled</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Attaches a last consumer for resolve and then suppress the promise, break the chain.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">done</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$done(kotlin.Function1((kotlin.Any, )), kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onFulfilled">onFulfilled</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="com.animeshz.promise.PromiseInterface$done(kotlin.Function1((kotlin.Any, )), kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Attaches a last consumer for both resolve, reject and then suppress the promise, break the chain.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="otherwise.html">otherwise</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">&gt;</span> <span class="identifier">otherwise</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$otherwise(kotlin.reflect.KClass((com.animeshz.promise.PromiseInterface.otherwise.T)), kotlin.Function1((com.animeshz.promise.PromiseInterface.otherwise.T, kotlin.Any)))/klass">klass</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="otherwise.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.animeshz.promise.PromiseInterface$otherwise(kotlin.reflect.KClass((com.animeshz.promise.PromiseInterface.otherwise.T)), kotlin.Function1((com.animeshz.promise.PromiseInterface.otherwise.T, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="otherwise.html#T"><span class="identifier">T</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Attaches a consumer for rejection of specific Throwable/Exception and continues to chain the promise by the result/error we are provided by consumer (onRejected).
+If the Exception was not matched or was not subclass of given klass, then the Exception will propagate to the next consumer (otherwise/then/done).</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">otherwise</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$otherwise(kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Attaches a consumer for reject and continues to chain the promise by the result/error we are provided by consumer (onRejected).
+Alias for then(null, onRejected)</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="then.html">then</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">then</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Returns itself</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">then</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$then(kotlin.Function1((kotlin.Any, )))/onFulfilled">onFulfilled</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Attaches a consumer for resolve and continues to chain the promise by the result/error we are provided by the consumer (onFulfilled).</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">then</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.PromiseInterface$then(kotlin.Function1((kotlin.Any, )), kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onFulfilled">onFulfilled</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="com.animeshz.promise.PromiseInterface$then(kotlin.Function1((kotlin.Any, )), kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Attaches a consumer for both resolve, reject and continues to chain the promise by the result/error we are provided by either of the consumer (onFulfilled/onRejected).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-fulfilled-promise/index.html">FulfilledPromise</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">FulfilledPromise</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Represents an already fulfilled promise.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-promise/index.html">Promise</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Promise</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Represents a Promise.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-rejected-promise/index.html">RejectedPromise</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">RejectedPromise</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Represents a already rejected promise.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

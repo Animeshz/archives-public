@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RejectedPromise.otherwise - promise</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">promise</a>&nbsp;/&nbsp;<a href="../index.html">com.animeshz.promise</a>&nbsp;/&nbsp;<a href="index.html">RejectedPromise</a>&nbsp;/&nbsp;<a href="./otherwise.html">otherwise</a><br/>
+<br/>
+<h1>otherwise</h1>
+<a name="com.animeshz.promise.RejectedPromise$otherwise(kotlin.reflect.KClass((com.animeshz.promise.RejectedPromise.otherwise.T)), kotlin.Function1((com.animeshz.promise.RejectedPromise.otherwise.T, kotlin.Any)))"></a>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">&gt;</span> <span class="identifier">otherwise</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.RejectedPromise$otherwise(kotlin.reflect.KClass((com.animeshz.promise.RejectedPromise.otherwise.T)), kotlin.Function1((com.animeshz.promise.RejectedPromise.otherwise.T, kotlin.Any)))/klass">klass</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="otherwise.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.animeshz.promise.RejectedPromise$otherwise(kotlin.reflect.KClass((com.animeshz.promise.RejectedPromise.otherwise.T)), kotlin.Function1((com.animeshz.promise.RejectedPromise.otherwise.T, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="otherwise.html#T"><span class="identifier">T</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-promise-interface/index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Overrides <a href="../-promise-interface/otherwise.html">PromiseInterface.otherwise</a></p>
+<p>Attaches a consumer for rejection of specific Throwable/Exception and continues to chain the promise by the result/error we are provided by consumer (onRejected).
+If the Exception was not matched or was not subclass of given klass, then the Exception will propagate to the next consumer (otherwise/then/done).</p>
+<p>Note: There is no reason to call this after casual otherwise as that will catch all the exception</p>
+<p>Example:</p>
+<pre><code class="lang-kotlin">promise.otherwise(IOException::class) {
+    // catch IOException if it occurs
+}.otherwise(IllegalArgumentException::class) {
+    // catch IllegalArgumentException if it occurs
+    // note if you throw an exception here, it will propagate to the next call of consumer (otherwise/then/done)
+}.otherwise {
+    // catch all kind of other exceptions that wasn't been caught in above handlers
+}
+</code></pre>
+<h3>Parameters</h3>
+<p><a name="klass"></a>
+<code>klass</code> - KClass object of type of exception you want to catch, you can get KClass by adding <code>::class</code> to the class statically.</p>
+<p><a name="onRejected"></a>
+<code>onRejected</code> - Consumer for rejection (Error/Exception caused in resolving) of promise</p>
+<p><strong>Since</strong><br/>
+1.0</p>
+<a name="com.animeshz.promise.RejectedPromise$otherwise(kotlin.Function1((kotlin.Throwable, kotlin.Any)))"></a>
+<code><span class="keyword">fun </span><span class="identifier">otherwise</span><span class="symbol">(</span><span class="identifier" id="com.animeshz.promise.RejectedPromise$otherwise(kotlin.Function1((kotlin.Throwable, kotlin.Any)))/onRejected">onRejected</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-promise-interface/index.html"><span class="identifier">PromiseInterface</span></a></code>
+<p>Overrides <a href="../-promise-interface/otherwise.html">PromiseInterface.otherwise</a></p>
+<p>Attaches a consumer for reject and continues to chain the promise by the result/error we are provided by consumer (onRejected).
+Alias for then(null, onRejected)</p>
+<h3>Parameters</h3>
+<p><a name="onRejected"></a>
+<code>onRejected</code> - Consumer for rejection (Error/Exception caused in resolving) of promise</p>
+<p><strong>Since</strong><br/>
+1.0</p>
+</BODY>
+</HTML>

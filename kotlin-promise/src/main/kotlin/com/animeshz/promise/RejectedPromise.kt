@@ -4,25 +4,41 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.isSubclassOf
 
+/**
+ * Represents a already rejected promise.
+ *
+ * @constructor [reason] Throwable/Exception which explains the process has been failed
+ * @since 1.0
+ */
 class RejectedPromise(internal val reason: Throwable) : PromiseInterface
 {
+	override val state: PromiseState = PromiseState.REJECTED
+
 	override fun always(onFulfilledOrRejected: () -> Unit): PromiseInterface
 	{
 		return this.then(null, { resolve(onFulfilledOrRejected()).then { RejectedPromise(reason) } })
 	}
 
+	/**
+	 * Calling cancel on rejected promise has no effect.
+	 *
+	 * @since 1.0
+	 */
 	override fun cancel()
 	{
 	}
 
 	override fun done()
 	{
-		return
 	}
 
+	/**
+	 * Calling done with only [onFulfilled] promise has no effect.
+	 *
+	 * @since 1.0
+	 */
 	override fun done(onFulfilled: (Any?) -> Any?)
 	{
-		return
 	}
 
 	override fun done(onFulfilled: ((Any?) -> Any?)?, onRejected: (Throwable) -> Any?)
@@ -69,6 +85,11 @@ class RejectedPromise(internal val reason: Throwable) : PromiseInterface
 		return this
 	}
 
+	/**
+	 * Returns itself, calling done with only [onFulfilled] promise has no effect.
+	 *
+	 * @since 1.0
+	 */
 	override fun then(onFulfilled: (Any?) -> Any?): RejectedPromise
 	{
 		return this
