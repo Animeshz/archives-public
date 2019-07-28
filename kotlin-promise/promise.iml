@@ -24,20 +24,22 @@
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/kotlin" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.41" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.3.41" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.41" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.3.41" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.kotlintest:kotlintest-runner-junit5:3.3.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.kotlintest:kotlintest-core:3.3.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.3.21" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.kotlintest:kotlintest-assertions:3.3.2" level="project" />
@@ -59,7 +61,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.github.classgraph:classgraph:4.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.arrow-kt:arrow-core:0.8.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.arrow-kt:arrow-annotations:0.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.kindedj:kindedj:1.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.4.0" level="project" />

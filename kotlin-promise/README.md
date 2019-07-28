@@ -1,3 +1,5 @@
+[![Release](https://jitpack.io/v/Animeshz/promise.svg)](https://jitpack.io/#Animeshz/promise)
+
 Promise
 =======
 An implementation of promise in kotlin.
