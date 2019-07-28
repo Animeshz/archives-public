@@ -89,6 +89,7 @@ class RejectedPromise(internal val reason: Throwable) : PromiseInterface
 	 * Returns itself, calling done with only [onFulfilled] promise has no effect.
 	 *
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	override fun then(onFulfilled: (Any?) -> Any?): RejectedPromise
 	{

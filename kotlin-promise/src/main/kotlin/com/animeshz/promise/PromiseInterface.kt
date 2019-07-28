@@ -23,6 +23,7 @@ interface PromiseInterface
 	 *
 	 * @param[onFulfilledOrRejected] A lambda which you want execute.
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun always(onFulfilledOrRejected: () -> Unit): PromiseInterface
 
@@ -64,6 +65,7 @@ interface PromiseInterface
 	/**
 	 * Returns itself
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun then(): PromiseInterface
 
@@ -72,6 +74,7 @@ interface PromiseInterface
 	 *
 	 * @param[onFulfilled] Consumer for resolve value of promise
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun then(onFulfilled: (Any?) -> Any?): PromiseInterface
 
@@ -81,6 +84,7 @@ interface PromiseInterface
 	 * @param[onFulfilled] Consumer for resolve value of promise
 	 * @param[onRejected] Consumer for rejection (Error/Exception caused in resolving) of promise
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun then(onFulfilled: ((Any?) -> Any?)? = null, onRejected: (Throwable) -> Any?): PromiseInterface
 
@@ -105,6 +109,7 @@ interface PromiseInterface
 	 * @param[klass] KClass object of type of exception you want to catch, you can get KClass by adding `::class` to the class statically.
 	 * @param[onRejected] Consumer for rejection (Error/Exception caused in resolving) of promise
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun <T : Throwable> otherwise(klass: KClass<T>, onRejected: (T) -> Any?): PromiseInterface
 
@@ -114,6 +119,7 @@ interface PromiseInterface
 	 *
 	 * @param[onRejected] Consumer for rejection (Error/Exception caused in resolving) of promise
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	fun otherwise(onRejected: (Throwable) -> Any?): PromiseInterface
 }

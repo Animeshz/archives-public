@@ -66,6 +66,7 @@ class FulfilledPromise(private var value: Any? = null) : PromiseInterface
 	 * Returns itself, calling otherwise on fulfilled promise has no effect.
 	 *
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	override fun <T : Throwable> otherwise(klass: KClass<T>, onRejected: (T) -> Any?): PromiseInterface
 	{
@@ -76,6 +77,7 @@ class FulfilledPromise(private var value: Any? = null) : PromiseInterface
 	 * Returns itself, calling otherwise on fulfilled promise has no effect.
 	 *
 	 * @since 1.0
+	 * @return[PromiseInterface]
 	 */
 	override fun otherwise(onRejected: (Throwable) -> Any?): PromiseInterface
 	{

@@ -5,6 +5,7 @@ package com.animeshz.promise
  *
  * @param[value] value which you want to make FulfilledPromise of
  * @since 1.0
+ * @return[PromiseInterface]
  */
 fun resolve(value: Any? = null): PromiseInterface = if (value is PromiseInterface) value else FulfilledPromise(
 	value)
@@ -14,6 +15,7 @@ fun resolve(value: Any? = null): PromiseInterface = if (value is PromiseInterfac
  *
  * @param[reason] Throwable/Exception which explains the process has been failed
  * @since 1.0
+ * @return[RejectedPromise]
  */
 fun reject(reason: Throwable) = RejectedPromise(reason)
 
@@ -28,6 +30,7 @@ fun reject(reason: Throwable) = RejectedPromise(reason)
  *
  * @param[promises] List of promises.
  * @since 1.0
+ * @return[PromiseInterface]
  */
 fun all(promises: List<Any?>): PromiseInterface = map(promises) { it }
 
@@ -37,6 +40,7 @@ fun all(promises: List<Any?>): PromiseInterface = map(promises) { it }
  *
  * @param[promises] List of promises.
  * @since 1.0
+ * @return[PromiseInterface]
  */
 fun map(promises: List<Any?>, mapper: (Any?) -> Any?): PromiseInterface
 {

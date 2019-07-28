@@ -61,6 +61,9 @@ fun callApiAsync(url: String): PromiseInterface
 The `promise` method returns the promise of the deferred. The `resolve` and `reject` methods control the state of the promise.
 
 ### PromiseInterface
+
+[Documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/-promise-interface/index.html)
+
 The promise interface provides the common interface for all promise implementations.
 
 A promise represents an eventual outcome, which is either fulfillment (success) and an associated value, or rejection (failure) and an associated reason.
@@ -68,17 +71,18 @@ A promise represents an eventual outcome, which is either fulfillment (success) 
 Once in the fulfilled or rejected state, a promise becomes immutable. Neither its state nor its result (or error) can be modified
 
 #### Implementations (read documentation for further info) -
-* Promise
-* FulfilledPromise
-* RejectedPromise
+* [Promise](#promise-2)
+* FulfilledPromise (recommended to use resolve() to create, [documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/-fulfilled-promise/index.html))
+* RejectedPromise (recommended to use resolve() to create, [documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/-rejected-promise/index.html))
 
 #### See also (read documentation for further info) -
-* resolve() - Creating a resolved promise
-* reject() - Creating a rejected promise
-* done() vs. then()
+* resolve() - Creates a resolved promise ([documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/resolve.html))
+* reject() - Creates a rejected promise ([documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/reject.html))
+* [done() vs. then()](#done-vs-then)
+* all() - Trigger an action when given list of promises are resolved [documentation]()
 
 ### Promise
-Creates a Standalone Promise whose state is controlled by resolver given into the constructor.
+Creates a Standalone Promise whose state is controlled by resolver given into the constructor [documentation](https://animeshz.github.io/promise/promise/com.animeshz.promise/-promise/index.html).
 ```kotlin
 val resolver: ((Any?) -> Any?, (Throwable) -> Any?) -> Any? = { resolve: (Any?) -> Any?, reject: (Throwable) -> Any? ->
     // do some operations
@@ -94,6 +98,34 @@ val resolver: ((Any?) -> Any?, (Throwable) -> Any?) -> Any? = { resolve: (Any?) 
 
 val promise: PromiseInterface = Promise(resolver)
 ```
+
+### done vs then
+There are two methods in a promise and if you are new to this concept there maybe so many confusions regarding this.
+
+The `then()` is used for chaining of operations (generally, asynchronous). `then()` returns PromiseInterface with resolving/rejecting value that have returned from last member of chain
+
+The `done()` is used for stopping the chain fixing the last consumer. There is no return value of done, hence you can no longer be able to attach another consumer to the chain.
+
+**Example:**
+```kotlin
+promise.then {
+    if (it !is String) throw IllegalStateException("Result is not an instance of string.")
+    "Result is: `$it`"
+}.then {
+    println(it)
+    "Success"
+}.otherwise(IllegalStateException::class) {
+    //handle exception came from 1st consumer
+    "Error"
+}.done{
+    when(it) {
+        "Success" -> log("Successfully printed the result")
+        "Error" -> log("Failed")
+    }
+    "Yipee ki yay" // this is eaten up by done, suppressed this return value
+} // you can no longer chain the promise now, as done does not return anything, its the end of the chain.
+```
+
 Documentation
 ---
 [Documentation of this library is here](https://animeshz.github.io/promise/promise)
