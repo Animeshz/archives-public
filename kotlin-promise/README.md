@@ -12,13 +12,16 @@ Table of contents
 2. [Concepts](#concepts)
     * [Deferred](#deferred)
     * [Promise](#promise-1)
-3. [QuickStart](#quickstart)
+3. [Installation](#installation)
+    * [Maven](#maven)
+    * [Gradle](#gradle)
+4. [QuickStart](#quickstart)
     * [Deferred](#deferred-1)
     * [PromiseInterface](#promiseinterface)
     * [Promise](#promise-2)
-4. [Documentation](#documentation)
-5. [Explore More](#explore-more)
-6. [License](#license)
+5. [Documentation](#documentation)
+6. [Explore More](#explore-more)
+7. [License](#license)
 
 
 Introduction
@@ -40,6 +43,45 @@ A Deferred represents a computation or unit of work that may not have completed 
 While a deferred represents the computation itself, a Promise represents the result of that computation. Thus, each deferred has a promise that acts as a placeholder for its actual result.
 
 > **Note:** A [standalone promise](#promise-2) (promise made by Promise() manually, which does not have a deferred associated) execute and resolves itself at the time of execution synchronously
+
+Installation
+---
+
+### Maven:
+First import jitpack.io repository.
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+Then add dependency to your project.
+```xml
+<dependency>
+    <groupId>com.github.Animeshz</groupId>
+    <artifactId>promise</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+### Gradle:
+First import jitpack.io repository.
+```gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+Then add dependency to your project.
+```gradle
+dependencies {
+    implementation 'com.github.Animeshz:promise:1.0'
+}
+```
 
 QuickStart
 ---
@@ -102,8 +144,6 @@ val promise: PromiseInterface = Promise(resolver)
 ```
 
 ### done vs then
-There are two methods in a promise and if you are new to this concept there maybe so many confusions regarding this.
-
 The `then()` is used for chaining of operations (generally, asynchronous). `then()` returns PromiseInterface with resolving/rejecting value that have returned from last member of chain
 
 The `done()` is used for stopping the chain fixing the last consumer. There is no return value of done, hence you can no longer be able to attach another consumer to the chain.
