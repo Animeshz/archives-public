@@ -1,7 +1,5 @@
 package com.animeshz.promise
 
-import com.animeshz.promise.PromiseInterface
-import com.animeshz.promise.resolve
 import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.shouldBe

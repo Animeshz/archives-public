@@ -1,8 +1,5 @@
 package com.animeshz.promise
 
-import com.animeshz.promise.*
-import com.animeshz.promise.reject
-import com.animeshz.promise.resolve
 import io.kotlintest.matchers.types.shouldBeTypeOf
 import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.shouldBe

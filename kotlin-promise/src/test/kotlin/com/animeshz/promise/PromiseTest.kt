@@ -1,15 +1,11 @@
 package com.animeshz.promise
 
-import com.animeshz.promise.Promise
-import com.animeshz.promise.PromiseInterface
-import com.animeshz.promise.PromiseState
-import com.animeshz.promise.resolve
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
-import io.kotlintest.shouldBe
 import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.matchers.types.shouldBeTypeOf
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import java.io.IOException
 

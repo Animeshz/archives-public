@@ -1,7 +1,5 @@
 package com.animeshz.promise
 
-import com.animeshz.promise.Deferred
-import com.animeshz.promise.PromiseState
 import io.kotlintest.matchers.string.shouldBeEmpty
 import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.shouldBe

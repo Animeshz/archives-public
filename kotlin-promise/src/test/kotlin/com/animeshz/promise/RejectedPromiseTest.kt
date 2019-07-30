@@ -1,11 +1,9 @@
 package com.animeshz.promise
 
-import com.animeshz.promise.PromiseInterface
-import com.animeshz.promise.reject
 import io.kotlintest.matchers.boolean.shouldBeTrue
+import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.specs.StringSpec
 
 class RejectedPromiseTest: StringSpec ({
