@@ -88,4 +88,8 @@ class PromiseTest : StringSpec({
 		Promise({ _, reject -> reject(Exception("Bad result")) }).state.shouldBe(PromiseState.REJECTED)
 	}
 
+	"resolve() should return RejectedPromise if object of Throwable type is given" {
+		resolve(Exception("An exception")).shouldBeInstanceOf<RejectedPromise>()
+	}
+
 })
