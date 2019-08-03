@@ -3,12 +3,17 @@ package com.animeshz.promise
 /**
  * Creates a [FulfilledPromise] with the [value], if the [value] is an instance of [PromiseInterface] it will just return it.
  *
- * @param[value] value which you want to make FulfilledPromise of
+ * @param[value] value which you want to make Promise of
  * @since 1.0
  * @return[PromiseInterface]
  */
-fun resolve(value: Any? = null): PromiseInterface = if (value is PromiseInterface) value else FulfilledPromise(
-	value)
+fun resolve(value: Any? = null): PromiseInterface = when (value)
+{
+	is PromiseInterface -> value
+	is Throwable -> reject(value)
+	else -> FulfilledPromise(
+		value)
+}
 
 /**
  * Creates a [RejectedPromise] with the [reason].

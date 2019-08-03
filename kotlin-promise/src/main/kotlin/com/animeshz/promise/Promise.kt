@@ -62,7 +62,7 @@ class Promise internal constructor(private var canceller: (() -> Any?)?) : Promi
 		{
 			callback(this::resolveCallback, this::rejectCallback)
 		} catch (e: Throwable) {
-			settle(reject(e))
+			rejectCallback(e)
 		}
 	}
 

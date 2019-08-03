@@ -49,8 +49,6 @@ class Deferred(private var canceller: (() -> Unit)? = null)
 	fun resolve(value: Any? = null)
 	{
 		promise()
-
-		//check for throwable/promiseinterface
 		resolveCallback(value)
 	}
 
