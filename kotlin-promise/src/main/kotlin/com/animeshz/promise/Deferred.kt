@@ -9,8 +9,13 @@ package com.animeshz.promise
  */
 class Deferred(private var canceller: (() -> Unit)? = null)
 {
+	@Volatile
 	private var promise: Promise? = null
+
+	@Volatile
 	private lateinit var resolveCallback: (Any?) -> Any?
+
+	@Volatile
 	private lateinit var rejectCallback: (Throwable) -> Any?
 
 	/**

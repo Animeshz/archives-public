@@ -20,10 +20,13 @@ class Promise internal constructor(private var canceller: (() -> Any?)?) : Promi
 	 * @see PromiseState
 	 * @since 1.0
 	 */
+	@Volatile
 	override var state: PromiseState = PromiseState.PENDING
 		private set
 
 	private val handlers = mutableListOf<(PromiseInterface) -> Unit>()
+
+	@Volatile
 	private var result: PromiseInterface? = null
 
 	/**
