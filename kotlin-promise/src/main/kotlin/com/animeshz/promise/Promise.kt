@@ -1,6 +1,7 @@
 package com.animeshz.promise
 
 import java.io.InvalidObjectException
+import java.util.Collections.synchronizedList
 import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.isSubclassOf
@@ -24,7 +25,7 @@ class Promise internal constructor(private var canceller: (() -> Any?)?) : Promi
 	override var state: PromiseState = PromiseState.PENDING
 		private set
 
-	private val handlers = mutableListOf<(PromiseInterface) -> Unit>()
+	private val handlers = synchronizedList(mutableListOf<(PromiseInterface) -> Unit>())
 
 	@Volatile
 	private var result: PromiseInterface? = null
@@ -189,7 +190,8 @@ class Promise internal constructor(private var canceller: (() -> Any?)?) : Promi
 		state = when (finalResult)
 		{
 			is RejectedPromise -> PromiseState.REJECTED
-			else -> PromiseState.FULFILLED
+			is FulfilledPromise -> PromiseState.FULFILLED
+			else -> PromiseState.PENDING
 		}
 	}
 
