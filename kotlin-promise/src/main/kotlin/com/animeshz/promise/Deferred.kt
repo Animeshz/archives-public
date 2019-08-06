@@ -29,20 +29,22 @@ class Deferred(private var canceller: (() -> Unit)? = null)
 	 */
 	fun promise(): PromiseInterface
 	{
-		var finalPromise = promise
+		synchronized(this) {
+			var finalPromise = promise
 
-		if (finalPromise === null)
-		{
-			val canceller = this.canceller
-			this.canceller = null
-			finalPromise = Promise({ resolve, reject ->
-				resolveCallback = resolve
-				rejectCallback = reject
-				Unit
-			}, canceller)
-			promise = finalPromise
+			if (finalPromise === null)
+			{
+				val canceller = this.canceller
+				this.canceller = null
+				finalPromise = Promise({ resolve, reject ->
+					resolveCallback = resolve
+					rejectCallback = reject
+					Unit
+				}, canceller)
+				promise = finalPromise
+			}
 		}
-		return finalPromise
+		return promise!!
 	}
 
 	/**
