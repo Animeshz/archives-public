@@ -43,8 +43,8 @@ class Deferred(private var canceller: (() -> Unit)? = null)
 				}, canceller)
 				promise = finalPromise
 			}
+			return finalPromise
 		}
-		return promise!!
 	}
 
 	/**
