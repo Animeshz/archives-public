@@ -68,7 +68,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
             //todo fetch job
             scope.launch {
                 while (isActive) {
-                    delay(10000)
+                    delay(10_000)
                     fetchMessages()
                 }
             }
@@ -84,10 +84,19 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
      * Get messages in the email after the [after] count, defaults to 0.
      */
     private suspend fun fetchMessages(after: Int = 0): List<Message> {
-        val json = requestString(Endpoint.MESSAGES, true, after)
-        return klaxon.parseArray(json) ?: if (requestString(Endpoint.MESSAGE_COUNT).parseSingleElementJson().toInt() == after) listOf() else run {
-            // if messages were more but we encountered problem in fetching them then retry after 5 seconds
-            delay(5000)
+        val json: String
+        try {
+            json = requestString(Endpoint.MESSAGES, true, after)
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
+            delay(5_000)
+            return fetchMessages(after)
+        }
+
+        return klaxon.parseArray(json) ?: if (requestString(Endpoint.MESSAGE_COUNT).parseSingleElementJson().toInt() == after) listOf()
+        else run {
+            logger.debug { "We encountered error parsing messages, retrying after 5 seconds" }
+            delay(5_000)
             fetchMessages(after)
         }
     }
@@ -114,7 +123,15 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
      */
     private suspend fun fetchMessages() {
         val fetched = messages.count()
-        val json = requestString(Endpoint.MESSAGES, true, fetched)
+        val json: String
+        try {
+            json = requestString(Endpoint.MESSAGES, true, fetched)
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
+            delay(5_000)
+            return fetchMessages()
+        }
+
         klaxon.parseArray<Message>(json)?.also {
             if (it.isNotEmpty()) {
                 messages.addAll(it)
@@ -127,7 +144,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
         } ?: if (requestString(Endpoint.MESSAGE_COUNT).parseSingleElementJson().toInt() != fetched)
             scope.launch {
                 logger.debug { "We are having problem fetching new messages from the server, retrying after 5 seconds" }
-                delay(5000)
+                delay(5_000)
                 fetchMessages()
             }
     }
@@ -169,11 +186,20 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
         } catch (e: KotlinNullPointerException) {
             logger.error(e) { "Error parsing address of email, creating new one" }
             init()
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
+            delay(5_000)
+            init()
         }
+    }
+
+    companion object {
+        const val RESPONSE_EXCEPTION_MSG = "Error getting the response, trying again after 5 seconds"
     }
 }
 
 /**
  * Uses string operations to extract single element (primitive) from json (object only).
+ * It is upto 1700 times faster than normal parsing of json.
  */
 fun String.parseSingleElementJson() = substring(indexOf(':')).trim { it in """:" }""" }
