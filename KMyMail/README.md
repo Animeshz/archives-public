@@ -153,7 +153,7 @@ email.cancel()
 
 Documentation
 ---
-[Documentation of this library is here](https://animeshz.github.io/KMyMail/-k-my-mail)
+[Documentation of this library is here](https://animeshz.github.io/KMyMail/-k-my-mail/)
 
 License
 ---
