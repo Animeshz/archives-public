@@ -80,28 +80,24 @@ suspend fun main() = coroutineScope {
     launch {
         /**
          * This auto-close email resource by calling email.close().
-
-         * It also gives email as receiver, i.e. you get email as this
-         * so instead of calling email.<fun> you'd directly call <fun>
          */
         email.use {
-            awaitReady() // <- suspends the coroutine till we're ready to use it
+            it.awaitReady() // <- suspends the coroutine till we're ready to use it
         
             // To get email address
-            val address: String = address // <- implicitly calls email.address
+            val address: String = it.address
             
-            // Do your tasks with email here 
+            // Do your tasks with email(it) here 
         }
     }
     // other tasks in main()
 }
 ```
 
+**Note:  if you use `use()` function you can change email.fun to it.fun in following examples**
 ### Messages
 ##### Receive messages
 ```kotlin
-// Note: if you use use{} function you can change email.<fun> to <fun>
-
 val messageReceiver: ReceiveChannel = email.messageBroadcast.openSubscription()
 val nextMessage: Message = messageReceiver.receive() // <- suspends till new message has arrived
 ```
