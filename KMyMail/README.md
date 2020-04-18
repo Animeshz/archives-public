@@ -103,7 +103,7 @@ suspend fun main() = coroutineScope {
 // Note: if you use use{} function you can change email.<fun> to <fun>
 
 val messageReceiver: ReceiveChannel = email.messageBroadcast.openSubscription()
-val nextMessage: Message = messageReceiver.receive()
+val nextMessage: Message = messageReceiver.receive() // <- suspends till new message has arrived
 ```
 
 ##### To get older messages list

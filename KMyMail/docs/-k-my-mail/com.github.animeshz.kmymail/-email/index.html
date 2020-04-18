@@ -1,0 +1,150 @@
+<HTML>
+<HEAD>
+    <meta charset="UTF-8">
+    <title>Email - KMyMail</title>
+    <link href="../../../style.css" rel="stylesheet">
+</HEAD>
+<BODY>
+<a href="../../index.html">KMyMail</a>&nbsp;/&nbsp;<a href="../index.html">com.github.animeshz.kmymail</a>&nbsp;/&nbsp;<a href="./index.html">Email</a><br/>
+<br/>
+<h1>Email</h1>
+<code><span class="keyword">class </span><span class="identifier">Email</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html"><span
+        class="identifier">Closeable</span></a></code>
+<p>Represents an Email</p>
+<h3>Parameters</h3>
+<p><a name="coroutineScope"></a>
+    <code>coroutineScope</code> - Scope on which all the coroutine is going to be launched, Job will be overridden.</p>
+<h3>Types</h3>
+<table>
+    <tbody>
+    <tr>
+        <td>
+            <h4><a href="-endpoint/index.html">Endpoint</a></h4>
+        </td>
+        <td>
+            <code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">Endpoint</span></code></td>
+    </tr>
+    </tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+    <tbody>
+    <tr>
+        <td>
+            <h4><a href="-init-.html">&lt;init&gt;</a></h4>
+        </td>
+        <td>
+            <p>Represents an Email</p>
+            <code><span class="identifier">Email</span><span class="symbol">(</span><span class="identifier"
+                                                                                          id="com.github.animeshz.kmymail.Email$<init>(kotlinx.coroutines.CoroutineScope)/coroutineScope">coroutineScope</span><span
+                    class="symbol">:</span>&nbsp;<span class="identifier">CoroutineScope</span><span class="symbol">)</span></code></td>
+    </tr>
+    </tbody>
+</table>
+<h3>Properties</h3>
+<table>
+    <tbody>
+    <tr>
+        <td>
+            <h4><a href="address.html">address</a></h4>
+        </td>
+        <td>
+            <p>Address of the email.</p>
+            <code><span class="keyword">lateinit</span> <span class="keyword">var </span><span class="identifier">address</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="message-broadcast.html">messageBroadcast</a></h4>
+        </td>
+        <td>
+            <p>Broadcast of newly coming messages</p>
+            <code><span class="keyword">val </span><span class="identifier">messageBroadcast</span><span class="symbol">: </span><span class="identifier">ConflatedBroadcastChannel</span><span
+                    class="symbol">&lt;</span><a href="../-message/index.html"><span class="identifier">Message</span></a><span class="symbol">&gt;</span></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="messages.html">messages</a></h4>
+        </td>
+        <td>
+            <p>List of all the fetched messages till now.</p>
+            <code><span class="keyword">val </span><span class="identifier">messages</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a
+                    href="../-message/index.html"><span class="identifier">Message</span></a><span class="symbol">&gt;</span></code></td>
+    </tr>
+    </tbody>
+</table>
+<h3>Functions</h3>
+<table>
+    <tbody>
+    <tr>
+        <td>
+            <h4><a href="await-ready.html">awaitReady</a></h4>
+        </td>
+        <td>
+            <p>Suspends caller until <a href="./index.html">Email</a> is ready to be used</p>
+            <code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">awaitReady</span><span class="symbol">(</span><span class="symbol">)</span><span
+                    class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="close.html">close</a></h4>
+        </td>
+        <td>
+            <p>Closes all the services running inside this object.
+                Frees up resources.</p>
+            <code><span class="keyword">fun </span><span class="identifier">close</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="is-expired.html">isExpired</a></h4>
+        </td>
+        <td>
+            <p>Checks if this email has been expired.</p>
+            <code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">isExpired</span><span class="symbol">(</span><span class="symbol">)</span><span
+                    class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="remaining-time.html">remainingTime</a></h4>
+        </td>
+        <td>
+            <p>Returns remaining time till the email can be used (in seconds)</p>
+            <code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">remainingTime</span><span class="symbol">(</span><span class="symbol">)</span><span
+                    class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="to-string.html">toString</a></h4>
+        </td>
+        <td>
+            <p>Returns a string representation of the object.</p>
+            <code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+    </tr>
+    </tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+    <tbody>
+    <tr>
+        <td>
+            <h4><a href="-h-t-t-p.html">HTTP</a></h4>
+        </td>
+        <td>
+            <code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">HTTP</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="-r-e-s-p-o-n-s-e_-e-x-c-e-p-t-i-o-n_-m-s-g.html">RESPONSE_EXCEPTION_MSG</a></h4>
+        </td>
+        <td>
+            <code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">RESPONSE_EXCEPTION_MSG</span><span class="symbol">: </span><a
+                    href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+    </tr>
+    </tbody>
+</table>
+</BODY>
+</HTML>

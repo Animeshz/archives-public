@@ -1,0 +1,4 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:com.github.animeshz.kmymail$parseSingleElementJson(kotlin.String)com.github.animeshz.kmymail/kotlin.-string/parse-single-element-json.html
+com.github.animeshz.kmymail
