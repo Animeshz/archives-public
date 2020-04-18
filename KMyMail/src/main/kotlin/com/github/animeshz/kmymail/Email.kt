@@ -46,19 +46,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
      * Useful when user forgot to close resources manually by calling [cancel]
      */
 
-    private val http = "https://10minutemail.com"
     private lateinit var cookies: HeaderValues
-
-    enum class Endpoint(val value: String) {
-        ADDRESS("/session/address"),
-        REMAINING_TIME("/session/secondsLeft"),
-        IS_EXPIRED("/session/expired"),
-        RESET_TIME("/session/reset"),
-        MESSAGES("/messages/messagesAfter/%d"),
-        MESSAGE_COUNT("/messages/messageCount"),
-        REPLY("/messages/reply"),
-        FORWARD("/messages/forward")
-    }
 
     init {
         createJob = scope.launch {
@@ -81,23 +69,48 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
     suspend fun awaitReady() = createJob.join()
 
     /**
-     * Get messages in the email after the [after] count, defaults to 0.
+     * Returns remaining time till the email can be used (in seconds)
      */
-    private suspend fun fetchMessages(after: Int = 0): List<Message> {
+    suspend fun remainingTime(): Int {
         val json: String
         try {
-            json = requestString(Endpoint.MESSAGES, true, after)
+            json = requestString(Endpoint.REMAINING_TIME)
         } catch (e: Exception) {
             logger.error(e) { RESPONSE_EXCEPTION_MSG }
             delay(5_000)
-            return fetchMessages(after)
+            return remainingTime()
         }
 
-        return klaxon.parseArray(json) ?: if (requestString(Endpoint.MESSAGE_COUNT).parseSingleElementJson().toInt() == after) listOf()
-        else run {
-            logger.debug { "We encountered error parsing messages, retrying after 5 seconds" }
+        return json.parseSingleElementJson().toInt()
+    }
+
+    /**
+     * Checks if this email has been expired.
+     */
+    suspend fun isExpired(): Boolean {
+        val json: String
+        try {
+            json = requestString(Endpoint.IS_EXPIRED)
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
             delay(5_000)
-            fetchMessages(after)
+            return isExpired()
+        }
+
+        return json.parseSingleElementJson().toBoolean()
+    }
+
+    /**
+     * Email is usable till 10 minutes since being created
+     * To get more time (10 minutes from now) call email.renew()
+     */
+    private suspend fun renew() {
+        try {
+            requestUnit(Endpoint.RESET_TIME)
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
+            delay(5_000)
+            return renew()
         }
     }
 
@@ -134,6 +147,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
 
         klaxon.parseArray<Message>(json)?.also {
             if (it.isNotEmpty()) {
+                for (m in it) m.setCookies(cookies)
                 messages.addAll(it)
                 scope.launch {
                     for (m in it) {
@@ -159,7 +173,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
      * val (request, response, result) = email.request(endpoint)
      */
     private suspend fun request(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): ResponseResultOf<String> =
-        Fuel.get(http + endpoint.value.run { if (format.isNotEmpty()) format(format) })
+        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
             .apply { if (setCookie) set("cookie", cookies) }
             .apply { logger.debug { "Starting responseResultString request to ${endpoint.value}" } }
             .awaitStringResponseResult()
@@ -168,10 +182,16 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
      * Returns response string
      */
     private suspend fun requestString(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): String =
-        Fuel.get(http + endpoint.value.run { if (format.isNotEmpty()) format(format) })
+        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
             .apply { if (setCookie) set("cookie", cookies) }
             .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
             .awaitString()
+
+    private suspend fun requestUnit(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): Unit =
+        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
+            .apply { if (setCookie) set("cookie", cookies) }
+            .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
+            .awaitUnit()
 
     /**
      * Initializer handled by init block.
@@ -195,6 +215,19 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
 
     companion object {
         const val RESPONSE_EXCEPTION_MSG = "Error getting the response, trying again after 5 seconds"
+
+        const val HTTP = "https://10minutemail.com"
+    }
+
+    enum class Endpoint(val value: String) {
+        ADDRESS("/session/address"),
+        REMAINING_TIME("/session/secondsLeft"),
+        IS_EXPIRED("/session/expired"),
+        RESET_TIME("/session/reset"),
+        MESSAGES("/messages/messagesAfter/%d"),
+        MESSAGE_COUNT("/messages/messageCount"),
+        REPLY("/messages/reply"),
+        FORWARD("/messages/forward")
     }
 }
 
