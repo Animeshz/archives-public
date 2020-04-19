@@ -1,14 +1,11 @@
-KMyMail
-=======
+<h1 align="center">KMyMail</h1>
+
 <p align="center">
     <a href="https://travis-ci.org/Animeshz/KMyMail">
         <img src="https://img.shields.io/travis/Animeshz/KMyMail?style=flat-square" alt="Build Status" />
     </a>
     <a href="https://www.codacy.com/manual/Animeshz/KMyMail?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Animeshz/KMyMail&amp;utm_campaign=Badge_Grade">
         <img src="https://img.shields.io/codacy/grade/37404b3fef2a45fa8859a1030f42dbe7?style=flat-square" alt="Code Quality" />
-    </a>
-    <a href="">
-        <img src="https://img.shields.io/codacy/coverage/37404b3fef2a45fa8859a1030f42dbe7" alt="Code Coverage" />
     </a>
     <a href="https://github.com/Animeshz/KMyMail/releases">
         <img src="https://img.shields.io/github/release-date/Animeshz/KMyMail?label=Latest%20Release" alt="Latest Release" />
