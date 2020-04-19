@@ -240,11 +240,11 @@ class Email(context: CoroutineContext) : Closeable {
     }
 
     private suspend fun fetchCancellation() {
-        val renewTime = startRenewTime
-        if (System.currentTimeMillis() - renewTime > 599_000) {
+        val duration = System.currentTimeMillis() - startRenewTime
+        if (duration > 599_000) {
             fetchJob.cancel()
         } else {
-            delay(System.currentTimeMillis() - renewTime)
+            delay(duration)
             fetchCancellation()
         }
     }
