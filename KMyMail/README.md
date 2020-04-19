@@ -2,7 +2,11 @@ KMyMail
 =======
 <p align="center">
     <img src="https://img.shields.io/github/languages/code-size/Animeshz/KMyMail?style=flat-square" alt="Code Size"/>
- 
+    <a href="https://jitpack.io/#Animeshz/KMyMail">
+        <img src="https://jitpack.io/v/Animeshz/KMyMail.svg" alt="Jitpack" /></a>
+    <a href="https://travis-ci.org/Animeshz/promise">
+                <img src="https://travis-ci.org/Animeshz/promise.svg?branch=master" alt="Build Status" /></a>
+    
 
 </p>
 ![Size](https://img.shields.io/github/languages/code-size/Animeshz/KMyMail?style=flat-square)
