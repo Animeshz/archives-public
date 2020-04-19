@@ -8,7 +8,7 @@
         <img src="https://img.shields.io/codacy/grade/37404b3fef2a45fa8859a1030f42dbe7?style=flat-square" alt="Code Quality" />
     </a>
     <a href="https://github.com/Animeshz/KMyMail/releases">
-        <img src="https://img.shields.io/github/release-date/Animeshz/KMyMail?label=Latest%20Release" alt="Latest Release" />
+        <img src="https://img.shields.io/github/release-date/Animeshz/KMyMail?style=flat-square&label=Latest%20Release" alt="Latest Release" />
     </a>
     <a href="https://jitpack.io/#Animeshz/KMyMail">
         <img src="https://img.shields.io/jitpack/v/github/Animeshz/KMyMail?style=flat-square" alt="Jitpack" />
