@@ -23,7 +23,7 @@ Table of contents
 
 Introduction
 ------------
-Ever wondered of temporary mails, receiving messages and then dispose them? This has now been implemented in Kotlin.
+Ever wondered of temporary mails, receiving messages and then disposing them? This has now been implemented in Kotlin.
 
 This library depends heavily in coroutines, providing a safe and convenient way to use this without blocking your application.
 
@@ -31,6 +31,7 @@ Here's what KMyMail serves:
 * Create disposable temporary emails.
 * Receive mails from it conveniently (from channels as well).
 * Reply to or forward message.
+* CANNOT send mails directly to sb.
 
 Installation
 ---
@@ -72,7 +73,8 @@ QuickStart
 ### Create a new email
 ```kotlin
 suspend fun main() = coroutineScope {
-    val email = Email(this)
+
+    val email = Email(this.coroutineContext) // specify context for email to run on
     
     /**
      * Launches a new coroutine so that main fun does not suspend, and could do work

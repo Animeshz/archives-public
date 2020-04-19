@@ -8,13 +8,14 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import mu.*
 import java.io.*
+import kotlin.coroutines.*
 
 /**
  * Represents an Email
- * @param coroutineScope Scope on which all the coroutine is going to be launched, Job will be overridden.
+ * @param context Context on which all the coroutine is going to be launched, Job will be overridden.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-class Email(coroutineScope: CoroutineScope) : Closeable {
+class Email(context: CoroutineContext) : Closeable {
     /**
      * Address of the email.
      *
@@ -38,7 +39,7 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
     private val klaxon by lazy { Klaxon() }
     private val logger = KotlinLogging.logger {}
     private val job = Job()
-    private val scope = coroutineScope + job
+    private val scope = CoroutineScope(context + job)
     private val createJob: Job
 
     /**
@@ -166,32 +167,40 @@ class Email(coroutineScope: CoroutineScope) : Closeable {
     /**
      * Returns a subtype of [Triple] having request, response and result (from response)
      *
-     * @param endpoint Endpoint to which request has to be made
+     * @param endpoint  Endpoint to which request has to be made
      * @param setCookie whether we have to set the cookies, cookies are received on the
+     * @param format    If there is any Java string format available in the endpoint, formats it.
      *
      * Usage:
      * val (request, response, result) = email.request(endpoint)
      */
     private suspend fun request(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): ResponseResultOf<String> =
-        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
-            .apply { if (setCookie) set("cookie", cookies) }
-            .apply { logger.debug { "Starting responseResultString request to ${endpoint.value}" } }
-            .awaitStringResponseResult()
+        buildRequest(endpoint, setCookie, format).awaitStringResponseResult()
 
     /**
-     * Returns response string
+     * Returns response [String]
+     *
+     * @param endpoint  Endpoint to which request has to be made
+     * @param setCookie whether we have to set the cookies, cookies are received on the
+     * @param format    If there is any Java string format available in the endpoint, formats it.
      */
     private suspend fun requestString(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): String =
-        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
-            .apply { if (setCookie) set("cookie", cookies) }
-            .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
-            .awaitString()
+        buildRequest(endpoint, setCookie, format).awaitString()
 
+    /**
+     * Runs the request and returns [Unit], use this when result is not useful.
+     *
+     * @param endpoint  Endpoint to which request has to be made
+     * @param setCookie whether we have to set the cookies, cookies are received on the
+     * @param format    If there is any Java string format available in the endpoint, formats it.
+     */
     private suspend fun requestUnit(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): Unit =
-        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) })
+        buildRequest(endpoint, setCookie, format).awaitUnit()
+
+    private fun buildRequest(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any) =
+        Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) else this })
             .apply { if (setCookie) set("cookie", cookies) }
             .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
-            .awaitUnit()
 
     /**
      * Initializer handled by init block.
