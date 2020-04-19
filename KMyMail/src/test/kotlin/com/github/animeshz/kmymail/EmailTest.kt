@@ -2,6 +2,7 @@ package com.github.animeshz.kmymail
 
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
+import io.kotest.matchers.ints.*
 import io.kotest.matchers.string.*
 
 class EmailTest : StringSpec({
@@ -18,6 +19,25 @@ class EmailTest : StringSpec({
         Email(this.coroutineContext).use {
             it.awaitReady()
             it.isExpired() shouldBe false
+        }
+    }
+
+    "remainingTime should return value close to 10 minutes" {
+        Email(this.coroutineContext).use {
+            it.awaitReady()
+            val rem = it.remainingTime()
+            rem shouldBeLessThan 600
+            rem shouldBeGreaterThan 590
+        }
+    }
+
+    "renew should reset the timeRemaining back to 10 minutes" {
+        Email(this.coroutineContext).use {
+            it.awaitReady()
+            val remBef = it.remainingTime()
+            it.renew()
+            val remAft = it.remainingTime()
+            remAft - remBef shouldBeGreaterThanOrEqual 0
         }
     }
 

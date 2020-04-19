@@ -105,7 +105,7 @@ class Email(context: CoroutineContext) : Closeable {
      * Email is usable till 10 minutes since being created
      * To get more time (10 minutes from now) call email.renew()
      */
-    private suspend fun renew() {
+    suspend fun renew() {
         try {
             requestUnit(Endpoint.RESET_TIME)
         } catch (e: Exception) {
