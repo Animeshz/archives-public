@@ -12,8 +12,8 @@
         class="identifier">Closeable</span></a></code>
 <p>Represents an Email</p>
 <h3>Parameters</h3>
-<p><a name="coroutineScope"></a>
-    <code>coroutineScope</code> - Scope on which all the coroutine is going to be launched, Job will be overridden.</p>
+<p><a name="context"></a>
+    <code>context</code> - Context on which all the coroutine is going to be launched, Job will be overridden.</p>
 <h3>Types</h3>
 <table>
     <tbody>
@@ -35,9 +35,9 @@
         </td>
         <td>
             <p>Represents an Email</p>
-            <code><span class="identifier">Email</span><span class="symbol">(</span><span class="identifier"
-                                                                                          id="com.github.animeshz.kmymail.Email$<init>(kotlinx.coroutines.CoroutineScope)/coroutineScope">coroutineScope</span><span
-                    class="symbol">:</span>&nbsp;<span class="identifier">CoroutineScope</span><span class="symbol">)</span></code></td>
+            <code><span class="identifier">Email</span><span class="symbol">(</span><span class="identifier" id="com.github.animeshz.kmymail.Email$<init>(kotlin.coroutines.CoroutineContext)/context">context</span><span
+                    class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines/-coroutine-context/index.html"><span class="identifier">CoroutineContext</span></a><span
+                    class="symbol">)</span></code></td>
     </tr>
     </tbody>
 </table>
@@ -113,6 +113,16 @@
             <p>Returns remaining time till the email can be used (in seconds)</p>
             <code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">remainingTime</span><span class="symbol">(</span><span class="symbol">)</span><span
                     class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+    </tr>
+    <tr>
+        <td>
+            <h4><a href="renew.html">renew</a></h4>
+        </td>
+        <td>
+            <p>Email is usable till 10 minutes since being created
+                To get more time (10 minutes from now) call email.renew()</p>
+            <code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">renew</span><span class="symbol">(</span><span class="symbol">)</span><span
+                    class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
     </tr>
     <tr>
         <td>

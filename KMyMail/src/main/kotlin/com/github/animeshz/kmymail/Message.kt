@@ -25,6 +25,11 @@ data class Message(
         cookies = c
     }
 
+    /**
+     * Replies to the sender of this message
+     *
+     * @param message the message you want to send as a reply
+     */
     suspend fun reply(message: String) {
         try {
             Fuel.post(Email.HTTP + Email.Endpoint.REPLY)
@@ -39,6 +44,11 @@ data class Message(
         }
     }
 
+    /**
+     * Forwards this message to sb else
+     *
+     * @param address email address of person you want to send this message to
+     */
     suspend fun forward(address: String) {
         try {
             Fuel.post(Email.HTTP + Email.Endpoint.REPLY)

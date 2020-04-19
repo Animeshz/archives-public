@@ -1,24 +1,28 @@
 KMyMail
 =======
-<!--[![Release](https://jitpack.io/v/Animeshz/KMyMail.svg)](https://jitpack.io/#Animeshz/KMyMail-->
-Disposable Email API written purely in Kotlin for JVM.
+<p align="center">
+    <img src="https://img.shields.io/github/languages/code-size/Animeshz/KMyMail?style=flat-square" alt="Code Size"/>
+ 
 
+</p>
+![Size](https://img.shields.io/github/languages/code-size/Animeshz/KMyMail?style=flat-square)
+Disposable Email API written purely in Kotlin for JVM.
 
 Table of contents
 -----------------
 
-1. [Introduction](#introduction)
-2. [Installation](#installation)
-    * [Maven](#maven)
-    * [Gradle](#gradle)
-3. [QuickStart](#quickstart)
-    * [Create a new email](#create-a-new-email)
-    * [Messages](#messages)
-    * [Time to use](#time-to-use)
-    * [Send reply or forward message](#send-reply-or-forward-message)
-    * [Close Email object to free up your resources](#close-email-object-to-free-up-your-resources)
-4. [Documentation](#documentation)
-5. [License](#license)
+1.  [Introduction](#introduction)
+2.  [Installation](#installation)
+    *   [Maven](#maven)
+    *   [Gradle](#gradle)
+3.  [QuickStart](#quickstart)
+    *   [Create a new email](#create-a-new-email)
+    *   [Messages](#messages)
+    *   [Time to use](#time-to-use)
+    *   [Send reply or forward message](#send-reply-or-forward-message)
+    *   [Close Email object to free up your resources](#close-email-object-to-free-up-your-resources)
+4.  [Documentation](#documentation)
+5.  [License](#license)
 
 
 Introduction
@@ -28,10 +32,11 @@ Ever wondered of temporary mails, receiving messages and then disposing them? Th
 This library depends heavily in coroutines, providing a safe and convenient way to use this without blocking your application.
 
 Here's what KMyMail serves:
-* Create disposable temporary emails.
-* Receive mails from it conveniently (from channels as well).
-* Reply to or forward message.
-* CANNOT send mails directly to sb.
+*   Create disposable temporary emails.
+*   Receive mails from it conveniently (from channels as well).
+*   Reply to or forward message.
+*   CANNOT send mails directly to sb.
+
 
 Installation
 ---
@@ -68,6 +73,7 @@ First import jitpack.io repository.
 </dependencies>
 ```
 
+
 QuickStart
 ---
 ### Create a new email
@@ -98,13 +104,13 @@ suspend fun main() = coroutineScope {
 
 **Note:  if you use `use()` function you can change email.fun to it.fun in following examples**
 ### Messages
-##### Receive messages
+#### Receive messages
 ```kotlin
 val messageReceiver: ReceiveChannel = email.messageBroadcast.openSubscription()
 val nextMessage: Message = messageReceiver.receive() // <- suspends till new message has arrived
 ```
 
-##### To get older messages list
+#### To get older messages list
 ```kotlin
 val messages: List<Message> = email.messages
 for (message: Message in messages) {
@@ -115,29 +121,29 @@ for (message: Message in messages) {
 ### Time to use
 Email object is usable till 10 minutes since being created.
 
-##### To check remaining time:
+#### To check remaining time:
 ```kotlin
 val remainingTime: Int = email.remainingTime()
 ```
 
-##### To check if it is expired:
+#### To check if it is expired:
 ```kotlin
 val isExpired: Boolean = email.isExpired()
 ```
 
-##### To renew:
+#### To renew:
 To renew (make this usable again for 10 minutes, from now)
 ```kotlin
 email.renew()
 ```
 
 ### Send reply or forward message
-##### Send reply to Message
+#### Send reply to Message
 To reply to a message (sender)
 ```kotlin
 message.reply("Your message here")
 ```
-##### Forward Message
+#### Forward Message
 To forward message to someone
 ```kotlin
 message.forward("addressofperson@asdf.com")
@@ -149,9 +155,11 @@ If you don't use `use()` then you have to manually call cancel() on email to clo
 email.cancel()
 ```
 
+
 Documentation
 ---
 [Documentation of this library is here](https://animeshz.github.io/KMyMail/-k-my-mail/)
+
 
 License
 ---
