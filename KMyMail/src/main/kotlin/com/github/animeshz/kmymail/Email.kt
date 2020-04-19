@@ -51,24 +51,23 @@ class Email(context: CoroutineContext) : Closeable {
     private val job = Job()
     private val scope = CoroutineScope(context + job)
     private val createJob: Job
+    private lateinit var fetchJob: Job
 
+    private var startRenewTime: Long = System.currentTimeMillis()
     private lateinit var cookies: HeaderValues
 
-    // Probably add a fetch job for more control instead of always running job for fetching messages.
-    // Useful when user forgot to close resources manually by calling [cancel]
 
     init {
         createJob = scope.launch {
             logger.debug { "Generating random email" }
             init()
 
-            //todo fetch job
             scope.launch {
-                while (isActive) {
-                    delay(10_000)
-                    fetchMessages()
-                }
+                delay(599_000)
+                fetchCancellation()
             }
+
+            fetchJob = scope.launch { fetchJob() }
         }
     }
 
@@ -115,7 +114,12 @@ class Email(context: CoroutineContext) : Closeable {
      */
     suspend fun renew() {
         try {
-            requestUnit(Endpoint.RESET_TIME)
+            requestUnit(Endpoint.RESET_TIME).apply {
+                startRenewTime = System.currentTimeMillis()
+                if (!fetchJob.isActive) {
+                    fetchJob = scope.launch { fetchJob() }
+                }
+            }
         } catch (e: Exception) {
             logger.error(e) { RESPONSE_EXCEPTION_MSG }
             delay(5_000)
@@ -215,17 +219,33 @@ class Email(context: CoroutineContext) : Closeable {
             .apply { if (setCookie) set("cookie", cookies) }
 
     private suspend fun init() {
-
         try {
             val (_, response, result) = request(Endpoint.ADDRESS, false)
             cookies = response.headers["Set-Cookie"]
-            
+
             address = result.get().parseSingleElementJson()
             logger.debug { "Successfully generated random email" }
         } catch (e: Exception) {
             logger.error(e) { RESPONSE_EXCEPTION_MSG }
             delay(5_000)
             return init()
+        }
+    }
+
+    private suspend fun CoroutineScope.fetchJob() {
+        while (isActive) {
+            delay(10_000)
+            fetchMessages()
+        }
+    }
+
+    private suspend fun fetchCancellation() {
+        val renewTime = startRenewTime
+        if (System.currentTimeMillis() - renewTime > 599_000) {
+            fetchJob.cancel()
+        } else {
+            delay(System.currentTimeMillis() - renewTime)
+            fetchCancellation()
         }
     }
 
