@@ -42,12 +42,10 @@ class Email(context: CoroutineContext) : Closeable {
     private val scope = CoroutineScope(context + job)
     private val createJob: Job
 
-    /**
-     * Probably add a fetch job for more control instead of always running job for fetching messages.
-     * Useful when user forgot to close resources manually by calling [cancel]
-     */
-
     private lateinit var cookies: HeaderValues
+
+    // Probably add a fetch job for more control instead of always running job for fetching messages.
+    // Useful when user forgot to close resources manually by calling [cancel]
 
     init {
         createJob = scope.launch {
@@ -202,11 +200,17 @@ class Email(context: CoroutineContext) : Closeable {
             .apply { if (setCookie) set("cookie", cookies) }
             .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
 
-    /**
-     * Initializer handled by init block.
-     */
     private suspend fun init() {
-        val (_, response, result) = request(Endpoint.ADDRESS, false)
+        val request: ResponseResultOf<String>
+        try {
+            request = request(Endpoint.ADDRESS, false)
+        } catch (e: Exception) {
+            logger.error(e) { RESPONSE_EXCEPTION_MSG }
+            delay(5_000)
+            return renew()
+        }
+
+        val (_, response, result) = request
         cookies = response.headers["Set-Cookie"]
 
         try {
@@ -215,19 +219,17 @@ class Email(context: CoroutineContext) : Closeable {
         } catch (e: KotlinNullPointerException) {
             logger.error(e) { "Error parsing address of email, creating new one" }
             init()
-        } catch (e: Exception) {
-            logger.error(e) { RESPONSE_EXCEPTION_MSG }
-            delay(5_000)
-            init()
         }
     }
 
     companion object {
         const val RESPONSE_EXCEPTION_MSG = "Error getting the response, trying again after 5 seconds"
-
         const val HTTP = "https://10minutemail.com"
     }
 
+    /**
+     * Endpoints to fetch the information
+     */
     enum class Endpoint(val value: String) {
         ADDRESS("/session/address"),
         REMAINING_TIME("/session/secondsLeft"),

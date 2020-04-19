@@ -24,7 +24,6 @@ Table of contents
 4.  [Documentation](#documentation)
 5.  [License](#license)
 
-
 Introduction
 ------------
 Ever wondered of temporary mails, receiving messages and then disposing them? This has now been implemented in Kotlin.
@@ -37,11 +36,9 @@ Here's what KMyMail serves:
 *   Reply to or forward message.
 *   CANNOT send mails directly to sb.
 
-
 Installation
 ---
-
-### Gradle:
+### Gradle
 First import jitpack.io repository.
 ```gradle
 repositories {
@@ -53,7 +50,7 @@ dependencies {
 }
 ```
 
-### Maven:
+### Maven
 First import jitpack.io repository.
 ```xml
 <repositories>
@@ -72,7 +69,6 @@ First import jitpack.io repository.
     </dependency>
 </dependencies>
 ```
-
 
 QuickStart
 ---
@@ -121,17 +117,17 @@ for (message: Message in messages) {
 ### Time to use
 Email object is usable till 10 minutes since being created.
 
-#### To check remaining time:
+#### To check remaining time
 ```kotlin
 val remainingTime: Int = email.remainingTime()
 ```
 
-#### To check if it is expired:
+#### To check if it is expired
 ```kotlin
 val isExpired: Boolean = email.isExpired()
 ```
 
-#### To renew:
+#### To renew
 To renew (make this usable again for 10 minutes, from now)
 ```kotlin
 email.renew()
@@ -155,11 +151,9 @@ If you don't use `use()` then you have to manually call cancel() on email to clo
 email.cancel()
 ```
 
-
 Documentation
 ---
 [Documentation of this library is here](https://animeshz.github.io/KMyMail/-k-my-mail/)
-
 
 License
 ---

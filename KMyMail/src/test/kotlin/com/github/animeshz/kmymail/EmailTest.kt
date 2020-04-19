@@ -5,6 +5,9 @@ import io.kotest.matchers.*
 import io.kotest.matchers.ints.*
 import io.kotest.matchers.string.*
 
+/**
+ * Unit tests the Email class
+ */
 class EmailTest : StringSpec({
 
     "email address should match the regex" {
