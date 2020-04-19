@@ -165,7 +165,7 @@ class Email(context: CoroutineContext) : Closeable {
                 }
             }
         } ?: if (requestString(Endpoint.MESSAGE_COUNT).parseSingleElementJson().toInt() != fetched)
-            scope.launch {
+            apply {
                 logger.debug { "We are having problem fetching new messages from the server, retrying after 5 seconds" }
                 delay(5_000)
                 fetchMessages()
@@ -183,7 +183,9 @@ class Email(context: CoroutineContext) : Closeable {
      * val (request, response, result) = email.request(endpoint)
      */
     private suspend fun request(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): ResponseResultOf<String> =
-        buildRequest(endpoint, setCookie, format).awaitStringResponseResult()
+        buildRequest(endpoint, setCookie, format)
+            .apply { logger.debug { "Starting string response result request to ${endpoint.value}" } }
+            .awaitStringResponseResult()
 
     /**
      * Returns response [String]
@@ -193,7 +195,8 @@ class Email(context: CoroutineContext) : Closeable {
      * @param format    If there is any Java string format available in the endpoint, formats it.
      */
     private suspend fun requestString(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): String =
-        buildRequest(endpoint, setCookie, format).awaitString()
+        buildRequest(endpoint, setCookie, format)
+            .apply { logger.debug { "Starting string request to ${endpoint.value}" } }.awaitString()
 
     /**
      * Runs the request and returns [Unit], use this when result is not useful.
@@ -203,32 +206,26 @@ class Email(context: CoroutineContext) : Closeable {
      * @param format    If there is any Java string format available in the endpoint, formats it.
      */
     private suspend fun requestUnit(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any): Unit =
-        buildRequest(endpoint, setCookie, format).awaitUnit()
+        buildRequest(endpoint, setCookie, format)
+            .apply { logger.debug { "Starting no return request to ${endpoint.value}" } }
+            .awaitUnit()
 
     private fun buildRequest(endpoint: Endpoint, setCookie: Boolean = true, vararg format: Any) =
         Fuel.get(HTTP + endpoint.value.run { if (format.isNotEmpty()) format(format) else this })
             .apply { if (setCookie) set("cookie", cookies) }
-            .apply { logger.debug { "Starting string request to ${endpoint.value}" } }
 
     private suspend fun init() {
-        val request: ResponseResultOf<String>
+
         try {
-            request = request(Endpoint.ADDRESS, false)
+            val (_, response, result) = request(Endpoint.ADDRESS, false)
+            cookies = response.headers["Set-Cookie"]
+            
+            address = result.get().parseSingleElementJson()
+            logger.debug { "Successfully generated random email" }
         } catch (e: Exception) {
             logger.error(e) { RESPONSE_EXCEPTION_MSG }
             delay(5_000)
-            return renew()
-        }
-
-        val (_, response, result) = request
-        cookies = response.headers["Set-Cookie"]
-
-        try {
-            address = result.get().parseSingleElementJson()
-            logger.debug { "Successfully generated random email" }
-        } catch (e: KotlinNullPointerException) {
-            logger.error(e) { "Error parsing address of email, creating new one" }
-            init()
+            return init()
         }
     }
 
