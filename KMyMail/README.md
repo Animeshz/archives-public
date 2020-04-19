@@ -51,7 +51,6 @@ Here's what KMyMail serves:
 Installation
 ---
 ### Gradle
-First import jitpack.io repository.
 ```gradle
 repositories {
     maven { url 'https://jitpack.io' }
@@ -63,7 +62,6 @@ dependencies {
 ```
 
 ### Maven
-First import jitpack.io repository.
 ```xml
 <repositories>
     ...
