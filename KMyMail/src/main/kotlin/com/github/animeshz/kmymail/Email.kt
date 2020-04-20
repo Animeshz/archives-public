@@ -53,7 +53,7 @@ class Email(context: CoroutineContext) : Closeable {
     private val createJob: Job
     private lateinit var fetchJob: Job
 
-    private var startRenewTime: Long = System.currentTimeMillis()
+    private var stopTime: Long = System.currentTimeMillis()
     private lateinit var cookies: HeaderValues
 
 
@@ -90,6 +90,7 @@ class Email(context: CoroutineContext) : Closeable {
         }
 
         return json.parseSingleElementJson().toInt()
+            .apply { stopTime = System.currentTimeMillis() + this }
     }
 
     /**
@@ -115,7 +116,7 @@ class Email(context: CoroutineContext) : Closeable {
     suspend fun renew() {
         try {
             requestUnit(Endpoint.RESET_TIME).apply {
-                startRenewTime = System.currentTimeMillis()
+                stopTime = System.currentTimeMillis() + 599_000
                 if (!fetchJob.isActive) {
                     fetchJob = scope.launch { fetchJob() }
                 }
@@ -240,11 +241,11 @@ class Email(context: CoroutineContext) : Closeable {
     }
 
     private suspend fun fetchCancellation() {
-        val duration = System.currentTimeMillis() - startRenewTime
-        if (duration > 599_000) {
+        val remaining = stopTime - System.currentTimeMillis()
+        if (remaining < 0) {
             fetchJob.cancel()
         } else {
-            delay(duration)
+            delay(remaining)
             fetchCancellation()
         }
     }
