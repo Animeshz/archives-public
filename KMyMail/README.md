@@ -57,7 +57,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Animeshz:KMyMail:$version'
+    implementation 'com.github.Animeshz:KMyMail:1.0.1'
 }
 ```
 
@@ -75,7 +75,7 @@ dependencies {
     <dependency>
         <groupId>com.github.Animeshz</groupId>
         <artifactId>KMyMail</artifactId>
-        <version>$version</version>
+        <version>1.0.1</version>
     </dependency>
 </dependencies>
 ```

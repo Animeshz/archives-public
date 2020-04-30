@@ -61,7 +61,7 @@ data class Message(
      */
     suspend fun forward(address: String) {
         try {
-            Fuel.post(Email.HTTP + Email.Endpoint.REPLY)
+            Fuel.post(Email.HTTP + Email.Endpoint.FORWARD)
                 .body("""{ "messageId": $id, "forwardAddress": $address}""")
                 .apply { set("cookie", cookies) }
                 .apply { logger.debug { "Forwarding message to $address" } }
