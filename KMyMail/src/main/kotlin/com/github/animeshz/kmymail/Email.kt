@@ -44,7 +44,7 @@ class Email(context: CoroutineContext) : Closeable {
      *
      * Listen to it by [BroadcastChannel.openSubscription]
      */
-    val messageBroadcast = ConflatedBroadcastChannel<Message>()
+    val messageBroadcast = BroadcastChannel<Message>(Channel.BUFFERED)
 
     private val klaxon by lazy { Klaxon() }
     private val logger = KotlinLogging.logger {}
