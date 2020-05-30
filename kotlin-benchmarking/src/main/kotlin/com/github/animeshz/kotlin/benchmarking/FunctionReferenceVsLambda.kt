@@ -38,21 +38,18 @@ private fun createStringForTesting(lines: Int = 5000, digitsPerLine: Int = 5): S
     return builder.toString()
 }
 
-/**
- * Tests reference performance (nano-time) with [input] string,
- * writes time taken (in nano-seconds) by each [iteration] file with [fileName] if given.
- *
- * @return average time taken (in nano-second)
- */
-private fun timeTakenByReference(input: String, iteration: Int = 5000, fileName: String? = null): Int {
+private inline fun timeTakenBase(
+    input: String,
+    iteration: Int,
+    fileName: String?,
+    crossinline block: (String) -> Unit
+): Int {
     val results = mutableListOf<Int>()
     val digitsPerLine: Int = input.reader().useLines { it.first() }.split(" ").count()
 
     repeat(iteration) {
         input.reader().forEachLine { line ->
-            measureNanoTime {
-                line.split(" ").map(String::toInt)
-            }.toInt().div(digitsPerLine).let { results.add(it) }
+            measureNanoTime { block(line) }.toInt().div(digitsPerLine).let { results.add(it) }
         }
     }
 
@@ -62,26 +59,23 @@ private fun timeTakenByReference(input: String, iteration: Int = 5000, fileName:
 }
 
 /**
+ * Tests reference performance (nano-time) with [input] string,
+ * writes time taken (in nano-seconds) by each [iteration] file with [fileName] if given.
+ *
+ * @return average time taken (in nano-second)
+ */
+private fun timeTakenByReference(input: String, iteration: Int = 5000, fileName: String? = null): Int {
+    return timeTakenBase(input, iteration, fileName) { line -> line.split(" ").map(String::toInt) }
+}
+
+/**
  * Tests lambda performance (nano-time) with [input] string,
  * writes time taken (in nano-seconds) by each [iteration] file with [fileName] if given.
  *
  * @return average time taken (in nano-second)
  */
 private fun timeTakenByLambda(input: String, iteration: Int = 5000, fileName: String? = null): Int {
-    val results = mutableListOf<Int>()
-    val digitsPerLine: Int = input.reader().useLines { it.first() }.split(" ").count()
-
-    repeat(iteration) {
-        input.reader().forEachLine { line ->
-            measureNanoTime {
-                line.split(" ").map { it.toInt() }
-            }.toInt().div(digitsPerLine).let { results.add(it) }
-        }
-    }
-
-    fileName?.let { writeToFile(it, results) }
-
-    return results.average().toInt()
+    return timeTakenBase(input, iteration, fileName) { line -> line.split(" ").map { it.toInt() } }
 }
 
 /**
