@@ -10,5 +10,3 @@ interface PowrProf : StdCallLibrary {
 
     companion object : PowrProf by Native.load("PowrProf", PowrProf::class.java)!!
 }
-
-
