@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     kotlin("jvm") version "1.4-M1"
 }
@@ -25,7 +27,7 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
 
-    test {
+    val test by getting(Test::class) {
         useJUnitPlatform()
     }
 }
