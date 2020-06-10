@@ -12,6 +12,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.0.3")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:4.0.3")
 }
 
 tasks {
@@ -20,5 +23,9 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

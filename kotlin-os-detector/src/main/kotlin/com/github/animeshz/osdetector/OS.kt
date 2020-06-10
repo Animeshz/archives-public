@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.animeshz.konvironment.util
+package com.github.animeshz.osdetector
 
 import java.util.*
 
@@ -31,7 +31,7 @@ enum class OSArchitecture {
     x32,
     PowerPc,
     ARM,
-    OTHER
+    Other
 }
 
 /**
@@ -68,7 +68,7 @@ object OS {
             "64" in arch -> OSArchitecture.x64
             "86" in arch || "32" in arch -> OSArchitecture.x32
             "powerpc" in arch -> OSArchitecture.PowerPc
-            else -> OSArchitecture.OTHER
+            else -> OSArchitecture.Other
         }
     }
 
