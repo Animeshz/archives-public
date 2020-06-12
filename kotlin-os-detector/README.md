@@ -18,7 +18,7 @@
         <img src="https://img.shields.io/github/license/Animeshz/os-detector?style=flat-square" alt="License" />
     </a>
 </p>
-Disposable Email API written purely in Kotlin for JVM.
+API to idiomatically check the OS type and architecture in Kotlin, will be supported / interoperable by other JVM languages as well.
 
 Table of contents
 -----------------
@@ -104,14 +104,14 @@ if (OS.isWindows()) {
     println("We are on Windows")
 } else {
     // Otherwise execute this block
-    println("We ar not on Windows")
+    println("We are not on Windows")
 }
 ```
 To find more shorthand functions to make your life easier, look at the [docs](#documentation).
 
 Documentation
 ---
-[Documentation of this library is here](https://animeshz.github.io/os-detector/-k-my-mail/)
+[Documentation of this library is here](https://animeshz.github.io/os-detector/-os-detector/)
 
 License
 ---
