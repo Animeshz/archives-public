@@ -111,7 +111,7 @@ To find more shorthand functions to make your life easier, look at the [docs](#d
 
 Documentation
 ---
-[Documentation of this library is here](https://animeshz.github.io/os-detector/-os-detector/)
+[Documentation of this library is here](https://animeshz.github.io/os-detector/os-detector)
 
 License
 ---
