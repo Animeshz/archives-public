@@ -112,7 +112,6 @@ data class BatteryStatus(
 )
 ```
 
-
 Documentation
 ---
 [Documentation of this library is here](https://animeshz.github.io/battery-info/battery-info)

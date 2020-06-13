@@ -16,6 +16,9 @@ import io.kotest.matchers.ints.*
 import io.kotest.matchers.nulls.*
 import kotlin.math.*
 
+/**
+ * Tests the [getBatteryStatus] function against series of unit tests.
+ */
 class UtilTest : StringSpec({
     "Important fields should not be default values" {
         val batteryStatus = getBatteryStatus()

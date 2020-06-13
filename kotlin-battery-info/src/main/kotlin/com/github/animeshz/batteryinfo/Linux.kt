@@ -14,7 +14,8 @@ import java.io.*
 import java.util.concurrent.*
 
 
-fun getLinuxBatteryStatus(): BatteryStatus? {
+@JvmSynthetic
+internal fun getLinuxBatteryStatus(): BatteryStatus? {
     val path = """upower --enumerate""".runCommand() ?: return null
 
     val parameters = listOf("present", "state", "energy-full", "energy", "energy-rate", "time to empty", "percentage")
