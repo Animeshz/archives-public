@@ -44,10 +44,11 @@ Installation
 ```gradle
 repositories {
     maven { url 'https://jitpack.io' }
+    // maven("jitpack.io")  // for gradle kotlin dsl script
 }
 
 dependencies {
-    implementation 'com.github.Animeshz:os-detector:0.1'
+    implementation("com.github.Animeshz:os-detector:0.1")
 }
 ```
 
@@ -65,7 +66,7 @@ dependencies {
     <dependency>
         <groupId>com.github.Animeshz</groupId>
         <artifactId>os-detector</artifactId>
-        <version>1.0.1</version>
+        <version>0.1</version>
     </dependency>
 </dependencies>
 ```
