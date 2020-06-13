@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version "1.4-M2"
+    id 'org.jetbrains.dokka' version '0.10.1'
 }
 
 group "com.github.animeshz"
@@ -7,6 +8,7 @@ version "0.1"
 
 repositories {
     maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    maven { url 'https://dl.bintray.com/kotlin/dokka' }
     mavenCentral()
 }
 
@@ -22,6 +24,11 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "docs/"
 }
 
 test {

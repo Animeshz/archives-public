@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>OS - os-detector</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">os-detector</a>&nbsp;/&nbsp;<a href="../index.html">com.github.animeshz.osdetector</a>&nbsp;/&nbsp;<a href="./index.html">OS</a><br/>
+<br/>
+<h1>OS</h1>
+<code><span class="keyword">object </span><span class="identifier">OS</span></code>
+<p>Helper class to check the operating system this Java VM runs in</p>
+<p>Pseudo-license:
+http://stackoverflow.com/questions/228477/how-do-i-programmatically-determine-operating-system-in-java
+compare to http://svn.terracotta.org/svn/tc/dso/tags/2.6.4/code/base/common/src/com/tc/util/runtime/Os.java
+http://www.docjar.com/html/api/org/apache/commons/lang/SystemUtils.java.html</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="architecture.html">architecture</a></h4>
+</td>
+<td>
+<p>Lazily computed <a href="../-o-s-architecture/index.html">OSArchitecture</a> from the os.arch System property</p>
+<code><span class="keyword">val </span><span class="identifier">architecture</span><span class="symbol">: </span><a href="../-o-s-architecture/index.html"><span class="identifier">OSArchitecture</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="type.html">type</a></h4>
+</td>
+<td>
+<p>Lazily computed <a href="../-o-s-type/index.html">OSType</a> from the os.name System property</p>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="../-o-s-type/index.html"><span class="identifier">OSType</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="is-arm.html">isArm</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="architecture.html">architecture</a> is <a href="../-o-s-architecture/x64.html">OSArchitecture.x64</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isArm</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-linux.html">isLinux</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="type.html">type</a> is <a href="../-o-s-type/-linux.html">OSType.Linux</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isLinux</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-mac.html">isMac</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="type.html">type</a> is <a href="../-o-s-type/-mac-o-s.html">OSType.MacOS</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isMac</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-power-pc.html">isPowerPc</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="architecture.html">architecture</a> is <a href="../-o-s-architecture/x64.html">OSArchitecture.x64</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isPowerPc</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-windows.html">isWindows</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="type.html">type</a> is <a href="../-o-s-type/-windows.html">OSType.Windows</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isWindows</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="isx32.html">isx32</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="architecture.html">architecture</a> is <a href="../-o-s-architecture/x64.html">OSArchitecture.x64</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isx32</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="isx64.html">isx64</a></h4>
+</td>
+<td>
+<p>Checks if the OS <a href="architecture.html">architecture</a> is <a href="../-o-s-architecture/x64.html">OSArchitecture.x64</a></p>
+<code><span class="keyword">fun </span><span class="identifier">isx64</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
