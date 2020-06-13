@@ -110,9 +110,9 @@ private fun SYSTEM_BATTERY_STATE.toBatteryStatus(): BatteryStatus {
         else -> BatteryFlow.UNKNOWN
     }
 
-    val timeToEmpty = if (batteryFlow != BatteryFlow.Discharging) -1 else (-remainingCapacity * 3600 / rate.toDouble()).toInt()
+    val timeToEmpty = if (batteryFlow != BatteryFlow.Discharging) -1 else if (rate == 0) Int.MAX_VALUE else (-remainingCapacity * 3600 / rate.toDouble()).toInt()
 
-    val timeToFull = if (batteryFlow != BatteryFlow.Charging) -1 else (maxCapacity - remainingCapacity) * 3600 / rate
+    val timeToFull = if (batteryFlow != BatteryFlow.Charging) -1 else if (rate == 0) Int.MAX_VALUE else (maxCapacity - remainingCapacity) * 3600 / rate
 
     val currentChargePercent = remainingCapacity.toDouble() * 100 / maxCapacity
 

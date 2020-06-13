@@ -44,8 +44,8 @@ fun getLinuxBatteryStatus(): BatteryStatus? {
         }
     if (batteryFlow == BatteryFlow.Discharging) rate *= -1
 
-    val timeToEmpty: Int = if (batteryFlow != BatteryFlow.Discharging) -1 else (-remainingCapacity * 3600 / rate.toDouble()).toInt()
-    val timeToFull = if (batteryFlow != BatteryFlow.Charging) -1 else (maxCapacity - remainingCapacity) * 3600 / rate
+    val timeToEmpty: Int = if (batteryFlow != BatteryFlow.Discharging) -1 else if (rate == 0) Int.MAX_VALUE else (-remainingCapacity * 3600 / rate.toDouble()).toInt()
+    val timeToFull = if (batteryFlow != BatteryFlow.Charging) -1 else if (rate == 0) Int.MAX_VALUE else (maxCapacity - remainingCapacity) * 3600 / rate
     val currentChargePercent = remainingCapacity.toDouble() * 100 / maxCapacity
 
     return BatteryStatus(
