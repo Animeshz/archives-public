@@ -13,6 +13,18 @@ package com.github.animeshz.batteryinfo
 
 /**
  * @see getBatteryStatus to get an instantaneous object of BatteryState.
+ *
+ * @param isAcConnected                 Is external power supply connected?
+ * @param isBatteryPresent              Is the battery present
+ * @param batteryFlow                   Is the battery [BatteryFlow.Charging] or [BatteryFlow.Discharging] or the state is [BatteryFlow.UNKNOWN]
+ * @param maxCapacityMWh                Max capacity of the battery in mWh
+ * @param currentChargeMWh              Current charge in the battery in mWh
+ * @param flowRateMWps                  Flow rate of the battery +ve when charging -ve when discharging, in mW/s
+ * @param timeToEmptyFromOS             Time to empty calculated from OS, might be zero (0) if not mentioned.
+ * @param timeToEmpty                   Time to empty calculated by [flowRateMWps] and [currentChargeMWh]. It is -1 when battery is charging.
+ * @param timeToFull                    Time required to complete charge the battery, calculated via [flowRateMWps] and [currentChargeMWh]. It is -1 when discharging.
+ * @param currentChargePercent          Current charge percent (accurate) calculated from [currentChargeMWh] and [maxCapacityMWh].
+ * @param currentChargeIntegralPercent  Current charge reported by the OS (Int).
  */
 data class BatteryStatus(
     val isAcConnected: Boolean,
@@ -28,6 +40,9 @@ data class BatteryStatus(
     val currentChargeIntegralPercent: Int
 )
 
+/**
+ * Represents a battery's flow. [Charging] when battery is charging, [Discharging] when discharging. An [UNKNOWN] state when state can't be known.
+ */
 enum class BatteryFlow {
     Charging,
     Discharging,

@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.github.animeshz.batteryinfo - battery-info</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">battery-info</a>&nbsp;/&nbsp;<a href="./index.html">com.github.animeshz.batteryinfo</a><br/>
+<br/>
+<h2>Package com.github.animeshz.batteryinfo</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-battery-flow/index.html">BatteryFlow</a></h4>
+</td>
+<td>
+<p>Represents a battery's flow. <a href="-battery-flow/-charging.html">Charging</a> when battery is charging, <a href="-battery-flow/-discharging.html">Discharging</a> when discharging. An <a href="-battery-flow/-u-n-k-n-o-w-n.html">UNKNOWN</a> state when state can't be known.</p>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">BatteryFlow</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-battery-status/index.html">BatteryStatus</a></h4>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BatteryStatus</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-s-y-s-t-e-m_-b-a-t-t-e-r-y_-s-t-a-t-e/index.html">SYSTEM_BATTERY_STATE</a></h4>
+</td>
+<td>
+<p>Internal Object for pulling data from the OS</p>
+<code><span class="keyword">class </span><span class="identifier">SYSTEM_BATTERY_STATE</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Structure</span><span class="symbol">, </span><span class="identifier">ByReference</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="build-string.html">buildString</a></h4>
+</td>
+<td>
+<p>Builds String by applying <a href="build-string.html#com.github.animeshz.batteryinfo$buildString(kotlin.Int, kotlin.Function1((java.lang.StringBuilder, kotlin.Unit)))/block">block</a>, initial capacity can be altered by <a href="build-string.html#com.github.animeshz.batteryinfo$buildString(kotlin.Int, kotlin.Function1((java.lang.StringBuilder, kotlin.Unit)))/capacity">capacity</a></p>
+<code><span class="keyword">fun </span><span class="identifier">buildString</span><span class="symbol">(</span><span class="identifier" id="com.github.animeshz.batteryinfo$buildString(kotlin.Int, kotlin.Function1((java.lang.StringBuilder, kotlin.Unit)))/capacity">capacity</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;16<span class="symbol">, </span><span class="identifier" id="com.github.animeshz.batteryinfo$buildString(kotlin.Int, kotlin.Function1((java.lang.StringBuilder, kotlin.Unit)))/block">block</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-string-builder/index.html"><span class="identifier">StringBuilder</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get-battery-status.html">getBatteryStatus</a></h4>
+</td>
+<td>
+<p>Performs blocking request into IO dispatcher to get <a href="-battery-status/index.html">BatteryStatus</a> from low-level API</p>
+<code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">getBatteryStatus</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-battery-status/index.html"><span class="identifier">BatteryStatus</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get-linux-battery-status.html">getLinuxBatteryStatus</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getLinuxBatteryStatus</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-battery-status/index.html"><span class="identifier">BatteryStatus</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

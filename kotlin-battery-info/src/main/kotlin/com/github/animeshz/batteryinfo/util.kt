@@ -17,9 +17,7 @@ import kotlinx.coroutines.*
  * Performs blocking request into IO dispatcher to get [BatteryStatus] from low-level API
  */
 suspend fun getBatteryStatus(): BatteryStatus? {
-    return withContext(
-        Dispatchers.IO
-    ) {
+    return withContext(Dispatchers.IO) {
         when {
             OS.isWindows() -> getWindowsBatteryStatus()
             OS.isLinux() -> getLinuxBatteryStatus()
