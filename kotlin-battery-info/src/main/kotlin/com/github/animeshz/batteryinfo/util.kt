@@ -32,7 +32,3 @@ suspend fun getBatteryStatus(): BatteryStatus? {
 inline fun buildString(capacity: Int = 16, block: StringBuilder.() -> Unit): String {
     return StringBuilder(capacity).apply(block).toString()
 }
-
-suspend fun main() {
-    getBatteryStatus().let(::println)
-}

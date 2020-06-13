@@ -13,7 +13,6 @@ package com.github.animeshz.batteryinfo
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import io.kotest.matchers.ints.*
-import io.kotest.matchers.nulls.*
 import kotlin.math.*
 
 /**
@@ -21,10 +20,7 @@ import kotlin.math.*
  */
 class UtilTest : StringSpec({
     "Important fields should not be default values" {
-        val batteryStatus = getBatteryStatus()
-        batteryStatus.shouldNotBeNull()
-
-        batteryStatus.apply {
+        getBatteryStatus()?.apply {
             maxCapacityMWh shouldNotBeExactly 0
             currentChargeMWh shouldNotBeExactly 0
             flowRateMWps shouldNotBeExactly 0
@@ -32,20 +28,14 @@ class UtilTest : StringSpec({
     }
 
     "Calculated fields should not be default values" {
-        val batteryStatus = getBatteryStatus()
-        batteryStatus.shouldNotBeNull()
-
-        batteryStatus.apply {
+        getBatteryStatus()?.apply {
             timeToEmpty shouldNotBeExactly 0
             timeToFull shouldNotBeExactly 0
         }
     }
 
     "The battery's charge percent should be between the greatest integer below it or the smallest integer above it" {
-        val batteryStatus = getBatteryStatus()
-        batteryStatus.shouldNotBeNull()
-
-        batteryStatus.apply {
+        getBatteryStatus()?.apply {
             currentChargeIntegralPercent shouldBe between(floor(currentChargePercent).toInt(), ceil(currentChargePercent).toInt())
         }
     }
