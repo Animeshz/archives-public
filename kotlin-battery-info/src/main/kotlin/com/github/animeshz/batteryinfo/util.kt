@@ -11,24 +11,14 @@
 package com.github.animeshz.batteryinfo
 
 import com.github.animeshz.osdetector.*
-import kotlinx.coroutines.*
+
 
 /**
- * Performs blocking request into IO dispatcher to get [BatteryStatus] from low-level API
+ * Performs blocking request into IO dispatcher to get [BatteryStatus] from low-level API.
+ * Note this is blocking, you may want to spawn this into Dispatchers.IO if you are using coroutines or a new thread if not.
  */
-suspend fun getBatteryStatus(): BatteryStatus? {
-    return withContext(Dispatchers.IO) {
-        when {
-            OS.isWindows() -> getWindowsBatteryStatus()
-            OS.isLinux() -> getLinuxBatteryStatus()
-            else -> TODO("Not implemented yet for MacOS")
-        }
-    }
-}
-
-/**
- * Builds String by applying [block], initial capacity can be altered by [capacity]
- */
-inline fun buildString(capacity: Int = 16, block: StringBuilder.() -> Unit): String {
-    return StringBuilder(capacity).apply(block).toString()
+fun getBatteryStatus(): BatteryStatus? = when {
+    OS.isWindows() -> getWindowsBatteryStatus()
+    OS.isLinux() -> getLinuxBatteryStatus()
+    else -> TODO("Not implemented yet for MacOS")
 }

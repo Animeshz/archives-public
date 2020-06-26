@@ -1,6 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version "1.4-M2"
     id 'org.jetbrains.dokka' version '0.10.1'
+//    Uncomment this to import plugin to create fat jar
+//    id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
 group "com.github.animeshz"
@@ -43,3 +45,18 @@ test {
         exceptionFormat "full"
     }
 }
+
+// Makes runnable jar in build/libs
+
+// Add this to util.kt to make a runnable jar
+//fun main() {
+//    measureNanoTime {
+//        println(getBatteryStatus())
+//    }.let { println("Took $it ns to fetch and print it, or say ${it/1_000_000} ms") }
+//}
+
+//shadowJar {
+//    manifest {
+//        attributes 'Main-Class': 'com.github.animeshz.batteryinfo.UtilKt'
+//    }
+//}

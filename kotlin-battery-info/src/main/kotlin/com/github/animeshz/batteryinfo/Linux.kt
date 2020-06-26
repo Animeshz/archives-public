@@ -18,7 +18,7 @@ import java.util.concurrent.*
 internal fun getLinuxBatteryStatus(): BatteryStatus? {
     val path = """upower --enumerate""".runCommand() ?: return null
 
-    val parameters = listOf("present", "state", "energy-full", "energy", "energy-rate", "time to empty", "percentage")
+    val parameters = listOf("present", "state", "energy-full", "energy", "energy-rate", "timetoempty", "percentage")
     val result = """upower -i ${path.first { "battery_BAT" in it }}""".runCommand() ?: return null
 
     var isAcConnected = false
@@ -85,7 +85,7 @@ private fun String.parseTimeToEmptyFromOS(): Int {
     return when {
         "hour" in this -> substringBefore('h').toDouble() * 3600
         "minute" in this -> substringBefore('m').toDouble() * 60
-        "second" in this -> substringBefore('h').toDouble()
+        "second" in this -> substringBefore('s').toDouble()
         else -> throw IllegalArgumentException("Time to empty should be in the hour(s), minute(s) or second(s)")
     }.toInt()
 }
