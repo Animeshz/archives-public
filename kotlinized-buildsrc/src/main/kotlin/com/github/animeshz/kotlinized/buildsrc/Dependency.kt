@@ -1,5 +1,3 @@
-@file:Suppress("EnumEntryName", "RemoveRedundantBackticks", "unused")
-
 package com.github.animeshz.kotlinized.buildsrc
 
 import org.gradle.api.artifacts.dsl.DependencyHandler
