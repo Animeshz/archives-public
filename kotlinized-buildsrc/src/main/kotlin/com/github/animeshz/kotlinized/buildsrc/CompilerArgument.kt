@@ -5,13 +5,13 @@ package com.github.animeshz.kotlinized.buildsrc
  *
  * TODO("Add see header to a readme/wiki")
  */
-interface CompilerArgument<T : CompilerArgument<T>> {
+public interface CompilerArgument<T : CompilerArgument<T>> {
     /**
      * The compiler argument.
      *
      * Ex: `-Xopt-in=kotlin.ExperimentalStdlibApi`
      */
-    val argument: String
+    public val argument: String
 }
 
 /**
@@ -19,5 +19,5 @@ interface CompilerArgument<T : CompilerArgument<T>> {
  *
  * TODO("Add see header to a readme/wiki")
  */
-inline fun <reified T> getCompilerArguments(): List<String> where T : CompilerArgument<T>, T : Enum<T> =
+public inline fun <reified T> getCompilerArguments(): List<String> where T : CompilerArgument<T>, T : Enum<T> =
         enumValues<T>().map { it.argument }

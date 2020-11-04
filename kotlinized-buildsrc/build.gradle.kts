@@ -16,6 +16,10 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+kotlin {
+    explicitApi()
+}
+
 val ktlint: Configuration by configurations.creating
 
 tasks.create<JavaExec>("diktatCheck") {

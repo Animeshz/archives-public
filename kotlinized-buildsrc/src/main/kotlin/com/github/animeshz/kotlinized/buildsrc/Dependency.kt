@@ -9,21 +9,21 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
  *
  * TODO("Add see header to a readme/wiki")
  */
-interface Dependency<T : Dependency<T>> {
+public interface Dependency<T : Dependency<T>> {
     /**
      * Dependency notation name for the dependency.
      */
-    val dependencyNotation: String
+    public val dependencyNotation: String
 
     /**
      * [Configuration] of the dependency.
      */
-    val configuration: Configuration
+    public val configuration: Configuration
 
     /**
      * Configurations available from the gradle.
      */
-    enum class Configuration(val configName: String) {
+    public enum class Configuration(public val configName: String) {
         IMPLEMENTATION("implementation"),
         TEST_IMPLEMENTATION("testImplementation"),
         API("api"),
@@ -42,7 +42,7 @@ interface Dependency<T : Dependency<T>> {
 /**
  * Auto register function to register all the [Repository] of a submodule defined in [Enum].
  */
-inline fun <reified T> DependencyHandler.register() where T : Dependency<T>, T : Enum<T> {
+public inline fun <reified T> DependencyHandler.register() where T : Dependency<T>, T : Enum<T> {
     enumValues<T>().forEach {
         add(it.configuration.configName, it.dependencyNotation)
     }
