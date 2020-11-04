@@ -1,0 +1,16 @@
+- name: DIKTAT_COMMON
+  configuration:
+    domainName: com.github.animeshz.kotlinized.buildsrc
+    testDirs: test
+
+- name: HEADER_MISSING_OR_WRONG_COPYRIGHT
+  enabled: false
+  configuration: { }
+
+- name: KDOC_WITHOUT_PARAM_TAG
+  enabled: false
+  configuration: { }
+
+- name: KDOC_WITHOUT_RETURN_TAG
+  enabled: false
+  configuration: { }
