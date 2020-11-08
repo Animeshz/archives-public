@@ -36,7 +36,7 @@ dependencies {
 
 QuickStart
 ----------
-Get started by defining some repositories and dependencies in your project via creating enums implementing [Dependency](TODO: Link to the docs)
+Get started by defining some repositories and dependencies in your project via creating enums implementing [Repository](https://animeshz.github.io/kotlinized-buildsrc/kotlinized-buildsrc/com.github.animeshz.kotlinized.buildsrc/-repository/index.html), [Dependency](https://animeshz.github.io/kotlinized-buildsrc/kotlinized-buildsrc/com.github.animeshz.kotlinized.buildsrc/-dependency/index.html) and [CompilerArgument](https://animeshz.github.io/kotlinized-buildsrc/kotlinized-buildsrc/com.github.animeshz.kotlinized.buildsrc/-compiler-argument/index.html)
 ```kotlin
 object Repositories {
     enum class TopLevel(override val url: String) : Repository<TopLevel> {
@@ -71,7 +71,7 @@ object Dependencies {
 }
 ```
 
-Checkout the docs for more information about [Configuration](https://animeshz.github.io/kotlinized-buildsrc/kotlinized-buildsrc/com.github.animeshz.kotlinized.buildsrc/index.html).
+Checkout the docs for more information about [Configuration](https://animeshz.github.io/kotlinized-buildsrc/kotlinized-buildsrc/com.github.animeshz.kotlinized.buildsrc/-dependency/-configuration/index.html).
 
 Then call register() on the modules
 
@@ -114,4 +114,4 @@ This project is licensed under MIT License, a copy of the License is present in 
 
 Contributing
 ------------
-Feel free to open a issue or submit a pull request for any bugs/improvements.
+Feel free to open issue or submit a pull request for any bugs/improvements.
