@@ -1,0 +1,16 @@
+- name: DIKTAT_COMMON
+  configuration:
+    domainName: com.github.animeshz.kotlinbenchmarking
+
+- name: KDOC_WITHOUT_PARAM_TAG
+  enabled: false
+  configuration: { }
+
+- name: KDOC_WITHOUT_RETURN_TAG
+  enabled: false
+  configuration: { }
+
+# Temporary rule disable till https://github.com/cqfn/diKTat/issues/89 fix is on a release
+- name: MISSING_KDOC_TOP_LEVEL
+  enabled: false
+  configuration: { }
