@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+
+# Solves linear equation: pass (ax+by=c, dx+ey=f) as a b c d e f
+# Linear equation can be of any variables
+# Used to match my answer :p
+
+import argparse
+from math import floor, sqrt
+import numpy
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Solves a quadratic equation')
+    parser.add_argument(
+        'coefficiencts', help='coefficients laying left to right', type=int, nargs='*')
+
+    args = parser.parse_args()
+
+    coeff = args.coefficiencts
+    length = len(coeff)
+
+    if length < 1:
+        parser.error('length of equation must be atleast 2')
+    elif length == 2:
+        return print(coeff[1]/coeff[0])
+
+    # dynamic typing -> d first is sqrt(D): float, then floor(it): int
+    if (d := sqrt(1+4*length)) != (d := floor(d)):
+        parser.error('length of equation must be n^2 + n for some n ∈ R')
+
+    variables = (-1 + d) // 2
+    del d
+
+    var_matrix = numpy.array([[coeff[i * (variables+1) + j]
+                               for j in range(variables)] for i in range(variables)])
+    const_matrix = numpy.array([coeff[i * (variables+1) + variables]
+                                for i in range(variables)])
+
+    result = numpy.linalg.solve(var_matrix, const_matrix).tolist()
+
+    print(' '.join([str(n if n % 1 else int(n)) for n in result]))
+
+
+if __name__ == '__main__':
+    main()

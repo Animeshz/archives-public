@@ -1,0 +1,8 @@
+#!/usr/bin/python3
+
+# gets the command arguments with comma,
+# usually to put things on VS Code where args need to be separated by commas, unlike shell.
+
+import sys
+
+print(sys.argv[1:])

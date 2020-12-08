@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+
+# Used to create a string password
+
+import random
+import string
+import argparse
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate random password')
+    parser.add_argument('-m', '--max', help='max length of password defaults to 12', type=int, default=12)
+    parser.add_argument('-s', '--simple', help='password without symbols', action='store_true')
+    parser.add_argument('-v', '--version', action='version', version='crpasswd 2.0')
+
+    args = parser.parse_args()
+
+    chars = string.digits + string.ascii_letters
+    if not args.simple:
+        chars += string.punctuation
+
+    rand_digit = random.choice(string.digits)
+    rand_upper = random.choice(string.ascii_uppercase)
+    rand_lower = random.choice(string.ascii_lowercase)
+    rand_symbol = random.choice(string.punctuation) if not args.simple else random.choice(chars)
+
+    temp_pass = [rand_digit, rand_upper, rand_lower, rand_symbol] + \
+                [random.choice(chars) for i in range(args.max - 4)]
+
+    password = ''.join(random.sample(temp_pass, len(temp_pass)))
+
+    print(password)
+
+
+if __name__ == '__main__':
+    main()

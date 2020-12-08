@@ -1,0 +1,19 @@
+#!/usr/bin/zsh
+
+# Used to create symlinks of .exe|.bat|... without extensions,
+# to directly invoke them from terminal without the extensions
+
+mkdir -p $HOME/.windows_binaries
+cd $HOME/.windows_binaries
+
+all_exts=${${${PATHEXT-".com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh;.msc"}//;/|}//./}
+IFS=$'\n'
+
+if [ $ZSH_VERSION ]; then setopt sh_word_split; fi
+
+for command in $(whence -psm "*.($all_exts)"); do
+  sym_name=${${command##*/}%.*}
+  if [ -f $sym_name ]; then; else
+    ln -s $command $sym_name
+  fi
+done

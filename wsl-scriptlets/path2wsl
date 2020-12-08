@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+
+# Converts Windows path to WSL path to quickly navigate to directories
+# Ex: cd $(path2wsl "D:\Projects\PycharmProjects\scriptlets")
+
+import re
+import sys
+
+import argparse
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Converts a Windows path to a WSL path (with unix forward slashes)')
+    parser.add_argument('path', help='Path that is to be converted into wsl path', type=str, nargs='?', default='')
+    args = parser.parse_args()
+
+    if ':' in (path := args.path):
+        print('/mnt/' + path[0].lower() + path[2:].replace('\\', '/'))
+
+
+if __name__ == '__main__':
+    main()

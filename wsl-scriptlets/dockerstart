@@ -1,0 +1,13 @@
+# start the docker vm if its not running
+docker-machine.exe start
+
+# delete env variable DOCKER_HOST if exist in the .zshrc
+sed -i '/DOCKER_HOST/d' $HOME/.zshrc
+
+# add env variable to be exported at the time of firing up the new shell
+docker_host=tcp://$(docker-machine.exe ip):2376
+env_add_cmd="export DOCKER_HOST=$docker_host"
+
+echo $env_add_cmd >> $HOME/.zshrc
+eval $env_add_cmd
+cmd.exe /c setx DOCKER_HOST "$docker_host"

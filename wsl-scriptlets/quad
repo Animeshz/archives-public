@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+
+# Solves quadratic equation pass (ax+by=c, dx+ey=f) as a b c d e f
+# Used to match my answer :p
+
+import argparse
+import cmath
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Solves a quadratic equation')
+    parser.add_argument('a', help='coefficient of x^2', type=float)
+    parser.add_argument('b', help='coefficient of x', type=float)
+    parser.add_argument('c', help='constant', type=float)
+
+    args = parser.parse_args()
+    a, b, c = args.a, args.b, args.c
+
+    D = (b ** 2) - (4 * a * c)
+
+    sqrtD = cmath.sqrt(D)
+    divider = 2 * a
+
+    first = (-b + sqrtD) / divider
+    second = (-b - sqrtD) / divider
+
+    if first != second:
+        print(first, second)
+    else:
+        print(first)
+
+
+if __name__ == '__main__':
+    main()
