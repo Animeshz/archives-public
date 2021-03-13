@@ -95,7 +95,7 @@ sed -i \
 ./ct-ng build.$(nproc) && \
 #
 cd /opt && \
-rm -rf crosstool-ng-1.24.0{,.tar.bz2} && \
+rm -rf crosstool-ng-1.24.0 crosstool-ng-1.24.0.tar.bz2 && \
 #
 mkdir /opt/crosstool-ng && \
 mv /root/x-tools/* /opt/crosstool-ng && \
