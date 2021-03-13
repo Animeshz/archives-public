@@ -99,8 +99,8 @@ rm -rf crosstool-ng-1.24.0 crosstool-ng-1.24.0.tar.bz2 && \
 #
 mkdir /opt/crosstool-ng && \
 mv /root/x-tools/* /opt/crosstool-ng && \
-rm /root/x-tools && \
-rm /root/src && \
+rm -rf /root/x-tools && \
+rm -rf /root/src && \
 #
 #
 # ==================================== Cleanup ====================================
