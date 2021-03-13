@@ -1,0 +1,1 @@
+docker build -t animeshz/mainstream-cross-compilers .
