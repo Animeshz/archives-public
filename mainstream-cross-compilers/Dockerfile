@@ -55,6 +55,7 @@ git clone https://github.com/mxe/mxe.git && \
 cd mxe && \
 git checkout 29bdf5b0692e1032eb1aa648f39a22f923a3d29d && \
 #
+echo "" >> settings.mk && \
 sed -i \
     -e "$ a MXE_TARGETS := x86_64-w64-mingw32.shared i686-w64-mingw32.shared" \
     -e "$ a MXE_USE_CCACHE :=" \
@@ -62,7 +63,8 @@ sed -i \
     -e "$ a LOCAL_PKG_LIST := cc cmake" \
     -e "$ a .DEFAULT local-pkg-list:" \
     -e "$ a local-pkg-list: \$(LOCAL_PKG_LIST)" \
-    .settings.mk && \
+    -e "/^$/d" \
+    settings.mk && \
 #
 make JOBS=$(nproc) && \
 #
@@ -70,8 +72,8 @@ make JOBS=$(nproc) && \
 ls | grep -v usr | xargs rm -rf && \
 #
 #
-# ==================================== Setup Linux corss compilers ====================================
-#
+# # ==================================== Setup Linux corss compilers ====================================
+# #
 mkdir /root/src && \
 cd /opt && \
 #
@@ -89,7 +91,7 @@ sed -i \
     -e "$ a CT_EXPERIMENTAL=y" \
     -e "$ a CT_ALLOW_BUILD_AS_ROOT=y" \
     -e "$ a CT_ALLOW_BUILD_AS_ROOT_SURE=y" \
-#   -e "$ a CT_DEBUG_CT_SAVE_STEPS=y" \
+    -e "$ a CT_DEBUG_CT_SAVE_STEPS=y" \
     .config && \
 #
 ./ct-ng build.$(nproc) && \

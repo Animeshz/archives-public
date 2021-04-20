@@ -1,0 +1,33 @@
+name: Build and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag for the image'     
+        required: true
+        default: SNAPSHOT
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'     
+        required: false
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Build the tagged Docker image
+        run: docker build . --file Dockerfile --tag animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
+
+      - name: Login to DockerHub Registry and Push the tagged Docker image
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
+
+      # Enable tmate debugging if above jobs failed or if manually-triggered workflows with debug option
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ failure() || (github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled) }}
