@@ -1,4 +1,4 @@
-name: Shell
+name: Shell Upterm
 
 on: workflow_dispatch
 
