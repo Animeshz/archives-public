@@ -1,4 +1,4 @@
-name: Build and Push
+name: Docker Build Image and Push
 
 on:
   workflow_dispatch:
@@ -19,13 +19,18 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Build the tagged Docker image
-        run: docker build . --file Dockerfile --tag animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
+      # Loads cache if it exists and creates cache in the post run
+      - uses: satackey/action-docker-layer-caching@v0
+        continue-on-error: true
 
-      - name: Login to DockerHub Registry and Push the tagged Docker image
-        run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
+      - name: Build the tagged Docker image
+        run: docker build . --progress=plain --file Dockerfile --tag animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
+
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Push the tagged Docker image
+        run: docker push animeshz/mainstream-cross-compilers:${{github.event.inputs.tag}}
 
       # Enable tmate debugging if above jobs failed or if manually-triggered workflows with debug option
       - name: Setup tmate session
