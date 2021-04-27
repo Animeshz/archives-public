@@ -1,0 +1,15 @@
+name: Run Command
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'Command to run'     
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run the command
+      run: ${{github.event.inputs.command}}
