@@ -6,10 +6,19 @@ on:
       command:
         description: 'Command to run'     
         required: true
+      checkout:
+        description: 'Checkout repo?'     
+        required: false
+        default: no
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - name: Run the command
-      run: ${{github.event.inputs.command}}
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        if: ${{ github.event.inputs.checkout == 'true' || github.event.inputs.checkout == 'yes' }}
+
+
+      - name: Run the command
+        run: ${{ github.event.inputs.command }}
