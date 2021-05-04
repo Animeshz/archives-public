@@ -9,7 +9,6 @@ build_deps=( \
     autoconf \
     automake \
     autopoint \
-    bash \
     bison \
     bzip2 \
     flex \
@@ -33,14 +32,13 @@ build_deps=( \
     perl \
     python \
     ruby \
-    sed \
     unzip \
     wget \
     xz-utils \
 ) && \
 #
 apt-get update && \
-apt-get install -y $build_deps && \
+apt-get install -y "${build_deps[@]}" bash sed && \
 #
 mkdir -p /opt && \
 #
@@ -75,5 +73,5 @@ apt-get install -y gcc g++ cmake && \
 #
 # ==================================== Cleanup ====================================
 #
-apt-get autoremove --purge -y $build_deps && \
+apt-get autoremove --purge -y "${build_deps[@]}" && \
 apt-get clean -y
