@@ -1,5 +1,7 @@
 FROM --platform=amd64 debian:stretch-slim
 
+SHELL ["/bin/bash", "-c"]
+
 RUN \
 # ==================================== Initial setup ====================================
 #
