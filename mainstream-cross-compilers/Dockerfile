@@ -1,54 +1,49 @@
-FROM alpine:3.12.4
+FROM --platform=amd64 debian:strech-slim
 
 RUN \
 # ==================================== Initial setup ====================================
 #
-apk add --update-cache libgcc libstdc++ && \
-#
-apk add --virtual build-dependencies \
+build_deps=( \
     autoconf \
     automake \
+    autopoint \
     bash \
-    binutils \
     bison \
     bzip2 \
     flex \
     g++ \
-    gawk \
-    gdk-pixbuf \
+    g++-multilib \
     gettext \
-    gettext-dev \
     git \
     gperf \
-    help2man \
     intltool \
-    libtool \
-    linux-headers \
+    libc6-dev-i386 \
+    libgdk-pixbuf2.0-dev \
+    libltdl-dev \
+    libssl-dev \
+    libtool-bin \
+    libxml-parser-perl \
     lzip \
     make \
-    curl \
-    ncurses-dev \
     openssl \
-    openssl-dev \
-    p7zip \
+    p7zip-full \
     patch \
     perl \
-    python3 \
-    python3-dev \
-    rsync \
+    python \
     ruby \
-    texinfo \
+    sed \
     unzip \
     wget \
-    xz \
-    zlib && \
+    xz-utils \
+) && \
+#
+apt update && \
+apt install $build_deps && \
 #
 mkdir -p /opt && \
 #
 #
-# ==================================== Setup Windows corss compilers ====================================
-#
-ln -s /usr/bin/python3 /usr/bin/python && \
+# ==================================== Setup Windows compilers ====================================
 #
 cd /opt && \
 git clone https://github.com/mxe/mxe.git && \
@@ -72,40 +67,11 @@ make JOBS=$(nproc) && \
 ls | grep -v usr | xargs rm -rf && \
 #
 #
-# # ==================================== Setup Linux corss compilers ====================================
-# #
-mkdir /root/src && \
-cd /opt && \
-#
-curl -LO http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.24.0.tar.bz2 && \
-tar -xjvf crosstool-ng-1.24.0.tar.bz2 && \
-cd crosstool-ng-1.24.0 && \
-#
-./configure --enable-local && \
-make && \
-#
-./ct-ng x86_64-unknown-linux-gnu && \
-#
-sed -i \
-    -e 's/\(^CT_EXTRA_CFLAGS_FOR_BUILD=".*\)"$/\1 -D__daddr_t_defined -D__u_char_defined"/' \
-    -e "$ a CT_EXPERIMENTAL=y" \
-    -e "$ a CT_ALLOW_BUILD_AS_ROOT=y" \
-    -e "$ a CT_ALLOW_BUILD_AS_ROOT_SURE=y" \
-    -e "$ a CT_DEBUG_CT_SAVE_STEPS=y" \
-    .config && \
-#
-./ct-ng build.$(nproc) && \
-#
-cd /opt && \
-rm -rf crosstool-ng-1.24.0 crosstool-ng-1.24.0.tar.bz2 && \
-#
-mkdir /opt/crosstool-ng && \
-mv /root/x-tools/* /opt/crosstool-ng && \
-rm -rf /root/x-tools && \
-rm -rf /root/src && \
+# # ==================================== Setup Linux compilers ====================================
+apt install gcc g++ cmake && \
 #
 #
 # ==================================== Cleanup ====================================
 #
-apk del build-dependencies && \
-rm -rf /var/cache/apk/*
+apt --purge autoremove $build_deps && \
+apt clean
