@@ -35,4 +35,4 @@ jobs:
       # Enable tmate debugging if above jobs failed or if manually-triggered workflows with debug option
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() || (github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled) }}
+        if: ${{ failure() && (github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled) }}

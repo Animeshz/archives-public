@@ -1,4 +1,4 @@
-FROM --platform=amd64 debian:strech-slim
+FROM --platform=amd64 debian:stretch-slim
 
 RUN \
 # ==================================== Initial setup ====================================
