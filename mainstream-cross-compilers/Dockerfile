@@ -39,8 +39,8 @@ build_deps=( \
     xz-utils \
 ) && \
 #
-apt update && \
-apt install $build_deps && \
+apt-get update && \
+apt-get install -y $build_deps && \
 #
 mkdir -p /opt && \
 #
@@ -70,10 +70,10 @@ ls | grep -v usr | xargs rm -rf && \
 #
 #
 # # ==================================== Setup Linux compilers ====================================
-apt install gcc g++ cmake && \
+apt-get install -y gcc g++ cmake && \
 #
 #
 # ==================================== Cleanup ====================================
 #
-apt --purge autoremove $build_deps && \
-apt clean
+apt-get autoremove --purge -y $build_deps && \
+apt-get clean -y
