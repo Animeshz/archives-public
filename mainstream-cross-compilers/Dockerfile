@@ -1,5 +1,7 @@
 FROM --platform=amd64 debian:stretch-slim
 
+LABEL maintainer="Animesh Sahu animeshsahu19@yahoo.com"
+
 COPY scripts/linux32 scripts/linux64 scripts/windows32 scripts/windows64 /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
@@ -15,7 +17,6 @@ build_deps=( \
     bzip2 \
     dos2unix \
     flex \
-    g++ \
     g++-multilib \
     gettext \
     git \
@@ -28,7 +29,6 @@ build_deps=( \
     libtool-bin \
     libxml-parser-perl \
     lzip \
-    make \
     openssl \
     p7zip-full \
     patch \
@@ -41,7 +41,7 @@ build_deps=( \
 ) && \
 #
 apt-get update && \
-apt-get install -y "${build_deps[@]}" bash sed && \
+apt-get install --no-install-recommends -y "${build_deps[@]}" bash sed g++ make && \
 #
 #
 dos2unix /usr/local/bin/* && \
@@ -77,14 +77,13 @@ ls | grep -v usr | xargs rm -rf && \
 # # ==================================== Setup Linux compilers ====================================
 echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list && \
 apt-get update && \
-apt-get install -y gcc g++ cmake && \
-sed '$d' /etc/apt/sources.list && \
-apt-get update && \
+apt-get install --no-install-recommends -y gcc g++ cmake && \
+sed -i '$d' /etc/apt/sources.list && \
 #
 #
 # ==================================== Cleanup ====================================
 #
-apt-get autoremove --purge -y "${build_deps[@]/g++}" && \
+apt-get autoremove --purge -y "${build_deps[@]}" && \
 apt-get clean -y
 
 ENV WORK_DIR /work
