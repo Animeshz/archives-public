@@ -40,6 +40,7 @@ build_deps=( \
     xz-utils \
 ) && \
 #
+echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list && \
 apt-get update && \
 apt-get install -y "${build_deps[@]}" bash sed && \
 #
@@ -80,7 +81,7 @@ apt-get install -y gcc g++ cmake && \
 #
 # ==================================== Cleanup ====================================
 #
-apt-get autoremove --purge -y "${build_deps[@]}" && \
+apt-get autoremove --purge -y "${build_deps[@]/g++}" && \
 apt-get clean -y
 
 ENV WORK_DIR /work
