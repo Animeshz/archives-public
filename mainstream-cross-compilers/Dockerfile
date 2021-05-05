@@ -7,14 +7,13 @@ SHELL ["/bin/bash", "-c"]
 RUN \
 # ==================================== Initial setup ====================================
 #
-chmod +x /usr/local/bin/* && \
-#
 build_deps=( \
     autoconf \
     automake \
     autopoint \
     bison \
     bzip2 \
+    dos2unix \
     flex \
     g++ \
     g++-multilib \
@@ -43,6 +42,10 @@ build_deps=( \
 #
 apt-get update && \
 apt-get install -y "${build_deps[@]}" bash sed && \
+#
+#
+dos2unix /usr/local/bin/* && \
+chmod +x /usr/local/bin/* && \
 #
 mkdir -p /opt && \
 #
