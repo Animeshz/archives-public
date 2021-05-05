@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CMAKE=/usr/bin/cmake
+export CMAKE='/usr/bin/cmake -DCMAKE_TOOLCHAIN_FILE=/opt/cmake-linux64.cmake'
 
 export AS=/usr/bin/as
 export AR=/usr/bin/ar
@@ -9,3 +9,19 @@ export CPP=/usr/bin/cpp
 export CXX=/usr/bin/g++
 export LD=/usr/bin/ld
 export FC=/usr/bin/gfortran
+
+
+echo > /opt/cmake-linux64.cmake <<EOF
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_VERSION 1)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+
+set(cross_triple "x86_64-linux-gnu")
+
+set(CMAKE_C_COMPILER $ENV{CC})
+set(CMAKE_CXX_COMPILER $ENV{CXX})
+set(CMAKE_Fortran_COMPILER $ENV{FC})
+set(CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER})
+
+set(CMAKE_CROSSCOMPILING_EMULATOR /usr/bin/${cross_triple}-noop)
+EOF

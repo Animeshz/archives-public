@@ -40,7 +40,6 @@ build_deps=( \
     xz-utils \
 ) && \
 #
-echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list && \
 apt-get update && \
 apt-get install -y "${build_deps[@]}" bash sed && \
 #
@@ -76,7 +75,11 @@ ls | grep -v usr | xargs rm -rf && \
 #
 #
 # # ==================================== Setup Linux compilers ====================================
+echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list && \
+apt-get update && \
 apt-get install -y gcc g++ cmake && \
+sed '$d' /etc/apt/sources.list && \
+apt-get update && \
 #
 #
 # ==================================== Cleanup ====================================
