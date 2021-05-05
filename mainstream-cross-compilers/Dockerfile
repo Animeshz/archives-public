@@ -79,3 +79,6 @@ apt-get install -y gcc g++ cmake && \
 #
 apt-get autoremove --purge -y "${build_deps[@]}" && \
 apt-get clean -y
+
+ENV WORK_DIR /work
+WORKDIR ${WORK_DIR}
