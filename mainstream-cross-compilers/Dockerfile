@@ -1,9 +1,13 @@
 FROM --platform=amd64 debian:stretch-slim
 
+COPY scripts/linux32 scripts/linux64 scripts/windows32 scripts/windows64 /usr/local/bin/
+
 SHELL ["/bin/bash", "-c"]
 
 RUN \
 # ==================================== Initial setup ====================================
+#
+chmod +x /usr/local/bin/* && \
 #
 build_deps=( \
     autoconf \

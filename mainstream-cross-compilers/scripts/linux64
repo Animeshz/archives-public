@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export CMAKE=/usr/bin/cmake
+
+export AS=/usr/bin/as
+export AR=/usr/bin/ar
+export CC=/usr/bin/gcc
+export CPP=/usr/bin/cpp
+export CXX=/usr/bin/g++
+export LD=/usr/bin/ld
+export FC=/usr/bin/gfortran

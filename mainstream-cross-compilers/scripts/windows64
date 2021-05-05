@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export CMAKE=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-cmake
+
+export AS=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-as
+export AR=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-ar
+export CC=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-gcc
+export CPP=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-cpp
+export CXX=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-g++
+export LD=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-ld
+export FC=/opt/mxe/usr/bin/x86_64-w64-mingw32.shared-gfortran

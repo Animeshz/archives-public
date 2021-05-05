@@ -1,0 +1,28 @@
+#!/bin/bash
+
+export CMAKE='/usr/bin/cmake -DCMAKE_TOOLCHAIN_FILE=/opt/cmake-linux32.cmake'
+
+export AS=/usr/bin/as
+export AR=/usr/bin/ar
+export CC=/usr/bin/gcc
+export CPP=/usr/bin/cpp
+export CXX=/usr/bin/g++
+export LD=/usr/bin/ld
+export FC=/usr/bin/gfortran
+
+echo > /opt/cmake-linux32.cmake <<EOF
+set(CMAKE_SYSTEM_NAME Linux)
+
+set(CMAKE_C_FLAGS -m32)
+set(CMAKE_CXX_FLAGS -m32)
+
+set(CMAKE_FIND_ROOT_PATH /usr/i686-linux-gnu)
+
+# adjust the default behaviour of the FIND_XXX() commands:
+# search headers and libraries in the target environment, search
+# programs in the host environment
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+EOF
+
