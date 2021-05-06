@@ -41,7 +41,7 @@ build_deps=( \
 ) && \
 #
 apt-get update && \
-apt-get install --no-install-recommends -y "${build_deps[@]}" bash sed g++ make && \
+apt-get install --no-install-recommends -y "${build_deps[@]}" bash curl sed g++ make && \
 #
 #
 dos2unix /usr/local/bin/* && \
@@ -77,8 +77,17 @@ ls | grep -v usr | xargs rm -rf && \
 # # ==================================== Setup Linux compilers ====================================
 echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list && \
 apt-get update && \
-apt-get install --no-install-recommends -y gcc g++ cmake && \
+apt-get install --no-install-recommends -y gcc g++ && \
 sed -i '$d' /etc/apt/sources.list && \
+#
+# Install cmake manually to resolve conflict with dependencies of curl
+mkdir -p /opt/cmake && \
+cd /opt/cmake && \
+curl -LO 'https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2-linux-x86_64.sh' && \
+chmod +x cmake-3.20.2-linux-x86_64.sh && \
+./cmake-3.20.2-linux-x86_64.sh --skip-license && \
+rm -rf doc man cmake-3.20.2-linux-x86_64.sh && \
+ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake && \
 #
 #
 # ==================================== Cleanup ====================================

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export CMAKE='/usr/bin/cmake -DCMAKE_TOOLCHAIN_FILE=/opt/cmake-linux32.cmake'
+export CMAKE=/usr/local/bin/cmake
+export CMAKE_TOOLCHAIN_FILE=/opt/cmake-linux32.cmake
 
 export AS=/usr/bin/as
 export AR=/usr/bin/ar
