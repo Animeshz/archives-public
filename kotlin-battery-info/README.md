@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Animeshz:battery-info:0.1")
+    implementation("com.github.Animeshz:battery-info:<-version->")
 }
 ```
 
@@ -65,7 +65,7 @@ dependencies {
     <dependency>
         <groupId>com.github.Animeshz</groupId>
         <artifactId>battery-info</artifactId>
-        <version>0.1</version>
+        <version><-version-></version>
     </dependency>
 </dependencies>
 ```
