@@ -1,0 +1,13 @@
+{
+  "name": "ytcache",
+  "description": "A chrome extension for caching youtube video dropped to a certain playlist with desired quality till download option is enabled in extension.",
+  "version": "1.0",
+  "version_name": "1.0-alpha1",
+  "manifest_version": 2,
+  "permissions": ["storage", "tabs", "unlimitedStorage"],
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'",
+  "web_accessible_resources": ["dist/*", "static/*"],
+  "background": {
+    "service_worker": "dist/main.js"
+  }
+}
