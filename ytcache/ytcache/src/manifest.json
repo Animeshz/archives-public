@@ -9,5 +9,14 @@
   "web_accessible_resources": ["*"],
   "background": {
     "service_worker": "main.js"
+  },
+  "icons": {
+    "16": "/static/image-logo/logo16.png",
+    "48": "/static/image-logo/logo48.png",
+    "128": "/static/image-logo/logo128.png"
+  },
+  "browser_action": {
+    "default_popup": "/static/popup.html",
+    "default_icon": "/static/image-logo/logo128.png"
   }
 }
