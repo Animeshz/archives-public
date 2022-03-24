@@ -4,11 +4,12 @@
   "version": "1.0",
   "version_name": "1.0-alpha1",
   "manifest_version": 2,
-  "permissions": ["storage", "tabs", "unlimitedStorage"],
-  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'",
+  "permissions": ["identity", "storage", "tabs", "unlimitedStorage"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "web_accessible_resources": ["*"],
   "background": {
-    "service_worker": "main.js"
+    "scripts": ["main.js"],
+    "persistent": false
   },
   "icons": {
     "16": "/static/image-logo/logo16.png",
