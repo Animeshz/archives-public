@@ -4,7 +4,12 @@
   "version": "1.0",
   "version_name": "1.0-alpha1",
   "manifest_version": 2,
-  "permissions": ["identity", "storage", "tabs", "unlimitedStorage"],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxYQqFMXkJDeP1G5Q2CpKeNpnWy6wWRmVrMeTLRs23B3/mV6ooYb3oH8LLgKy83+xx4tp61SFz7bUsC6Q+qqOQnjCvYGeBoCiyMEOlMsJ9ivWslZC2m7LRX2K0ydoZOUShRVZuGJNGjW4E1zNWvn8FEuv268YGdag3tVw4O9SamWkSNpJycZCUYIoIH3XCnfwW6fxtNkKFGAoOW0jjgCikakpG498Z9x0NjE0sUzPiqKSSzib+u76W8/FYA3pOHjQ8Z6myieoIJDuZJdckjU1JCCYLcy9unLqF9K+v1KB7IM63gEpiUxngOO6zQQd0CK5iJ1wXmnU1c1d4GzVY0EoQQIDAQAB",
+  "oauth2": {
+    "client_id": "170889941730-kh93arhfkdrfdi2aepr9gp7vtmufriqd.apps.googleusercontent.com",
+    "scopes": ["email", "profile", "https://www.googleapis.com/auth/youtube"]
+  },
+  "permissions": ["identity", "storage", "tabs", "unlimitedStorage", "https://accounts.google.com"],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "web_accessible_resources": ["*"],
   "background": {
