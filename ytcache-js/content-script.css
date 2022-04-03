@@ -1,0 +1,24 @@
+.ytcache-split-btn {
+    border: 1px solid black;
+    background: transparent;
+    height: var(--yt-button-icon-size);
+}
+
+.ytcache-split-btn-dropdown {
+    display: inline-block;
+}
+
+.ytcache-split-btn-dropdown-content {
+    display: none;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    z-index: 1;
+}
+
+.ytcache-split-btn-dropdown:hover .ytcache-split-btn-dropdown-content {
+    display: block;
+}
+
+.ytcache-split-btn:hover {
+    background-color: grey;
+}

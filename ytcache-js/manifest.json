@@ -1,0 +1,32 @@
+{
+    "name": "ytcache-js",
+    "description": "A chrome extension for caching youtube video dropped to a certain playlist with desired quality till download option is enabled in extension.",
+    "version": "1.0",
+    "version_name": "1.0-alpha1",
+    "manifest_version": 2,
+    "oauth2": {
+        "client_id": "170889941730-kh93arhfkdrfdi2aepr9gp7vtmufriqd.apps.googleusercontent.com",
+        "scopes": ["email", "profile", "https://www.googleapis.com/auth/youtube"]
+    },
+    "permissions": ["identity", "storage", "tabs", "unlimitedStorage", "https://accounts.google.com"],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "web_accessible_resources": ["*"],
+    "background": {
+        "scripts": ["main.js"],
+        "persistent": false
+    },
+    "icons": {
+        "16": "/static/image-logo/logo16.png",
+        "48": "/static/image-logo/logo48.png",
+        "128": "/static/image-logo/logo128.png"
+    },
+    "browser_action": {
+        "default_popup": "/popup.html",
+        "default_icon": "/static/image-logo/logo128.png"
+    },
+    "content_scripts": [{
+        "matches": ["https://*.youtube.com/*"],
+        "css": ["/content-script.css", "/bootstrap.min.css"],
+        "js": ["/content-script.js", "/bootstrap.bundle.min.js"]
+    }]
+}

@@ -1,0 +1,36 @@
+body {
+    background-color: #303443;
+    color: white;
+    margin: 0px;
+    width: 340px;
+}
+
+.extension_logo {
+    margin: 5px;
+    margin-left: 40px;
+}
+
+.link_input {
+    background-color: #0D1D1F;
+    color: white;
+    margin: 2px;
+}
+
+.playlist_link_input_box {
+    background-color: #181A21;
+    color: white;
+    border: 0px;
+    width: 65%;
+    height: 22px;
+    border-radius: 2px;
+}
+
+.playlist_link_submit_button {
+    background-color: #303443;
+    color: white;
+    float: right;
+    margin-top: 4px;
+    margin-right: 4px;
+    border: 4px;
+    border-radius: 2px;
+}
