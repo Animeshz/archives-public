@@ -12,7 +12,7 @@ int EXTRA_PRINT=0;
 int HEADER_PRINT=0;
 int MAIN_PRINT=1;
 int TOTAL_PRINT=0;
-
+int IGNORE_DOTFILES=0;
 
 int is_file(char *filename) {
     struct stat s;
@@ -22,6 +22,7 @@ int is_file(char *filename) {
 
 int is_subdir(char *filename) {
     if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0) return 0;
+    if (strncmp(filename + strlen(filename) - 2, "/.", 2) == 0 || strncmp(filename + strlen(filename) - 3, "/..", 3) == 0) return 0;
 
     struct stat s;
     if (stat(filename, &s) == 0) return s.st_mode & S_IFDIR;
@@ -80,11 +81,16 @@ void dirinfo(char *dir_prefix, DIR *d) {
     struct dirent *dir;
     while ((dir = readdir(d)) != NULL) {
 
+        if (IGNORE_DOTFILES && strncmp(dir->d_name, ".", 1) == 0) {
+            extra_info_holder.files_ignored++;
+            continue;
+        }
+
         char *relative_fname = strcmp(dir_prefix, "") == 0 ? strdup(dir->d_name) : concatenate(dir_prefix, "/", dir->d_name);
         if (is_subdir(relative_fname)) {
-            //DIR *d = opendir(relative_fname);
-            //dirinfo(relative_fname, d);
-            //closedir(d);
+            DIR *d = opendir(relative_fname);
+            dirinfo(relative_fname, d);
+            closedir(d);
         } else if (is_file(relative_fname)) {
             if (is_binary(relative_fname)) extra_info_holder.files_ignored++;
             else {
@@ -114,7 +120,7 @@ void dirinfo(char *dir_prefix, DIR *d) {
                 for (int i = 0; i < file_size; i++) {
                     if (file_contents[i] == '\n') {
                         node->line_count++;
-                        if (strncmp(file_contents+i+1, "\n", 1) == 0 || strncmp(file_contents+i+1, "\r\n", 2) == 0) {
+                        if (i+1 < file_size && strncmp(file_contents+i+1, "\n", 1) == 0 || i+2 < file_size && strncmp(file_contents+i+1, "\r\n", 2) == 0) {
                             node->blank_line_count++;
                         }
                     }
@@ -131,12 +137,13 @@ void dirinfo(char *dir_prefix, DIR *d) {
 
 
 void print_usage_and_exit(char *basename) {
-    printf("Usage: %s [-t|-to|-h|-ho|-e]\n", basename);
+    printf("Usage: %s [-t|-to|-h|-ho|-e|-i]\n", basename);
     printf("-t  -> print total\n");
     printf("-to -> print total only (exclusive option)\n");
     printf("-h -> print info header\n");
     printf("-ho -> print info header only (exclusive option)\n");
     printf("-e -> print extra information (traversal related)\n");
+    printf("-i -> ignore dotfiles\n");
     exit(1);
 }
 
@@ -158,6 +165,7 @@ int main(int argc, char *argv[]) {
             if (strcmp(argv[i], "-t") == 0) TOTAL_PRINT=1;
             else if (strcmp(argv[i], "-h") == 0) HEADER_PRINT=1;
             else if (strcmp(argv[i], "-e") == 0) EXTRA_PRINT=1;
+            else if (strcmp(argv[i], "-i") == 0) IGNORE_DOTFILES=1;
             else { printf("Unknown option: %s\n", argv[i]); print_usage_and_exit(argv[0]); }
         }
     }
