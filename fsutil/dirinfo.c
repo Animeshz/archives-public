@@ -60,6 +60,7 @@ typedef struct dirinfo_node {
     int file_count;
     int line_count;
     int blank_line_count;
+    int total_size;
     struct dirinfo_node *next;
 } dirinfo_node;
 struct extra_info {
@@ -117,6 +118,7 @@ void dirinfo(char *dir_prefix, DIR *d) {
                 fread(file_contents, file_size, 1, f);
                 fclose(f);
 
+                node->total_size += file_size;
                 for (int i = 0; i < file_size; i++) {
                     if (file_contents[i] == '\n') {
                         node->line_count++;
@@ -157,7 +159,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             if (strcmp(argv[i], "-ho") == 0) {
-                if (argc != 2) { printf("-io is exclusive and cannot be used with another option\n"); print_usage_and_exit(argv[0]); }
+                if (argc != 2) { printf("-ho is exclusive and cannot be used with another option\n"); print_usage_and_exit(argv[0]); }
                 HEADER_PRINT=1;
                 MAIN_PRINT=0;
                 break;
@@ -185,7 +187,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (HEADER_PRINT) {
-        printf("extension file_count line_count blank_line_count\n");
+        printf("extension file_count line_count blank_line_count total_size_of_files\n");
     }
 
     dirinfo_node *node;
@@ -195,20 +197,20 @@ int main(int argc, char *argv[]) {
         node = dirinfo_head_node;
         while (node != NULL) {
             if (strcmp(node->ext, "") == 0)
-                printf("unknown %d %d %d\n", node->file_count, node->line_count, node->blank_line_count);
+                printf("unknown %d %d %d %d\n", node->file_count, node->line_count, node->blank_line_count, node->total_size);
             else
-                printf("%s %d %d %d\n", node->ext, node->file_count, node->line_count, node->blank_line_count);
+                printf("%s %d %d %d %d\n", node->ext, node->file_count, node->line_count, node->blank_line_count, node->total_size);
             node = node->next;
         }
     }
     if (TOTAL_PRINT) {
         node = dirinfo_head_node;
-        int total_file_count = 0, total_line_count = 0, total_blank_line_count = 0;
+        int total_file_count = 0, total_line_count = 0, total_blank_line_count = 0, total_size;
         while (node != NULL) {
-            total_file_count += node->file_count, total_line_count += node->line_count, total_blank_line_count += node->blank_line_count;
+            total_file_count += node->file_count, total_line_count += node->line_count, total_blank_line_count += node->blank_line_count, total_size += node->total_size;
             node = node->next;
         }
-        printf("total %d %d %d\n", total_file_count, total_line_count, total_blank_line_count);
+        printf("total %d %d %d %d\n", total_file_count, total_line_count, total_blank_line_count, total_size);
     }
 
     // cleanup
