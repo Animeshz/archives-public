@@ -137,7 +137,7 @@ void dirinfo(char *dir_prefix, DIR *d) {
 
 
 void print_usage_and_exit(char *basename) {
-    printf("Usage: %s [-t|-to|-h|-ho|-e|-i]\n", basename);
+    printf("Usage: %s [-t|-to|-h|-ho|-e|-i]  -- Gives file count, line count, and blank lines per file-extension in current directory\n", basename);
     printf("-t  -> print total\n");
     printf("-to -> print total only (exclusive option)\n");
     printf("-h -> print info header\n");

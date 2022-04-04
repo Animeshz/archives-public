@@ -47,7 +47,12 @@ char *concatenate(char *str1, char *sep, char *str2) {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 1) {
+        printf("Unknown option %s\n", argv[1]);
+        printf("Usage: %s -- arranges all the scatterred files into folder with name of their respective extension", argv[0]);
+    }
+
     DIR *d = opendir(".");
     if (!d) {
         printf("ERROR: Cannot read current directory\n");
