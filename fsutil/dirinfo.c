@@ -89,9 +89,9 @@ void dirinfo(char *dir_prefix, DIR *d) {
 
         char *relative_fname = strcmp(dir_prefix, "") == 0 ? strdup(dir->d_name) : concatenate(dir_prefix, "/", dir->d_name);
         if (is_subdir(relative_fname)) {
-            DIR *d = opendir(relative_fname);
-            dirinfo(relative_fname, d);
-            closedir(d);
+            DIR *subd = opendir(relative_fname);
+            dirinfo(relative_fname, subd);
+            closedir(subd);
         } else if (is_file(relative_fname)) {
             if (is_binary(relative_fname)) extra_info_holder.files_ignored++;
             else {
@@ -122,7 +122,7 @@ void dirinfo(char *dir_prefix, DIR *d) {
                 for (int i = 0; i < file_size; i++) {
                     if (file_contents[i] == '\n') {
                         node->line_count++;
-                        if (i+1 < file_size && strncmp(file_contents+i+1, "\n", 1) == 0 || i+2 < file_size && strncmp(file_contents+i+1, "\r\n", 2) == 0) {
+                        if ((i+1 < file_size && strncmp(file_contents+i+1, "\n", 1) == 0) || (i+2 < file_size && strncmp(file_contents+i+1, "\r\n", 2) == 0)) {
                             node->blank_line_count++;
                         }
                     }
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
     }
     if (TOTAL_PRINT) {
         node = dirinfo_head_node;
-        int total_file_count = 0, total_line_count = 0, total_blank_line_count = 0, total_size;
+        int total_file_count = 0, total_line_count = 0, total_blank_line_count = 0, total_size = 0;
         while (node != NULL) {
             total_file_count += node->file_count, total_line_count += node->line_count, total_blank_line_count += node->blank_line_count, total_size += node->total_size;
             node = node->next;
