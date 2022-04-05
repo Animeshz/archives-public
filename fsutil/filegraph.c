@@ -25,16 +25,16 @@ void print_file_graph(char *dir_prefix, char *print_prefix, DIR *d) {
     struct dirent *dir; int index = 0;
     while ((dir = readdir(d)) != NULL) {
         if (dir->d_name[0] == '.') continue;
+        char *pointer = !index ? "┌── " : "├── ";
         char *relative_fname = strcmp(dir_prefix, "") == 0 ? strdup(dir->d_name) : concatenate(dir_prefix, "/", dir->d_name);
         if (is_subdir(relative_fname)) {
             DIR *subd = opendir(relative_fname);
-            char *new_prefix = concatenate(print_prefix, "", "│   ");
+            char *new_prefix = concatenate(print_prefix, "", !index ? "    " : "│   ");
             print_file_graph(relative_fname, new_prefix, subd);
-            printf("%s%s%s\n", print_prefix, "├── ", dir->d_name);
+            printf("%s%s%s\n", print_prefix, pointer, dir->d_name);
             free(new_prefix);
             closedir(subd);
         } else {
-            char *pointer = !index ? "┌── " : "├── ";
             printf("%s%s%s\n", print_prefix, pointer, dir->d_name);
         }
         index++;
