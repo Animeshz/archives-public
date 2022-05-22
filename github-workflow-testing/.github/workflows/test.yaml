@@ -1,0 +1,32 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: 'ghcr.io/void-linux/void-linux:latest-mini-x86_64'
+
+    steps:
+      - name: Basic Setup
+        run: |
+          xbps-install -Sy dust
+          dust /
+
+      - name: Fail
+        run: fail
+
+      - name: OnFail
+        id: fail
+        if: ${{ failure() }}
+        run: true
+
+      - name: OnFail-Next
+        if: ${{ always() && steps.fail.outcome == 'success' }}
+        run: true
+
