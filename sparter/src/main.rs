@@ -1,9 +1,9 @@
 pub mod opts;
 
-use opts::CliOpts;
-use structopt::StructOpt;
+use crate::opts::CliOpts;
+use clap::Parser;
 
 fn main() {
-    let opt = CliOpts::from_args();
+    let opt = CliOpts::parse();
     println!("{:#?}", opt);
 }

@@ -1,11 +1,13 @@
-extern crate clap;
+use clap::CommandFactory;
+use clap_complete::{generate_to, shells};
 
 include!("src/opts.rs");
-use clap::Shell;
 
-fn main() {
-    let mut app = CliOpts::clap();
-    app.gen_completions(env!("CARGO_PKG_NAME"), Shell::Bash, "target");
-    app.gen_completions(env!("CARGO_PKG_NAME"), Shell::Fish, "target");
-    app.gen_completions(env!("CARGO_PKG_NAME"), Shell::Zsh, "target");
+fn main() -> std::io::Result<()> {
+    let mut cmd = CliOpts::command();
+    generate_to(shells::Bash, &mut cmd, env!("CARGO_PKG_NAME"), "target")?;
+    generate_to(shells::Fish, &mut cmd, env!("CARGO_PKG_NAME"), "target")?;
+    generate_to(shells::Zsh, &mut cmd, env!("CARGO_PKG_NAME"), "target")?;
+
+    Ok(())
 }

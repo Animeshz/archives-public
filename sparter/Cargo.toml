@@ -5,13 +5,13 @@ edition = "2021"
 
 [dependencies]
 bytesize = "1.1.0"
+clap = { version = "3.1.18", features = ["derive"] }
 gptman = "1.0.0"
 indicatif = "0.16.2"
 path-clean = "0.1.0"
-structopt = "0.3"
 
 [build-dependencies]
 bytesize = "1.1.0"
-clap = "2.23"
+clap = { version = "3.1.18", features = ["derive"] }
+clap_complete = "3.1.4"
 path-clean = "0.1.0"
-structopt = "0.3"
