@@ -1,15 +1,15 @@
 use std::{io, path::PathBuf, str::FromStr};
 
 use bytesize::ByteSize;
-use clap::Parser;
+use clap::{Parser, ValueHint};
 use path_clean::PathClean;
 
 /// A simple partitioner
 #[derive(Parser, Debug)]
-#[clap(name = "sparter", version = "0.0.1")]
+#[clap(name = "sparter", version = "0.1.0")]
 pub struct CliOpts {
     /// Writes logs at the given file
-    #[clap(short, long, global = true)]
+    #[clap(short, long, value_hint = ValueHint::AnyPath, global = true)]
     log_file: Option<IoMethod>,
 
     #[clap(subcommand)]
@@ -19,7 +19,10 @@ pub struct CliOpts {
 #[derive(Parser, Debug)]
 pub enum SubCommand {
     /// Lists all the partitions in the drive
-    List { from: IoMethod },
+    List {
+        #[clap(value_hint = ValueHint::AnyPath)]
+        from: IoMethod,
+    },
 
     /// Partition backup subcommand
     #[clap(subcommand)]
@@ -48,18 +51,27 @@ pub enum SubCommand {
 pub enum BackupCommand {
     /// Create a backup of paritition
     Create {
+        #[clap(value_hint = ValueHint::AnyPath)]
         partition: IoMethod,
+
+        #[clap(value_hint = ValueHint::AnyPath)]
         output: IoMethod,
     },
 
     /// Restore a partition from a backup
     Restore {
+        #[clap(value_hint = ValueHint::AnyPath)]
         input: IoMethod,
+
+        #[clap(value_hint = ValueHint::AnyPath)]
         partition: IoMethod,
     },
 
     /// Retrieves information of the partition
-    Info { input: IoMethod },
+    Info {
+        #[clap(value_hint = ValueHint::AnyPath)]
+        input: IoMethod,
+    },
 }
 
 #[derive(Parser, Debug)]
@@ -73,6 +85,7 @@ pub struct ResizeCommand {
     anchor: Anchor,
 
     /// Target partition to be shrunk/extended
+    #[clap(value_hint = ValueHint::AnyPath)]
     target: IoMethod,
 }
 
@@ -89,18 +102,21 @@ pub struct PositionCommand {
     anchor: Anchor,
 
     /// Target partition
+    #[clap(value_hint = ValueHint::AnyPath)]
     target: IoMethod,
 }
 
 #[derive(Parser, Debug)]
 pub struct DeleteCommand {
     /// Target partition
+    #[clap(value_hint = ValueHint::AnyPath)]
     target: IoMethod,
 }
 
 #[derive(Parser, Debug)]
 pub struct RenameCommand {
     /// Target partition
+    #[clap(value_hint = ValueHint::AnyPath)]
     target: IoMethod,
 
     /// New name
