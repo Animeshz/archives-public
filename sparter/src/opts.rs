@@ -1,10 +1,7 @@
-use std::{
-    fmt::Display,
-    path::{Path, PathBuf},
-    str::FromStr,
-};
+use std::{io, path::PathBuf, str::FromStr};
 
 use bytesize::ByteSize;
+use path_clean::PathClean;
 use structopt::StructOpt;
 
 /// A simple partitioner
@@ -61,9 +58,7 @@ pub enum BackupCommand {
     },
 
     /// Retrieves information of the partition
-    Info {
-        input: IoMethod,
-    },
+    Info { input: IoMethod },
 }
 
 #[derive(StructOpt, Debug)]
@@ -73,6 +68,7 @@ pub struct ResizeCommand {
     size: u64,
 
     /// Anchor (`before` or `after`)
+    #[structopt(possible_values = &Anchor::variants())]
     anchor: Anchor,
 
     /// Target partition to be shrunk/extended
@@ -88,6 +84,7 @@ pub struct PositionCommand {
     size: u64,
 
     /// Anchor (`before` or `after`)
+    #[structopt(possible_values = &Anchor::variants())]
     anchor: Anchor,
 
     /// Target partition
@@ -107,7 +104,6 @@ pub struct RenameCommand {
 
     /// New name
     new_name: String,
-
 }
 
 #[derive(Debug)]
@@ -117,50 +113,54 @@ pub enum IoMethod {
 }
 
 impl FromStr for IoMethod {
-    type Err = String;
+    type Err = io::Error;
 
-    fn from_str(src: &str) -> Result<Self, Self::Err> {
+    fn from_str(src: &str) -> io::Result<Self> {
         match src {
             "-" => Ok(IoMethod::StdIo),
             _ => {
                 let path = PathBuf::from(src);
-                if path.exists() || path.parent().unwrap_or_else(|| &Path::new("/")).exists() {
+                let path = match path.is_absolute() {
+                    true => path,
+                    false => std::env::current_dir()?.join(path),
+                }
+                .clean();
+
+                if path.exists() || path.parent().map(|v| v.exists()) == Some(true) {
                     Ok(IoMethod::File(path))
                 } else {
-                    Err(format!("Path {} does not exists", src))
+                    Err(io::Error::new(
+                        io::ErrorKind::NotFound,
+                        format!("Path {:?} does not exist", path),
+                    ))
                 }
             }
         }
     }
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(Debug)]
 enum Anchor {
     Before,
     After,
 }
-
+impl Anchor {
+    fn variants() -> [&'static str; 2] {
+        ["before", "after"]
+    }
+}
 impl FromStr for Anchor {
-    type Err = ParseAnchorError;
+    type Err = core::convert::Infallible;
 
     fn from_str(src: &str) -> Result<Self, Self::Err> {
         match src {
             "before" => Ok(Anchor::Before),
             "after" => Ok(Anchor::After),
-            _ => Err(ParseAnchorError),
+            _ => unreachable!(),
         }
-    }
-}
-
-#[derive(Debug)]
-struct ParseAnchorError;
-impl Display for ParseAnchorError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "provided string was not `before` or `after`")
     }
 }
 
 fn parse_size(src: &str) -> Result<u64, <ByteSize as FromStr>::Err> {
     Ok(src.parse::<ByteSize>()?.0)
 }
-
