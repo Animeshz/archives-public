@@ -4,10 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+ariadne = "0.1.5"
+block-utils = "0.10.7"
 bytesize = "1.1.0"
 clap = { version = "3.1.18", features = ["derive"] }
 gptman = "1.0.0"
-indicatif = "0.16.2"
+mbrman = "0.4.2"
 path-clean = "0.1.0"
 
 [build-dependencies]

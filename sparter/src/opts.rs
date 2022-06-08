@@ -4,7 +4,7 @@ use bytesize::ByteSize;
 use clap::{Parser, ValueHint};
 use path_clean::PathClean;
 
-/// A simple partitioner
+/// A simple partitioning utility for easily [ resize | move | create | delete | backup | restore ] partition(s)
 #[derive(Parser, Debug)]
 #[clap(name = "sparter", version = "0.1.0")]
 pub struct CliOpts {
