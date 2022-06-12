@@ -23,7 +23,9 @@ pub trait Fmt: Sized {
     ///
     /// # Example
     /// ```rust
+    /// use unidraw::symbol::Fmt;
     /// use yansi::Color;
+    ///
     /// println!("{}", "Hello".fg(Color::Red))
     /// ```
     fn fg(self, color: Color) -> Paint<Self> {
@@ -34,7 +36,9 @@ pub trait Fmt: Sized {
     ///
     /// # Example
     /// ```rust
+    /// use unidraw::symbol::Fmt;
     /// use yansi::Color;
+    ///
     /// println!("{}", "Hello".bg(Color::Green))
     /// ```
     fn bg(self, color: Color) -> Paint<Self> {
