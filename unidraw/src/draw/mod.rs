@@ -1,7 +1,10 @@
 pub mod path;
 pub mod shape;
 
+use std::convert::From;
+
 /// Measurement is used to define dimensions of [`shape::Shape`]
+#[derive(Copy, Clone, Debug)]
 pub enum Measurement {
     Exact(u16),
     Percentage(u8),
@@ -15,6 +18,14 @@ pub struct Point {
     pub y: i16,
 }
 
+/// Represents a cell at a point in the cartesian plane (of the terminal ofc).
+#[derive(Copy, Clone, Debug, Default)]
+pub struct Cell {
+    pub c: char,
+    // modifier: Modifier,  // if modifier is just a bitmask then probably a good idea to have Copy trait
+}
+
+#[derive(Copy, Clone, Debug)]
 pub enum DiagonalDirection {
     TopLeft,
     TopRight,
@@ -22,26 +33,13 @@ pub enum DiagonalDirection {
     BottomRight,
 }
 
+#[derive(Copy, Clone, Debug)]
 pub enum StraightDirection {
     Left,
     Bottom,
     Top,
     Right,
 }
-impl StraightDirection {
-    /// Returns the opposite StraightDirection.
-    fn opposite(&self) -> EdgeDirection {
-        match self {
-            EdgeDirection::Left => EdgeDirection::Right,
-            EdgeDirection::Bottom => EdgeDirection::Top,
-            EdgeDirection::Top => EdgeDirection::Bottom,
-            EdgeDirection::Right => EdgeDirection::Left,
-        }
-    }
-}
-
-/// `Anchor` refers to a vertex of a shape.
-pub type Anchor = Point;
 
 /// `AnchorDirection` refers to direction of anchor towards the [`shape::Shape`].
 pub type AnchorDirection = DiagonalDirection;
@@ -49,15 +47,22 @@ pub type AnchorDirection = DiagonalDirection;
 /// `EdgeDirection` refers to direction of Edge outwards the [`shape::Shape`].
 pub type EdgeDirection = StraightDirection;
 
-/// `Edge` refers to any of straight line formed between any two `Anchor`s of the `Shape`, or `AreaBoundary` of the terminal.
+/// `Anchor` refers to a vertex of a shape.
 #[derive(Copy, Clone, Debug)]
-pub enum Edge {
-    AreaBoundary(EdgeDirection),
-    Shape {
-        from: Anchor,
-        to: Anchor,
-        direction: EdgeDirection,
-    },
+pub struct Anchor(Point, AnchorDirection);
+
+/// `Edge` refers to any of straight line formed between any two [`Anchor`]s of the [`shape::Shape`] or the Terminal.
+#[derive(Copy, Clone, Debug)]
+pub struct Edge {
+    from: Anchor,
+    to: Anchor,
+    direction: EdgeDirection,
+}
+
+impl From<(Anchor, Anchor)> for Edge {
+    fn from(anchors: (Anchor, Anchor)) -> Self {
+        todo!()
+    }
 }
 
 // Make constraint resolving at the time of rendering.
@@ -74,7 +79,7 @@ pub struct EdgeConstraint {
     // modifiers: Modifiers,
 }
 impl EdgeConstraint {
-    fn with_margin(&mut self, width: u16) -> Self {
-        self
+    pub fn with_margin(mut self, width: u16) -> Self {
+        todo!()
     }
 }

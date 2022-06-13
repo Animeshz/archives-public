@@ -45,7 +45,7 @@ pub trait Fmt: Sized {
         Paint::new(self).bg(color)
     }
 }
-impl<T: std::fmt::Display> Fmt for T {}
+impl<T> Fmt for T {}
 
 #[cfg(test)]
 mod tests {
