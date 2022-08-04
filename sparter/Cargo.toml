@@ -5,12 +5,16 @@ edition = "2021"
 
 [dependencies]
 ariadne = "0.1.5"
-block-utils = "0.10.7"
 bytesize = "1.1.0"
 clap = { version = "3.1.18", features = ["derive"] }
 gptman = "1.0.0"
+libc = "0.2.126"
+libparted = "0.1.5"
 mbrman = "0.4.2"
 path-clean = "0.1.0"
+sys-mount = "1.5.1"
+udev = "0.6.3"
+walkdir = "2.3.2"
 
 [build-dependencies]
 bytesize = "1.1.0"
