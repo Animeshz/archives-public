@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pun"
+version = "0.1.0"
+description = ""
+authors = ["Animesh Sahu <animeshsahu19@yahoo.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+rich-click = "^1.5.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.autopep8]
+max_line_length = 120
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
