@@ -15,23 +15,22 @@ Build from source and Install:
 
 ```bash
 git clone https://github.com/Animeshz/sys-replica && cd sys-replica
-poetry build
-pip install dist/sys_replica-*.whl
+just install
 ```
 
 
 ## QuickStart
 
-A config file (`replica.py`) at its simplest level:
+A config file (`config.py`) at its simplest level:
 
 ```python
-from replica import resolve_repositories, read_file
+from replica import resolve_repositories, resolve_config, read_file, register_inbuilts
 
 REPOSITORIES = resolve_repositories(
     void="https://mirrors.dotsrc.org/voidlinux/current",
 )
 
-CONFIG = dict(
+CONFIG = resolve_config(
     packages=REPOSITORIES.void("fd", "curl")
     files={
         '$HOME/.config/starship.toml': read_file('config/starship.toml'),
@@ -43,9 +42,8 @@ CONFIG = dict(
 Run:
 
 ```bash
-replica reduce      # resolves all repositories and config into its simplest form
+replica query <repo-url> <pkg>  # searches pkg in repository specified (by regex)
 replica build       # builds configuration files and installation script in $CWD/build
-replica query <repo-url> <pkg>  # searches pkg in a repository
 
 ./build/install     # Installs all the programs listed
 ./build/orphan      # Uninstalls any program unlisted after previous install run
@@ -55,17 +53,21 @@ replica query <repo-url> <pkg>  # searches pkg in a repository
 ./build/apply -f    # Force apply all files (overwriting)
 ```
 
+> PROTIP: You can print CONFIG to see what does the resolved CONFIG looks like
+
 
 ## Modules
 
 The config options are futher extended to provide simplistic configurables for complex things:
 
 ```python
-CONFIG = dict(
+register_inbuilt_modules()
+
+CONFIG = resolve_config(
     programs=dict(
          vscode=dict(
              enable=True,
-             source=REPOSITORIES.void,
+             source=REPOSITORIES.void("vscode"),  # or simply REPOSITORIES.void, if name is the same (vscode)
              extensions=[
                  "asvetliakov.vscode-neovim",
                  "Equinusocio.vsc-material-theme",
