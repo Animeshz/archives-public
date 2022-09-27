@@ -34,7 +34,7 @@ REPOSITORIES = resolve_repositories(
 CONFIG = dict(
     packages=REPOSITORIES.void("fd", "curl")
     files={
-        '$HOME/.config/starship.toml': read_file('config/starship.toml')
+        '$HOME/.config/starship.toml': read_file('config/starship.toml'),
         '$HOME/.config/micro/settings.json': '{"colorscheme": "one-dark", "mkparents": true}'
     }
 )
@@ -44,10 +44,15 @@ Run:
 
 ```bash
 replica reduce      # resolves all repositories and config into its simplest form
-replica build       # builds configuration and installation script in $CWD/build/files & $CWD/build/apply
+replica build       # builds configuration files and installation script in $CWD/build
+replica query <repo-url> <pkg>  # searches pkg in a repository
 
-./build/check       # 
-./build/apply       # 
+./build/install     # Installs all the programs listed
+./build/orphan      # Uninstalls any program unlisted after previous install run
+
+./build/check       # Check conflicts with files & shows conflicts (if any) in git-diff format
+./build/apply       # Applies non-conflicting files
+./build/apply -f    # Force apply all files (overwriting)
 ```
 
 
