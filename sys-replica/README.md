@@ -24,7 +24,8 @@ just install
 A config file (`config.py`) at its simplest level:
 
 ```python
-from replica import resolve_repositories, resolve_config, read_file, register_inbuilts
+from replica.modules import resolve_repositories, resolve_config, inbuilt_modules
+from replica.utils import read_file
 
 REPOSITORIES = resolve_repositories(
     void="https://mirrors.dotsrc.org/voidlinux/current",
@@ -61,13 +62,12 @@ replica build       # builds configuration files and installation script in $CWD
 The config options are futher extended to provide simplistic configurables for complex things:
 
 ```python
-register_inbuilt_modules()
-
 CONFIG = resolve_config(
+    modules=[*inbuilt_modules(), my_module_1, my_module_2]
     programs=dict(
          vscode=dict(
              enable=True,
-             source=REPOSITORIES.void("vscode"),  # or simply REPOSITORIES.void, if name is the same (vscode)
+             install=REPOSITORIES.void("vscode"),
              extensions=[
                  "asvetliakov.vscode-neovim",
                  "Equinusocio.vsc-material-theme",
@@ -84,15 +84,10 @@ CONFIG = resolve_config(
 Where a module defined as below will listen to the `programs.vscode` key:
 
 ```python
-from replica import Module, register_module
-
-class VscodeModule(Module):
-    def consumes():
-        return ['programs.vscode']
-
-    def reduce(cfg):
-        return {...}  # read /src/inbuilt_modules/vscode.py
-
-# somewhere
-register_module(VscodeModule)
+def vscode_module(cfg):
+    cfg['files']['$HOME/.config/...'] =
+        lambda: cfg['programs']['vscode']['config'] if cfg['programs']['vscode']['enable'] and 'config' in cfg['programs']['vscode'] else None
+    # ...
 ```
+
+**Note:** Multiple modules can register to same key, the resultant value must be implementing `+`, for example you can add multiple shell alias where each alias must be therefore str (as str+str is allowed in python).
