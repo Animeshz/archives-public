@@ -1,0 +1,15 @@
+---
+import Keys from './Keys.astro';
+
+interface Props{
+    row: string[]
+}
+
+const { row } = Astro.props;
+---
+
+<div>
+    {row.map((item)=>(
+    <Keys value={item} />
+))}
+</div>
