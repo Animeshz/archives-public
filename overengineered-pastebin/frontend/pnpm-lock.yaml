@@ -8,8 +8,10 @@ specifiers:
   '@types/react-dom': ^18.0.6
   astro: ^1.6.0
   firebase: ^9.13.0
+  monaco-vim: ^0.3.5
   react: ^18.0.0
   react-dom: ^18.0.0
+  react-simple-keyboard: ^3.4.230
   tailwindcss: ^3.0.24
   vue: ^3.2.30
 
@@ -21,8 +23,10 @@ dependencies:
   '@types/react-dom': 18.0.8
   astro: 1.6.2
   firebase: 9.13.0
+  monaco-vim: 0.3.5
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-simple-keyboard: 3.4.230_biqbaboplfbrettd7655fr4n2y
   tailwindcss: 3.2.1
   vue: 3.2.41
 
@@ -3668,6 +3672,12 @@ packages:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
     dev: false
 
+  /monaco-vim/0.3.5:
+    resolution: {integrity: sha512-4L8iHlhpYImhqQwGIfcsD9caxlW/eANRCk/77xTAAlxV2LLSfMpubnSXCGdoOu+GPlHM0frKFn3aUQJpoe0gjQ==}
+    peerDependencies:
+      monaco-editor: '*'
+    dev: false
+
   /mri/1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -4092,6 +4102,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-simple-keyboard/3.4.230_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-MTrv3PDlzC4G77NWjMVPaVU4eqgxvJlInCr32MRmmarwumqDgPZs2a1Xg9BCx9JMRV3Qd6Ck3qrLS2w6BtAk4A==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react/18.2.0:

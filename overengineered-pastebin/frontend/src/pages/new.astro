@@ -1,3 +1,9 @@
+---
+import Keyboard from '../components/Keyboard.jsx';
+import SimpleKeyboard from '../components/SimpleKeyboard.jsx';
+import Textarea from '../components/TextArea.vue';
+---
+
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -8,6 +14,9 @@
 		<title>Astro</title>
 	</head>
 	<body>
-        testing
+        <Textarea />
+        <Keyboard>
+            <SimpleKeyboard client:only="react" />
+        </Keyboard>
 	</body>
 </html>
