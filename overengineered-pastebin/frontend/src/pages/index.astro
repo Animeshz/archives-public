@@ -1,4 +1,5 @@
 ---
+import App from '../components/Home.jsx';
 import Keyboard from '../components/Keyboard.astro';
 ---
 
@@ -8,10 +9,11 @@ import Keyboard from '../components/Keyboard.astro';
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
-        <Keyboard />
+		<App></App>
+        <!-- <Keyboard /> -->
 	</body>
 </html>
