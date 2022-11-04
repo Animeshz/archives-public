@@ -2,17 +2,17 @@ import logo from './text-editor.png';
 import './App.css';
 import React, { useState, useEffect } from 'react'
 import {auth, google, twitter, github} from './config/fire'
-import {signInWithPopup, signOut} from 'firebase/auth' 
+import {signInWithPopup, signOut} from 'firebase/auth'
 
 function App() {
 
   const [isLogin, setIsLogin] = useState(false)
   const [user, setUser] = useState(null)
-  
+
   useEffect(() => {
-    localStorage.setItem("userid", user.tenantId);
+    if (user) localStorage.setItem("userid", user.tenantId);
   }, [user]);
-  
+
   const LoginFalse = () => (
     <>
     <div className='topbox'>
@@ -36,8 +36,8 @@ function App() {
       onClick={() => {login(github)}}>
       <i className="fa fa-github fa-lg"></i>
       </button></div>
-
     </div>
+      <a href="/new" style={{color: "black", fontSize: "16px", textDecoration: "underline"}}>Or create anonymously</a>
     </div>
     <svg style={{borderRadius:"10px"}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#5000ca" fillOpacity="1" d="M0,224L48,192C96,160,192,96,288,101.3C384,107,480,181,576,181.3C672,181,768,107,864,112C960,117,1056,203,1152,224C1248,245,1344,203,1392,181.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
 
@@ -46,20 +46,22 @@ function App() {
 
     </>
   )
-  
+
   const LoginTrue = () => (
     <>
       <h1>Welcome!</h1>
       <img src={user.photoURL} style={{width:120}}/>
       <p>Welcome {user.displayName}! Your account {user.email} has been successfully logged in at {user.metadata.lastSignInTime}</p>
+
+      <a href="/new" style={{color: "black", fontSize: "16px", textDecoration: "underline"}}>Start creating paste</a>
       <button style={{width:150}} onClick={logout}>
         Logout
       </button>
     </>
   )
-  
+
   const login = async(provider) => {
-    const result = await signInWithPopup(auth, provider) 
+    const result = await signInWithPopup(auth, provider)
     setUser(result.user)
     setIsLogin(true)
     console.log(result)
@@ -71,11 +73,11 @@ function App() {
     setIsLogin(false)
     console.log(result)
   }
-  
+
   return (
     <div className="App">
       <header className="App-header">
-        
+
       {isLogin && user ? <LoginTrue/> : <LoginFalse/>}
 
       </header>
