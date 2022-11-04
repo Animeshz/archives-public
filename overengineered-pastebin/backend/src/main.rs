@@ -1,3 +1,4 @@
+use axum::http::Method;
 use axum::{extract::Query, response::Html, routing::*, Extension, Router};
 use nanoid::nanoid;
 use redis::JsonAsyncCommands;
@@ -7,6 +8,7 @@ use serde_json::json;
 use serde_json::Value;
 use std::{borrow::BorrowMut, collections::HashMap, net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
+use tower_http::cors::{Any, CorsLayer};
 
 async fn redis_instance() -> redis::RedisResult<Connection> {
     let client = redis::Client::open("redis://127.0.0.1/")?;
@@ -22,6 +24,10 @@ async fn main() {
         let _: Result<(), _> = redis.json_set("pastes", "$", &json!([])).await;
     }
 
+    let cors = CorsLayer::new()
+    .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+    .allow_origin(Any);
+
     // build our application with a route
     let app = Router::new()
         .route("/", get(handler))
@@ -30,10 +36,11 @@ async fn main() {
         .route("/paste", put(update_paste))
         .route("/paste", delete(delete_paste))
         .route("/user_pastes", get(get_all_pastes_for_user))
-        .layer(Extension(Arc::new(Mutex::new(redis))));
+        .layer(Extension(Arc::new(Mutex::new(redis))))
+        .layer(cors);
 
     // run it
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 4000));
     println!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())

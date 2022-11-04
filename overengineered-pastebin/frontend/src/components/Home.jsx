@@ -1,6 +1,6 @@
 import logo from './text-editor.png';
 import './App.css';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {auth, google, twitter, github} from './config/fire'
 import {signInWithPopup, signOut} from 'firebase/auth' 
 
@@ -8,6 +8,10 @@ function App() {
 
   const [isLogin, setIsLogin] = useState(false)
   const [user, setUser] = useState(null)
+  
+  useEffect(() => {
+    localStorage.setItem("userid", user.tenantId);
+  }, [user]);
   
   const LoginFalse = () => (
     <>

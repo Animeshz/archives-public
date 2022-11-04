@@ -1,7 +1,5 @@
 <template>
-    <div class="pad">
-        <textarea class="textarea" id="textarea">Helo</textarea>
-    </div>
+    <textarea class="textarea pad" id="textarea" rows="14">Helo</textarea>
 </template>
 
 <style>
@@ -11,11 +9,12 @@ body {
 </style>
 <style scoped>
 .pad {
-    margin-top: 100px;
-    padding: 0 100px;
+    margin-top: 40px;
+    margin-left: 100px;
+    margin-right: 100px;
 }
 .textarea {
-    background-color: darkgrey;
-    width: 100%;
+    background-color: #dedede;
+    width: calc(100% - 200px);
 }
 </style>

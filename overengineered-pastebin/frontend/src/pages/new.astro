@@ -2,6 +2,7 @@
 import Keyboard from '../components/Keyboard.jsx';
 import SimpleKeyboard from '../components/SimpleKeyboard.jsx';
 import Textarea from '../components/TextArea.vue';
+import Wave from '../components/Wave.vue';
 ---
 
 <html lang="en">
@@ -14,9 +15,57 @@ import Textarea from '../components/TextArea.vue';
 		<title>Astro</title>
 	</head>
 	<body>
-        <Textarea />
+		<div style="background: linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);">
+          <h1 style="padding-top: 20px; font-weight: 900; font-size: 28px; text-align: center; color: white;">Overengineered PasteBin</h1>
+        	<Textarea />
+        	<button style="color: white; background-color: rgb(230,20,20); padding: 10px; border-radius: 3px; margin: 0 auto; display: block;" onclick="create_paste()">Create new paste</button>
+		<Wave />
+		</div>
         <Keyboard>
             <SimpleKeyboard client:only="react" />
         </Keyboard>
+
+	<script client:only>
+	function create_paste() {
+    	const userid = localStorage.getItem("userid");
+		const textarea = document.getElementById('textarea')
+
+		if (userid) url = 'localhost:4000/paste?user_id=' + userid;
+		else url = 'localhost:4000/paste'
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url, false);
+		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+		xhr.onload = (event) => console.log(event);
+		xhr.send(textarea.value);
+	}
+	</script>
+
+	<!--
+	<script client:only src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+	<script client:only>
+	  require.config({
+	    paths: {
+	      'vs': 'https://unpkg.com/monaco-editor/min/vs/',
+	      'monaco-vim': 'https://unpkg.com/monaco-vim/dist/monaco-vim/',
+	    }
+	  });
+	  require(['vs/editor/editor.main', 'monaco-vim'], function(a, MonacoVim) {
+	    var editor = monaco.editor.create(document.getElementById('container'), {
+	      value: [
+	        'function x() {',
+	        '\tconsole.log("Hello world!");',
+	        '}'
+	      ].join('\n'),
+	      language: 'javascript'
+	    });
+	    var statusNode = document.getElementById('status');
+	    var vimMode = MonacoVim.initVimMode(editor, statusNode);
+	
+	    // remove vim mode by calling
+	    // vimMode.dispose();
+	  });
+	</script>
+	-->
 	</body>
 </html>
