@@ -3,6 +3,7 @@ import Keyboard from '../components/Keyboard.jsx';
 import SimpleKeyboard from '../components/SimpleKeyboard.jsx';
 import Textarea from '../components/TextArea.vue';
 import Wave from '../components/Wave.vue';
+import LanguageSelektor from '../components/LanguageSelektor.vue';
 ---
 
 <html lang="en">
@@ -24,6 +25,8 @@ import Wave from '../components/Wave.vue';
         <Keyboard>
             <SimpleKeyboard client:only="react" />
         </Keyboard>
+
+    <LanguageSelektor />
 
 	<script client:only>
   function create_paste() {
