@@ -1,0 +1,28 @@
+---
+const { id } = Astro.params;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+		<title>Astro</title>
+	</head>
+	<body style="height: 100vh; background:linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%);">
+		<div>
+		<div style="fontFamily:sans-serif;fontSize:50px;textAlign:center;color:whitesmoke; padding: 100px 100px 100px 100px;" id="paste">{id}</div>
+		</div>
+
+		<script client:only>
+		const paste = document.getElementById('paste');
+		const url = 'http://localhost:4000/paste?paste_id=' + paste.innerText;
+
+		fetch(url, {method: "GET"})
+			.then(response => { return response.json() })
+			.then(json => { const contents = json[0].contents; paste.innerText = contents[contents.length-1]; console.log(json); });
+		</script>
+	</body>
+</html>
