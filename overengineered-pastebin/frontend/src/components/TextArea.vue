@@ -16,5 +16,6 @@ body {
 .textarea {
     background-color: #dedede;
     width: calc(100% - 200px);
+    font-size: 24px;
 }
 </style>
