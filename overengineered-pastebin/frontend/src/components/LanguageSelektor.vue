@@ -33,7 +33,7 @@ const layouts = [
 </script>
 
 <template>
-    <div style="display:flex;flex-wrap:wrap;">
+    <div style="margin-top: 50px; display:flex;flex-wrap:wrap;">
         <div style="flex: 1 1 0; padding:15px; background:linear-gradient(60deg, rgba(84,58,183,1) 0%, rgba(0,172,193,1) 100%); margin: 10px; border-radius: 10px;" v-for="layout in layouts" onclick="window.setLayout(event.target.innerText)">{{layout}}</div>
     </div>
 </template>
