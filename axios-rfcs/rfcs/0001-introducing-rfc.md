@@ -15,10 +15,22 @@ This is for introducing RFCs (Request for Comments) - an open discussion for enc
 # Motivation
 [motivation]: #motivation
 
-We have gone through various problems selecting _free slot for classes_, and _event management_.A major part of that problem is to collect feedback from rest of the student body.
-If there was a discussion for which platform to use for general communitcating with other students ex Discord ,whatsapp etc. We could not get much feedback about the change before hand hence many of the past decision have failed to materilize.
+We have gone through various problems selecting _free slot for classes_, and _event management_.
 
-Another significant concern we've identified in our current decision-making process within public text channels is the prevalence of excessive noise. This noise creates difficulties in following conversations coherently, leading to a lack of clarity and logical progression. Additionally, the absence of an efficient way to revisit and understand the context behind decisions exacerbates this challenge. In this section, we delve into how the proposed transition to an RFC system aims to alleviate these issues.The RFC system introduces a structured framework that focuses discussions on specific proposals. This allocation of dedicated spaces for each proposal inherently organizes conversations, mitigating noise and fostering clearer communication.
+Our current decision-making process faces issues with excessive noise in public text channels (Whatsapp group), leading to unclear conversations and difficulty in revisiting decision context. To address this, we propose adopting an RFC system. This system provides dedicated spaces for specific proposals, organizing discussions and minimizing noise.
+
+
+It also help to solve another major part of this problem to collect feedback from the student body. A RFC based system allows for interested students to leave comments in topic which concerns them rather than the approach of having question posted in public text channels where a important decision or topic is drowned out by the noise created by usual conversation.
+
+Previous Failed attempts to fix similar problem:
+
+- [College Gate App](https://play.google.com/store/apps/details?id=com.iiitl.college_gate) (by Anu/Jagnik) introduced way to immediately log campus in-out records.
+- [IIITL Wiki](https://wiki.iiitl.ac.in) (by Pranav) introduction of wiki pages for college use.
+- Intro to discord server (by Animesh and Karthik S) for management of resources and college information.
+- Intro to [College Management Portal](https://github.com/iiitl/college-management) webapp (by Karthik S).
+
+These attempts should have been somehow validated/discussed/slightly-changed before taken into consideration, in order to increase the likelihood that they'll actually be adopted.
+
 
 # Proposed Solution
 [proposed-solution]: #proposed-solution
@@ -94,13 +106,6 @@ What are the disadvantages of doing this?
 * Notion: Using tools like Notion for documentation and collaboration can be useful, but it may lack a formalized process and might not foster as much community involvement and transparency as RFCs.
 
 * Discord forums: This adds up initial adapting resistance, last time it was attempted to maintain all the calendar, mess, extra resource and discussions over there, but failed miserably due to lack of participation with overall complexity and since it wasn't accepted by everyone.
-
-Previous Failed attempts to fix this problem:
-
-- [College Gate App](https://play.google.com/store/apps/details?id=com.iiitl.college_gate) (by Anu/Jagnik) introduced way to immediately log campus in-out records.
-- [IIITL Wiki](https://wiki.iiitl.ac.in) (by Pranav) introduction of wiki pages for college use.
-- Intro to discord server (by Animesh and Karthik S) for management of resources and college information.
-- Intro to [College Management Portal](https://github.com/iiitl/college-management) webapp (by Karthik S).
 
 ### What is the impact of not doing this?
 
