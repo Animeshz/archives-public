@@ -12,23 +12,13 @@ Different people knows different things, which may lead to healthy discussions. 
 
 This is for introducing RFCs (Request for Comments) - an open discussion for encouraging initiatives & better decision making in Axios, The technical society of IIIT Lucknow.
 
-
 # Motivation
 [motivation]: #motivation
 
-We have gone through various problems selecting _free slot for classes_, and _event management_.
+We have gone through various problems selecting _free slot for classes_, and _event management_.A major part of that problem is to collect feedback from rest of the student body.
+If there was a discussion for which platform to use for general communitcating with other students ex Discord ,whatsapp etc. We could not get much feedback about the change before hand hence many of the past decision have failed to materilize.
 
-There have also been failed attempts in
-
-- [College Gate App](https://play.google.com/store/apps/details?id=com.iiitl.college_gate) (by Anu/Jagnik) introduced way to immediately log campus in-out records.
-- [IIITL Wiki](https://wiki.iiitl.ac.in) (by Pranav) introduction of wiki pages for college use.
-- Intro to discord server (by Animesh and Karthik S) for management of resources and college information.
-- Intro to [College Management Portal](https://github.com/iiitl/college-management) webapp (by Karthik S).
-
-These attempts should have been somehow validated/discussed/slightly-changed before taken into consideration, in order to increase the likelihood that they'll actually be adopted.
-
-Even opening of new wing such as linux club (just as an example, while there's no need after the formation of infosec+foss wings but for any other one) can be RFC'd, interested members will comment by themselves, no need to ask for whom wants to be with, or why should it not exist separately.
-
+Another significant concern we've identified in our current decision-making process within public text channels is the prevalence of excessive noise. This noise creates difficulties in following conversations coherently, leading to a lack of clarity and logical progression. Additionally, the absence of an efficient way to revisit and understand the context behind decisions exacerbates this challenge. In this section, we delve into how the proposed transition to an RFC system aims to alleviate these issues.The RFC system introduces a structured framework that focuses discussions on specific proposals. This allocation of dedicated spaces for each proposal inherently organizes conversations, mitigating noise and fostering clearer communication.
 
 # Proposed Solution
 [proposed-solution]: #proposed-solution
@@ -104,6 +94,13 @@ What are the disadvantages of doing this?
 * Notion: Using tools like Notion for documentation and collaboration can be useful, but it may lack a formalized process and might not foster as much community involvement and transparency as RFCs.
 
 * Discord forums: This adds up initial adapting resistance, last time it was attempted to maintain all the calendar, mess, extra resource and discussions over there, but failed miserably due to lack of participation with overall complexity and since it wasn't accepted by everyone.
+
+Previous Failed attempts to fix this problem:
+
+- [College Gate App](https://play.google.com/store/apps/details?id=com.iiitl.college_gate) (by Anu/Jagnik) introduced way to immediately log campus in-out records.
+- [IIITL Wiki](https://wiki.iiitl.ac.in) (by Pranav) introduction of wiki pages for college use.
+- Intro to discord server (by Animesh and Karthik S) for management of resources and college information.
+- Intro to [College Management Portal](https://github.com/iiitl/college-management) webapp (by Karthik S).
 
 ### What is the impact of not doing this?
 
