@@ -7,14 +7,14 @@
 */
 
 use Animeshz\ClusterPlus\Client;
-use Animeshz\ClusterPlus\Dependent\Command;
 use Animeshz\ClusterPlus\Exceptions\MultipleEntryFoundException;
 use Animeshz\ClusterPlus\Models\Module;
 use CharlotteDunois\Livia\CommandMessage;
+use CharlotteDunois\Sarah\SarahCommand;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
 
 return function(Client $client) {
-	return (new class($client) extends Command {
+	return (new class($client) extends SarahCommand {
 		function __construct($client) {
 			parent::__construct($client, [
 				'name' => 'attach-module',
@@ -46,7 +46,7 @@ return function(Client $client) {
 				return $message->say('', ['embed' => new MessageEmbed(['description' => $e->getMessage()])]);
 			}
 
-			return $this->client->pool->runCommand($this->name, 'threadRun', $message, $args, $fromPattern);
+			return $this->client->pool->run($this->name, 'threadRun', $message, $args, $fromPattern);
 		}
 
 		function threadRun(CommandMessage $message, \ArrayObject $args, bool $fromPattern)
