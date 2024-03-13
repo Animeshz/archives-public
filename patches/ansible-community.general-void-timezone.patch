@@ -1,0 +1,71 @@
+commit 45901429f419e0b7c3fe9a9fe1d30839c3396c3f
+Author: Animesh Sahu <animeshsahu19@yahoo.com>
+Date:   Sun Apr 9 12:00:30 2023 +0530
+
+    timezone: add void linux support
+
+diff --git a/plugins/modules/timezone.py b/plugins/modules/timezone.py
+index 05849e4..1d42da1 100644
+--- a/plugins/modules/timezone.py
++++ b/plugins/modules/timezone.py
+@@ -17,7 +17,7 @@ description:
+     If you want to set up the NTP, use M(ansible.builtin.service) module.
+   - It is recommended to restart C(crond) after changing the timezone, otherwise the jobs may run at the wrong time.
+   - Several different tools are used depending on the OS/Distribution involved.
+-    For Linux it can use C(timedatectl) or edit C(/etc/sysconfig/clock) or C(/etc/timezone) and C(hwclock).
++    For Linux it can use C(timedatectl) or C(/etc/localtime) or edit C(/etc/sysconfig/clock) or C(/etc/timezone) and C(hwclock).
+     On SmartOS, C(sm-set-timezone), for macOS, C(systemsetup), for BSD, C(/etc/localtime) is modified.
+     On AIX, C(chtz) is used.
+   - Make sure that the zoneinfo files are installed with the appropriate OS package, like C(tzdata) (usually always installed,
+@@ -384,8 +384,12 @@ class NosystemdTimezone(Timezone):
+             self.conf_files['hwclock'] = '/etc/default/rcS'
+         elif distribution == 'Alpine' or distribution == 'Gentoo':
+             self.conf_files['hwclock'] = '/etc/conf.d/hwclock'
+-            if distribution == 'Alpine':
++            if distribution == 'Alpine' and 'name' in self.value:
+                 self.update_timezone = ['%s -z %s' % (self.module.get_bin_path('setup-timezone', required=True), planned_tz)]
++        elif distribution == 'Void':
++            if 'name' in self.value:
++                self.update_timezone = ['%s -sf %s /etc/localtime' % (self.module.get_bin_path('ln', required=True), tzfile)]
++            self.conf_files['name'] = None
+         else:
+             # RHEL/CentOS/SUSE
+             if self.module.get_bin_path('tzdata-update') is not None:
+@@ -540,8 +544,8 @@ class NosystemdTimezone(Timezone):
+                 # value, we need to check /etc/adjtime.
+                 value = self._get_value_from_config('adjtime', phase)
+         elif key == 'name':
+-            value = self._get_value_from_config(key, phase)
+-            if value == planned:
++            value = self._get_value_from_config(key, phase) if self.conf_files['name'] is not None else 'n/a'
++            if value == planned or value == 'n/a':
+                 # If the planned values is the same as the one in the config file
+                 # we need to check if /etc/localtime is also set to the 'planned' zone.
+                 if os.path.islink('/etc/localtime'):
+@@ -556,9 +560,7 @@ class NosystemdTimezone(Timezone):
+                         # alpine linux links under /etc/zoneinfo
+                         linktz = re.search(r'(?:/(?:usr/share|etc)/zoneinfo/)(.*)', path, re.MULTILINE)
+                         if linktz:
+-                            valuelink = linktz.group(1)
+-                            if valuelink != planned:
+-                                value = valuelink
++                            value = linktz.group(1)
+                         else:
+                             # Set current TZ to 'n/a' if the symlink points to a path
+                             # which isn't a zone file.
+@@ -579,10 +581,11 @@ class NosystemdTimezone(Timezone):
+         return value
+ 
+     def set_timezone(self, value):
+-        self._edit_file(filename=self.conf_files['name'],
+-                        regexp=self.regexps['name'],
+-                        value=self.tzline_format % value,
+-                        key='name')
++        if self.conf_files['name'] is not None:
++            self._edit_file(filename=self.conf_files['name'],
++                            regexp=self.regexps['name'],
++                            value=self.tzline_format % value,
++                            key='name')
+         for cmd in self.update_timezone:
+             self.execute(cmd)
+ 
